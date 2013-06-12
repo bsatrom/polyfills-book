@@ -40,10 +40,10 @@ According to Sharp, the practice that we now refer to as polyfilling needed a ne
 
 "Progressive enhancement," and it's cousin "graceful degradation," didn't work for this idea either, simply because these terms imply building sites that either gain functionality with JavaScript, or which remain functional in the absence of JavaScript. Polyfills often depend on JavaScript in the absence of native browser functionality and, as such, neither of these terms seemed appropriate.
 
-When Remy Sharp conceived of the term "polyfill," he wasn't attempting to coin a new phrase for austerity but, rather, to describe an increasingly relevant practice that would undoubtably become even more important as HTML5 and the "open web" continued to proliferate throughout the development world. 
+When Remy Sharp conceived of the term "polyfill," he wasn't attempting to coin a new phrase for posterity but, rather, to describe an increasingly relevant practice that would undoubtably become even more important as HTML5 and the "open web" continued to proliferate throughout the development world. The web development community needed a term to describe this burgeoning practice, and Sharp had one to offer. In spite of claims from time-to-time that the word should be changed (or "Americanized," as is often the true motive), the term caught on . I don't expect that it, or the practice that it represents to go anywhere, anytime soon. Quite the opposite, in fact, which is why you hold this book in your hands.  
 
-=== Common Types of Polyfills
+=== The Polyfilling Spectrum
 
-=== Challenges and Considerations for Building Polyfills
+With a proper explanation of polyfills out of the way, let's spend a few moments talking about types of polyfills, or the polyfilling spectrum. While Remy Sharp's definition does have a very pure interpretation, polyfills, in reality, don't always respect this definition to a T. 
 
 === Why Polyfills still matter 

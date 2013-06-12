@@ -1,0 +1,19 @@
+[[polyfills_chapter_2]]
+== Principles and Practices of Polyfill Development
+
+=== Building responsible polyfills
+
+=== Building Polyfills: Challenges & Considerations
+		- Cover the case where an API/subset cannot be polyfilled. Eric B. ran into this with idb.filesystem.js
+
+=== Principles of responsible polyfill development
+    
+==== Read the Spec
+
+==== Respect the API, if possible
+
+==== Mind (only) the Gaps
+
+==== Think like a browser developer
+
+==== Build with performance in mind
