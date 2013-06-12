@@ -44,6 +44,16 @@ When Remy Sharp conceived of the term "polyfill," he wasn't attempting to coin a
 
 === The Polyfilling Spectrum
 
-With a proper explanation of polyfills out of the way, let's spend a few moments talking about types of polyfills, or the polyfilling spectrum. While Remy Sharp's definition does have a very pure interpretation, polyfills, in reality, don't always respect this definition to a T. 
+With a proper explanation of polyfills out of the way, let's spend a few moments talking about types of polyfills, or the polyfilling spectrum. While Remy Sharp's definition does have a pure, simple interpretation, polyfills in reality don't always respect this definition to a T. In this section, we'll look at some common "classes" of polyfills, as well as the pros and cons of choosing each approach when building your own polyfill.
+
+==== The Shim
+
+==== The "Opt-in" Polyfill
+
+==== The Wrapper Polyfill
+
+==== The Pure Polyfill
+
+==== The "Prolyfill," or forward polyfill 
 
 === Why Polyfills still matter 
