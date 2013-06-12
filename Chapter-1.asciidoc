@@ -25,10 +25,25 @@ Once I’ve covered the ins-and outs of building polyfills, the last few chapter
 
 === What is a Polyfill (and what is it not)?
 
-In 2009, as he was working on the seminal *Introducing HTML5*, Remy Sharp conceived and coin the term "polyfill" to describe a practice that he'd seen increasingly applied by developers adopting HTML5 and CSS3 in their applications. 
+In 2009, as he was working on the seminal book, -Introducing HTML5-, Remy Sharp conceived and coin the term "polyfill" to describe a practice that he'd seen increasingly applied by developers adopting HTML5 and CSS3 in their applications. In a post on his blog from 2010, he defines it like so:
+
+[quote, Remy Sharp, http://remysharp.com/2010/10/08/what-is-a-polyfill/]
+____
+A polyfill, or polyfiller, is a piece of code (or plugin) that provides the technology that you, the developer, expect the browser to provide natively. Flattening the API landscape if you will.
+____
+
+For those of you in the UK, the term "polyfill," might evoke images of "polyfilla," a paste that Britons use to cover cracks and holes in walls (We call this "speckling," in the US). It's a convenient image that happens to describe exactly what good polyfills strive to do: fill in the gaps and holes of browsers so that a developer can go to work on a smooth, consistent surface.
+
+The term also has a more direct, deeper meaning if analyzed in parts, "poly" and "fill." *Fill* denotes the hole in the browser that the library exists to address, and *poly* means that the problem can be solved by using any number of techniques. JavaScript might be the predominant polyfilling approach, but there are several examples of Polyfills that fall back to plugins like Silverlight  or Flash to provide functionality to the browser. Notable examples of these are the http://code.google.com/p/explorercanvas/[excanvas] plugin, which falls back to Silverlight to provide Canvas support in IE6-8 and http://mediaelementjs.com/[mediaelement.js], which provides consistent HTML5 media support across browsers.
+
+According to Sharp, the practice that we now refer to as polyfilling needed a new term because existing terms didn't map to the idea of replicating the API of native browser features using JavaScript. Polyfills are distinct from "shimming" and "progressive enhancement," in that regard. "Shim" does describe a library or bit of code that adds features or functionality to the browser, and may even provide an abstraction that spans cross-browser inconsistencies, but these libraries often introduce their own, specialized APIs. jQuery, which was first introduced as a way to normalize DOM interactions across browsers, is a popular example of a shim. 
+
+"Progressive enhancement," and it's cousin "graceful degradation," didn't work for this idea either, simply because these terms imply building sites that either gain functionality with JavaScript, or which remain functional in the absence of JavaScript. Polyfills often depend on JavaScript in the absence of native browser functionality and, as such, neither of these terms seemed appropriate.
+
+When Remy Sharp conceived of the term "polyfill," he wasn't attempting to coin a new phrase for austerity but, rather, to describe an increasingly relevant practice that would undoubtably become even more important as HTML5 and the "open web" continued to proliferate throughout the development world. 
 
 === Common Types of Polyfills
 
 === Challenges and Considerations for Building Polyfills
 
-=== Why Pollyfills still matter 
+=== Why Polyfills still matter 
