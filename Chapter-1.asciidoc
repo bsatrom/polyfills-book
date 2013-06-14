@@ -146,13 +146,13 @@ And yet, polyfills remain part of our everyday front-end vernacular. I believe t
 
 Another reason for the continued importance of the polyfill is the emergence of the "Prolyfill" or forward polyfill. As discussed in the last section, the Prolyfill variation has appeared over the last year in response to an ever-growing number of developers desiring to get involved earlier in the standards process, often even before a new API is introduced in any of the browsers. Prolyfills are a tool of choice for developers looking to "extend the web forward." In the recent http://extensiblewebmanifesto.org[Extensible Web Manifesto], polyfills were described as the catalyst that aids in creating a "virtuous cycle" between web developers and the W3C's standardization process:
 
-[quote, The Extensible Web Manifesto]
-----
+[quote, The Extensible Web Manifesto, http://extensiblewebmanifesto.org]
+____
 Making new features easy to understand and polyfill introduces a virtuous cycle:
 
 * Developers can ramp up more quickly on new APIs, providing quicker feedback to the platform while the APIs are still the most malleable.
 * Mistakes in APIs can be corrected quickly by the developers who use them, and library authors who serve them, providing high-fidelity, critical feedback to browser vendors and platform designers.
 * Library authors can experiment with new APIs and create more cow-paths for the platform to pave.
-----
+____
 
 Over the last few years, Polyfills have grown from an HTML5 adoption tactic to a popular library development pattern and finally, a full-blown standardization strategy. As a polyfill developer, you may be building your library with one of these targets in mind. Regardless of whether your polyfill is practical, tactical or strategic in nature, you'll want to keep some building principles and practices in mind as you set out to build your library. In the next chapter, we'll discuss these strategies.
