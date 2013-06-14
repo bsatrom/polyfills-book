@@ -134,9 +134,36 @@ Opt-in Polyfills have a couple of advantages over shims. For starters, these lib
 
 On the other hand, "opt-in" polyfills do still introduce technical debt in the form of extra code, even if that code is often a few extra lines. A line or two of extra code is all find and good with example code, but imagine having to add "opt-in" support for a few hundred selectors across a large site. Now, imagine what it would be like to remove all of that opt-in code a few years down the road. Doesn't sound like much fun, does it?  Thankfully, there are other approaches that are designed to be a bit more "hands off."
 
-==== The Pure Polyfill
+==== The "Drop-in" Polyfill
+
+The next type of polyfill on our spectrum is the so-called "drop-in" or pure polyfill, a name I've chosen to indicate a polyfill that both adheres to the API of the feature in question and, more importantly, requires no additional configuration beyond a script include in order to provide its functionality to the non-compliant browsers. When included, a "drop-in" polyfill goes to work by adding its functionality to the browser, typically via additions to JavaScript prototypes or globals like +window+ and +document+. Once the polyfill is included and parsed, the developer is free to rely on standard functionality without the need for additional feature detects or User Agent interrogation.
+
+Let's take a look at a simple, yet appropriate example: +String.trim()+. This useful function is included in all modern browsers, but it notably absent from Internet Explorer 6-8. If you're tasked with supporting these browsers, and you absolutely must trim your strings with a built-in function, you can add that needed functionality via a drop-in polyfill, as illustrated in <<EX4>>, courtesy of https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Trim[Mozilla's excellent MDN documentation]
+
+[[EX3]]
+.Creating a "Drop-in" polyfill for String.trim()
+====
+[source, js]
+----
+if(!String.prototype.trim) {
+  String.prototype.trim = function () {
+    return this.replace(/^\s+|\s+$/g,'');
+  };
+}
+----
+====
+
+In this example, we're checking to see if the +trim+ function exists on the +String+ prototype and if not, it creates a new function that performs a simple RegEx replacement. To leverage this polyfill, a developer need to only include it somewhere in his app before the first call to +trim+. An important takeaway from this example is that first +if+ statement. If +trim+ does indeed exist, our polyfill isn't needed and thus, nothing else happens. It may seem like a minor point, but it's important to note that a good polyfill is aware of it's executing environment and only adds functionality when needed. We'll talk more about this in the next chapter.
+
+The biggest advantage of the drop-in polyfill is hands-off adoption for the developer. Because the workflow for using this type of library is a single step--include the library in your app--this type of approach is quite appealing for many developers looking for a quick solution that takes them out of the feature detection game. 
+
+That said, the biggest benefit of the drop-in polyfill is also its weakness. A drop-in polyfill subtly communicates to developers that the API they are looking to leverage is both fully-supported and implemented exactly to the standard approaches taken by already-supporting browsers. As a result, building drop-in polyfills is not for the faint of heart. As we'll discuss in the next chapter, taking on this type of library necessitates a deep understanding of the relevant W3C or WHATWG specification, as well as some knowledge of the inner-workings of compliant implementations in other browsers.
+
+It also requires that you either support the *entire* API, or be crystal clear which apects you do support, if you choose not to.  By definition, drop-in polyfills can be subdivided into two types: those that fully fill the complete feature API, and those that fill only a portion of that API. An example of the latter sub-type is the http://code.google.com/p/explorercanvas/[excanvas] polyfill, which supports much of the HTML5 Canvas API, but does not support the rendering of text via the standard +fillText+ and +strokeText+ API. For text, the developer must either avoid using these functions, or leverage an additional polyfill for this functionality. While a partial "drop-in" polyfill is still useful, it someone obviates the benefits of building a drop-in polyfill because the developer still must feature test for those aspects of the API not supported by your library. It's not always possible or sensible to fully support a standard API, of course, but where possible, you should make every effort to do so when building this type of polyfill.
 
 ==== The "Prolyfill," or forward polyfill 
+
+
 
 === Why Polyfills still matter 
 
