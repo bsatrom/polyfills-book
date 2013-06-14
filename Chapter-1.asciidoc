@@ -7,7 +7,7 @@ If you play a game of word association with a room full of front-end developers,
 
 Like many things in the world of technology, the practice of polyfilling is far older than its name. And even though the term itself is a recent addition to the web platform cannon, as long as we've had multiple browsers with varying and inconsistent implementations of web platform features--which is just about always--we've had the practice of polyfilling. Every developer who mucks with the string prototype to add a +trim()+ function for *oldIE* is creating a polyfill, as is the developer who lovingly adds a home-grown +window.addEventListner()+ function to IE 8 in the hopes of simplifying her event management code. As a practice, polyfilling has been around the block a few times, but its naming coincides with a time in which its use on the web exploded: the advent of HTML5.
 
-Much like the coining of "Ajax" by Jesse-James Garret in 2005, the practice was given a name at a time when developers where increasingly looking at HTML5 and thinking "how can I get me some of that in my apps?" Part of the answer at the time was polyfilling and, in many ways, it's been an adequate answer. For the last four years, polyfilling has allowed developers to target multiple browsers with new technologies, while not leaving those oldIE users behind. This is polyfilling's past, and also its present. We still live in a world where the predominant use case for a polyfill is "filling the gaps" in a browser that doesn't yet natively provide a feature or features that we need. 
+Much like the coining of "Ajax" by Jesse-James Garret in 2005, the practice of polyfilling was given a name at a time when developers where increasingly looking at HTML5 and thinking "how can I get me some of that in my apps?" Part of the answer at the time was polyfilling and, in many ways, it's been an adequate answer. For the last four years, polyfilling has allowed developers to target multiple browsers with new technologies, while not leaving those oldIE users behind. This is polyfilling's past, and also its present. We still live in a world where the predominant use case for a polyfill is "filling the gaps" in a browser that doesn't yet natively provide a feature or features that we need. 
 
 Were that the end of the story, I don't think an entire book on polyfills would be very interesting. Thankfully, it's not. Instead, a subtle shift in how we look at polyfilling is taking place in the web community. Rather than simply building polyfills to modernize older browsers, a new class of library is starting to emerge. These libraries, sometimes called "forward polyfills" or prollyfills exist to try out new ideas and unproven specifications on the web. This can be something as simple as a library that adds Classes to JavaScript in accordance with the ES6 specification, or as complex as a full suite of libraries that provide advance support for Web Components.
 
@@ -79,7 +79,7 @@ While some see the opt-in nature of shims as a advantage to this approach, other
 
 The next polyfill type on our list is the "opt-in" polyfill. These libraries qualify as polyfills in the sense that they operate on standard APIs. That said, they are "opt-in" because the developer must take action in order to leverage them.
 
-As an example, consider http://css3pie.com/documentation/pie-js/[PIE], a popular CSS3 Polyfill. PIE, aka "Progressive Internet Explorer" exists to provide CSS3 features like +border-radius+, +box-shadow+ and +border-image+ to, you guessed it, IE6-8. The library works in one of two ways. Developers can use the relevant CSS properties, as normal, and then opt-into PIE by including a +behavior+ property at the end of the CSS rule, as shown in <<EX2>> [ADD CALLOUT]
+As an example, consider http://css3pie.com/documentation/pie-js/[PIE], a popular CSS3 Polyfill. PIE, aka "Progressive Internet Explorer" exists to provide CSS3 features like +border-radius+, +box-shadow+ and +border-image+ to, you guessed it, IE6-8. The library works in one of two ways. Developers can use the relevant CSS properties, as normal, and then opt-into PIE by including a +behavior+ property at the end of the CSS rule, as shown in <<EX2>>
 
 [[EX2]]
 .Activate PIE using CSS
@@ -93,9 +93,10 @@ As an example, consider http://css3pie.com/documentation/pie-js/[PIE], a popular
   -moz-border-radius: 1em;
   -webkit-border-radius: 1em;
   border-radius: 1em;
-  behavior: url(PIE.htc);
+  behavior: url(PIE.htc); <1>
 }
 ----
+<1> This IE-specific line of CSS "activates" the PIE polyfill.
 ====
 
 In this example, the "opt-in" happens when the browser's parser encounters the +behavior+ property. If the +behavior+ property looks foreign to you, you're not alone. This property, which is only supported in IE 5.5 and above, allows you to use CSS to add a script to a selector, with the purpose of implementing DHTML components. (remember those?) The +.htc+ extension on our PIE file is a DHTML component-specific format that's essentially JavaScript plus some additional vendor-specific elements that define the components. 
