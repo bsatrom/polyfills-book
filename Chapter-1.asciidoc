@@ -9,7 +9,7 @@ Like many things in the world of technology, the practice of polyfilling is far 
 
 Much like the coining of "Ajax" by Jesse-James Garret in 2005, the practice was given a name at a time when developers where increasingly looking at HTML5 and thinking "how can I get me some of that in my apps?" Part of the answer at the time was polyfilling and, in many ways, it's been an adequate answer. For the last four years, polyfilling has allowed developers to target multiple browsers with new technologies, while not leaving those oldIE users behind. This is polyfilling's past, and also its present. We still live in a world where the predominant use case for a polyfill is "filling the gaps" in a browser that doesn't yet natively provide a feature or features that we need. 
 
-Were that the end of the story, I don't think an entire book on polyfills would be very interesting. Thankfully, it's not. Instead, a subtle shift in how we look at polyfilling is taking place in the web community. Rather than simply building polyfills to modernize older browsers, a new class of library is starting to emerge. These libraries, sometimes called "forward polyfills" or prolyfills exist to try out new ideas and unproven specifications on the web. This can be something as simple as a library that adds Classes to JavaScript in accordance with the ES6 specification, or as complex as a full suite of libraries that provide advance support for Web Components.
+Were that the end of the story, I don't think an entire book on polyfills would be very interesting. Thankfully, it's not. Instead, a subtle shift in how we look at polyfilling is taking place in the web community. Rather than simply building polyfills to modernize older browsers, a new class of library is starting to emerge. These libraries, sometimes called "forward polyfills" or prollyfills exist to try out new ideas and unproven specifications on the web. This can be something as simple as a library that adds Classes to JavaScript in accordance with the ES6 specification, or as complex as a full suite of libraries that provide advance support for Web Components.
 
 It's a powerful application, and this new class of polyfill is shifting the balance of power on the web. Increasingly, these libraries are allowing us, lowly web developers, to emerge as not just authors of web sites and applications, but as architects of the web platform itself. It's an exciting time to be a polyfiller, so I hope you'll read on.
 
@@ -140,7 +140,7 @@ The next type of polyfill on our spectrum is the so-called "drop-in" or pure pol
 
 Let's take a look at a simple, yet appropriate example: +String.trim()+. This useful function is included in all modern browsers, but it notably absent from Internet Explorer 6-8. If you're tasked with supporting these browsers, and you absolutely must trim your strings with a built-in function, you can add that needed functionality via a drop-in polyfill, as illustrated in <<EX4>>, courtesy of https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Trim[Mozilla's excellent MDN documentation]
 
-[[EX3]]
+[[EX4]]
 .Creating a "Drop-in" polyfill for String.trim()
 ====
 [source, js]
@@ -161,9 +161,37 @@ That said, the biggest benefit of the drop-in polyfill is also its weakness. A d
 
 It also requires that you either support the *entire* API, or be crystal clear which apects you do support, if you choose not to.  By definition, drop-in polyfills can be subdivided into two types: those that fully fill the complete feature API, and those that fill only a portion of that API. An example of the latter sub-type is the http://code.google.com/p/explorercanvas/[excanvas] polyfill, which supports much of the HTML5 Canvas API, but does not support the rendering of text via the standard +fillText+ and +strokeText+ API. For text, the developer must either avoid using these functions, or leverage an additional polyfill for this functionality. While a partial "drop-in" polyfill is still useful, it someone obviates the benefits of building a drop-in polyfill because the developer still must feature test for those aspects of the API not supported by your library. It's not always possible or sensible to fully support a standard API, of course, but where possible, you should make every effort to do so when building this type of polyfill.
 
-==== The "Prolyfill," or forward polyfill 
+==== The "Prollyfill," or forward polyfill 
 
+The last type of polyfill on our spectrum is an emerging type: the *Prollyfill*. According to Alex Sexton, who https://twitter.com/SlexAxton/status/257543702124306432[coined the term], a prollyfill is ".. a polyfill for a not yet standardized API." These types of libraries, also called *forward polyfills*, are unique in that they are not designed to fill in existing standards gaps, as polyfills have done traditionally. Rather, these types of polyfills are designed to test out new or emerging standards inside of the browsers. 
 
+The prollyfill pattern is becoming more and more important to web developers and standards authors alike because they create a feedback loop between developers, spec authors and browser engineers that's heretofore been unseen on the web. If you want proof of what top-down standardization brings, see XHTML 2.0, Microformats, WebSQL, Application Cache or any number of standards that failed to gain traction once subjected to real-world use by developers.
+
+Prollyfills bring a bottom-up, democratized process to the open web by allowing developers to experiment with and iterate on candidate APIs *before* they move into stable browser implementations. Prollyfills can also emerge from new libraries and languages that weren't formed with the goal of shaking up the world of web standards. Take CoffeeScript, for instance:
+
+[[EX5]]
+.CoffeeScript's "Dash rocket" and fat-arrow function syntax
+====
+[source, js]
+----
+square = (x) -> x * x
+cube   = (x) => square(x) * x
+----
+====
+
+Though CoffeeScript isn't a prollyfill per-se, it's a great example of allowing developer adoption to drive the standardization process, as evidenced by TC39's adoption of "fat arrow function syntax" for ECMAScript 6.
+
+[[EX6]]
+.Arrow Function syntax in ECMAScript 6
+====
+[source, js]
+----
+let square = x => x * x;
+let cube = x => square(x) * x;
+----
+====
+
+Prollyfills are an important concept, and they are much the reason why I set out to write this book. A deeper discussion of these, the rationale behind them and various approaches for building prollyfills can be found in the latter half of this book. In the meantime, let's talk about why polyfills should and do still matter to web developers.	
 
 === Why Polyfills still matter 
 
@@ -171,7 +199,7 @@ In the current error of faster updates to browsers--including our favorite punch
 
 And yet, polyfills remain part of our everyday front-end vernacular. I believe this is for a couple of reasons. For starters, for HTML5 and beyond (the "open web," if you will), browser vendors continue to adopt emerging technologies at differing paces. While some browsers tend to add features as early as possible for the purpose of developer testing and feedback, others prefer to iterate solely in the standards bodies, only adopting features as they move further through the process and mature. It's outside of the scope of this book and well beyond this author's patience to render judgment on which of these approaches is more idea, but these differences are worth mentioning because they point to the continued importance of Polyfills. As long as browser x implements a different set of emerging features than browsers y or z, the need for Polyfills will remain.
 
-Another reason for the continued importance of the polyfill is the emergence of the "Prolyfill" or forward polyfill. As discussed in the last section, the Prolyfill variation has appeared over the last year in response to an ever-growing number of developers desiring to get involved earlier in the standards process, often even before a new API is introduced in any of the browsers. Prolyfills are a tool of choice for developers looking to "extend the web forward." In the recent http://extensiblewebmanifesto.org[Extensible Web Manifesto], polyfills were described as the catalyst that aids in creating a "virtuous cycle" between web developers and the W3C's standardization process:
+Another reason for the continued importance of the polyfill is the emergence of the "prollyfill" or forward polyfill. As discussed in the last section, the prollyfill variation has appeared over the last year in response to an ever-growing number of developers desiring to get involved earlier in the standards process, often even before a new API is introduced in any of the browsers. prollyfills are a tool of choice for developers looking to "extend the web forward." In the recent http://extensiblewebmanifesto.org[Extensible Web Manifesto], polyfills were described as the catalyst that aids in creating a "virtuous cycle" between web developers and the W3C's standardization process:
 
 [quote, The Extensible Web Manifesto, http://extensiblewebmanifesto.org]
 ____
