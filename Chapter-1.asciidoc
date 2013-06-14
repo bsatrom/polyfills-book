@@ -93,7 +93,7 @@ As an example, consider http://css3pie.com/documentation/pie-js/[PIE], a popular
   -moz-border-radius: 1em;
   -webkit-border-radius: 1em;
   border-radius: 1em;
-	behavior: url(PIE.htc);
+  behavior: url(PIE.htc);
 }
 ----
 ====
@@ -114,7 +114,7 @@ Modernizr.load([
   nope: 'PIE.js',
   complete: function() {
     if (window.PIE) {
-		  // Select all elements with class 'rounded'
+      // Select all elements with class 'rounded'
       $('.rounded').each(function() {
         PIE.attach(this);
       });
