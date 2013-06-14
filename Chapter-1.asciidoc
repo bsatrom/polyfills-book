@@ -57,7 +57,7 @@ As stated above, jQuery--specifically the library's sizzle selector engine and e
 [[EX1]]
 .Using jQuery to interact with the DOM
 ====
-[source, javascript]
+[source, js]
 ----
 $('#myTodoList').find('li.dueToday')
   .css(‘background-color’,‘yellow’)
@@ -107,7 +107,7 @@ If the thought of using DHTML to fake CSS3 support in IE isn't your cup 'o tea, 
 [[EX3]]
 .Activate PIE using JavaScript
 ====
-[source, javascript]
+[source, js]
 ----
 Modernizr.load([
   test: Modernizr.borderradius,
@@ -134,10 +134,25 @@ Opt-in Polyfills have a couple of advantages over shims. For starters, these lib
 
 On the other hand, "opt-in" polyfills do still introduce technical debt in the form of extra code, even if that code is often a few extra lines. A line or two of extra code is all find and good with example code, but imagine having to add "opt-in" support for a few hundred selectors across a large site. Now, imagine what it would be like to remove all of that opt-in code a few years down the road. Doesn't sound like much fun, does it?  Thankfully, there are other approaches that are designed to be a bit more "hands off."
 
-==== The Wrapper Polyfill
-
 ==== The Pure Polyfill
 
 ==== The "Prolyfill," or forward polyfill 
 
 === Why Polyfills still matter 
+
+In the current error of faster updates to browsers--including our favorite punching-bag Internet Explorer--it's easy to dismiss Polyfills as a passing fad that colored the early days of HTML5 adoption. In some ways, this claim isn't unfair. When Polyfills first entered the developer consciousness, their goal was singular: easing the path to HTML5 adoption by reducing the amount of platform-specific code needed to leverage a new feature. Had the polyfilling pattern never grown beyond this scope, we probably wouldn't be talking about them much, these days.
+
+And yet, polyfills remain part of our everyday front-end vernacular. I believe this is for a couple of reasons. For starters, for HTML5 and beyond (the "open web," if you will), browser vendors continue to adopt emerging technologies at differing paces. While some browsers tend to add features as early as possible for the purpose of developer testing and feedback, others prefer to iterate solely in the standards bodies, only adopting features as they move further through the process and mature. It's outside of the scope of this book and well beyond this author's patience to render judgment on which of these approaches is more idea, but these differences are worth mentioning because they point to the continued importance of Polyfills. As long as browser x implements a different set of emerging features than browsers y or z, the need for Polyfills will remain.
+
+Another reason for the continued importance of the polyfill is the emergence of the "Prolyfill" or forward polyfill. As discussed in the last section, the Prolyfill variation has appeared over the last year in response to an ever-growing number of developers desiring to get involved earlier in the standards process, often even before a new API is introduced in any of the browsers. Prolyfills are a tool of choice for developers looking to "extend the web forward." In the recent "http://extensiblewebmanifesto.org/[Extensible Web Manifesto]," polyfills were described as the catalyst that aids in creating a "virtuous cycle" between web developers and the W3C's standardization process:
+
+[quote, http://extensiblewebmanifesto.org/[Extensible Web Manifesto]]
+----
+Making new features easy to understand and polyfill introduces a virtuous cycle:
+
+* Developers can ramp up more quickly on new APIs, providing quicker feedback to the platform while the APIs are still the most malleable.
+* Mistakes in APIs can be corrected quickly by the developers who use them, and library authors who serve them, providing high-fidelity, critical feedback to browser vendors and platform designers.
+* Library authors can experiment with new APIs and create more cow-paths for the platform to pave.
+----
+
+Over the last few years, Polyfills have grown from an HTML5 adoption tactic to a popular library development pattern and finally, a full-blown standardization strategy. As a polyfill developer, you may be building your library with one of these targets in mind. Regardless of whether your polyfill is practical, tactical or strategic in nature, you'll want to keep some building principles and practices in mind as you set out to build your library. In the next chapter, we'll discuss these strategies.
