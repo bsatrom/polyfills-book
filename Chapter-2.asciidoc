@@ -1,12 +1,68 @@
 [[polyfills_chapter_2]]
 == Principles and Practices of Polyfill Development
 
+In Chapter 1, we talked about what polyfills are and are not, various types of polyfills, and why these libraries are still important in the world of web development. In this chapter, I'm going to introduce the concept of _responsible polyfills_, that is, a polyfill built to serve the needs of the web developer. It's a common-sense subject, for sure, but one that I still believe warrants explicit discussion.
+
+Once I've introduced the _responsible polyfills_ concept, I'll share some principles of polyfill development to use as your guide, regardless of the type of library you're building. Finally, I'll wrap this chapter up with a brief discussion on the challenges and pitfalls of polyfilling.
+
 === Building responsible polyfills
 
-=== Building Polyfills: Challenges & Considerations
-		- Cover the case where an API/subset cannot be polyfilled. Eric B. ran into this with idb.filesystem.js
+When building a polyfill, or any library for that matter, you probably start by asking yourself several questions. For instance: 
+
+* Why is this library necessary?
+* Why am I building this library?
+* What should this library do?
+* How will developers want to use this library?
+
+For most of us, the act of creating a new piece of software is driven by an unmet need. If you encounter a platform feature not supported in all browsers, and think that you have the skills, time and desire to create a polyfill, that may be all it takes to get started. As the developer and first user of your library, you often have a good handle on answering most or all of the questions above.
+
+Even still, if you're creating your library as open-source or publicly available software, you're probably not doing it for yourself, alone. You may be the first user, but you probably don't want to be the only one. As such, planning the creation of your polyfill should be an exercise in thinking about the variety of needs and contexts that developers will bring to the table when using your library.
+
+I call this practice _responsible polyfilling_. That is, building your polyfill not just for yourself and your needs, but for the needs of as many developers as possible. This means that you need to think about things like performance, execution environment and even planned obsolescence. Responsible polyfills are polyfills that don't make the developer pay a tax for using them, be that a performance tax, maintenance tax or otherwise. Responsible polyfills give the developer options based on their context and needs, and don't force them down a narrow path built solely for the library developer.
+
+Responsible polyfilling is about having a clear purpose, clear goals and non-goals, and about following a couple of basic principles during development. We'll talk about principles in the next section, but the first, and most important step in polyfill development is to define the purpose and goals for your library. 
+
+Much like a vision statement for a new company or product, your polyfill needs something to clearly define why it exists, what benefit it provides and what it will and won't offer to developers. This little bit of advance planning helps drive development and clearly communicates your value, when made public. What's more, it can also spur additional feedback from developers who might have different or expanded needs from your library, thereby allowing you to expand your library if doing so makes sense.
+
+All this "vision statement" babble might sound like a lot of work for an open source library, but it doesn't have to be. a half-hour spent defining what your polyfill is all about will streamline your development, keep you focused on the things that matter, and save you tons of time and headaches down the road. 
+
+Let's look at an example. In the next chapter, I'm going to walk  step-by-step through the construction of a polyfilling library that uses http://www.kendoui.com[Kendo UI] widgets to fill in the missing or inconsistent parts of the HTML5 Forms experience across all browsers, including IE7/8. When I started this project, I sat down and defined three things:
+
+* The scope and vision for the library
+* It's goals
+* It's non-goals
+
+This vision statement can be found on the https://github.com/kendo-labs/kendo-ui-forms[home page for the project], but I'll include it here so you can see an example of what I mean:
+
+[quote]
+____
+The purpose of this project is to serve as a complete polyfill for http://www.w3.org/TR/2011/WD-html5-20110525/forms.html[HTML5 Forms] functionality, including support for new input types--like color and datetime--new attributes--like placeholder and pattern--and validation. This project includes built-in feature detection and, by-default, will only polyfill those forms features not present in the user's browser. To polyfill forms features, Kendo UI widgets and framework features will be used.
+
+If developers prefer not to use the default behavior, they will be able to configure the polyfill to always use Kendo UI widgets and features, even in cases where the browser natively supports these.
+
+This library will function as an opt-in polyfill, meaning that the developer will need to initialize a form using Kendo UI's imperative, plugin syntax (eg. +$('form').kendoForm();+) or with declarative syntax on an HTML form element (eg. +<form data-role="form">+). 
+
+*Goals*
+
+- *Provide a complete HTML5 Forms solution that leverages Kendo UI for visual widgets and features like validation*.
+- *Enable developers to mark up forms using HTML5 Forms semantics and automatically gain support for these in non-supporting browsers*. Anecdotally, in a future world where all browser fully support the forms spec, a developer should be able to remove the script reference for this library and the single attribute or line of code that initializes it and have a non-broken, fully-functional experience.
+- *Ensure that performance is a feature*. This library should tax the developer and end user as little as possible, making the benefit of use far higher than the cost of development, maintenance or performance.
+
+*Non-Goals*
+
+- This library will not support configurable or drop-in replacement for another UI/Widget library.
+- This library will not diverge from the http://www.w3.org/TR/2011/WD-html5-20110525/forms.html[HTML5 Forms] spec in order to add convenience features or non-standard behaviors.
+____
+
+As you can see, in just a few hundred words, I'm able to clarify important features of the library, why it exists and even spend some time being specific about what the library does and doesn't do. If I hadn't written this ahead of time, I might have missed important features, like configuration options or making performance a feature, or potentially taken on big features--like swappable library support--without thinking them through ahead of time.
+
+When you set out to build your polyfill, spend an hour or so thinking about some of those important "W's" from your writing classes all those years ago: What, Why, When, and of course, How. The exercise will provide you with laser focus, and set you up for success.
+
+Speaking of success, let's build on our vision statement and talk about some principles for building responsible polyfills.
 
 === Principles of responsible polyfill development
+
+
     
 ==== Read the Spec
 
@@ -17,3 +73,9 @@
 ==== Think like a browser developer
 
 ==== Build with performance in mind
+Performance is important when adopting HTML5 features, even when polyfilling older browsers. While this library cannot hope to match native browser performance, every effort will be made  
+
+==== Plan for obsolescence
+
+=== Building Polyfills: Challenges & Considerations
+		- Cover the case where an API/subset cannot be polyfilled. Eric B. ran into this with idb.filesystem.js
