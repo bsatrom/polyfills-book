@@ -3,7 +3,7 @@
 
 In Chapter 1, we talked about what polyfills are and are not, various types of polyfills, and why these libraries are still important in the world of web development. In this chapter, I'm going to introduce the concept of _responsible polyfills_, that is, a polyfill built to serve the needs of the web developer. It's a common-sense subject, for sure, but one that I still believe warrants explicit discussion.
 
-Once I've introduced the _responsible polyfills_ concept, I'll share some principles of polyfill development to use as your guide, regardless of the type of library you're building. Finally, I'll wrap this chapter up with a brief discussion on the challenges and pitfalls of polyfilling.
+Once I've introduced the _responsible polyfills_ concept, I'll share some principles of polyfill development to use as your guide, regardless of the type of library you're building. For many of the included principles, the discussion will include some of the common challenges and pitfalls of polyfilling you might run into.
 
 === Building responsible polyfills
 
@@ -110,11 +110,25 @@ In other cases, you might be dealing with a specification that has experienced c
 
 ==== Mind (only) the gaps
 
+This is a simple principle, but an important one to highlight nonetheless. When building your polyfill, it's important to never lose sight of the fact that your library's purpose in life is to "fill in" the gaps in other browsers--or to iterate on experimental APIs, is is the case of a prollyfill--and nothing more. You should resist the temptation to add non standard features simply because you want them or developers are clamoring for them. You can always create a separate shim that depends on your polyfill and adds these features, but you'd be wise to keep them out of your main library.
+
+Of course, prollyfills are an exception to this principle. Because the point of a prollyfill is to help vet an emerging API, you should experiment with new ideas and interfaces that you think should be in the spec, within reason, of course.  
+
 ==== Think like a browser developer
+
+As I mentioned in the first principle, there's no doubt that most W3C specifications are written by browser developers, for developers. And while efforts like the "Extensible Web" movement are hoping to change that reality, for now, most of the specs in the standards pipeline were written by the people who will be adding those features to our browsers. I'm not going to weigh in here on whether that reality is or isn't an idea world, but I do bring this point up to underscore an important fact. That is, when you're building polyfills, you need to think like the C++ developer who is working on this feature in the browser. "Thinking like a browser developer" can take a number of forms, for instance:
+
+* Following feature and spec discussions on the appropriate http://lists.w3.org/[W3C Working Group mailing list]
+* Following the implementation discussion in the Issue trackers for https://code.google.com/p/chromium/issues/list[Chrome] or https://bugzilla.mozilla.org/describecomponents.cgi?product=Firefox[Firefox]. Google and Mozilla developers do a very good job of working in the open, so these trackers reveal a lot of insight into the various design decisions that go into implementing a given feature.
+* Asking questions up developers on IRC. Picking a browser developer's brain via IRC can be one of the best ways to tap into implementation knowledge. It may sound daunting, but if you let these folks know that you're working on a polyfill for the feature they're working on, most will be happy to help. The Chrome team can be reached at #blink-dev on freenode, while Mozilla engineers typically hang out at #firefox pm irc.mozilla.org.
 
 ==== Build with performance in mind
 
-Performance is important when adopting HTML5 features, even when polyfilling older browsers. While this library cannot hope to match native browser performance, every effort will be made  
+If you talk to web developers who have been working with HTML5 for a couple of years, you might discover that many hold the opinion that polyfills are nice, but too often, they are slow. Often, when developers create a polyfill, they're interested first in covering features. Once those are delivered, the developer usually packs up his or her kit and heads home, thinking the job is done. 
+
+But the truth is, performance is important when adopting HTML5 features, even when polyfilling older browsers. While your library cannot hope to match native browser performance, you should make every effort to make your library as fast as possible. After all, a poorly-performing polyfill will end up being a bigger nightmare to end-users and thus developers than if the developer just omitted the non-standard feature in the first place.
+
+There are a couple of ways you can build for performance. First, you can benchmark your implementation to native using a tool like http://jsperf[JSPerf] and then iterate the heck out of your library until you can't iterate any more. Second, you can create a robust set of unit tests with your polyfill, and make sure that these are tested using a cross-browser automated testing framework, like http://karma-runner.github.io/0.8/index.html[Karma]. We'll look at both of these strategies in Chapters 3 and 4.
 
 ==== Plan for obsolescence
 
@@ -133,5 +147,4 @@ Over the last five years, PhoneGap/Cordova has become the de facto wrapper for b
 
 Each principle above is designed to reinforce the goal of building responsible polyfills for developers. If you build your polyfill with some or all of these principles in mind, you'll go a long was towards building a robust, well-performing library that developers will love to use.
 
-=== Building Polyfills: Challenges & Considerations
-		- Cover the case where an API/subset cannot be polyfilled. Eric B. ran into this with idb.filesystem.js
+Now that we've talked about some of the key principles of building responsible polyfills, let's get to work. In the next chapter, I'll walk you through building a complete polyfill, step-by-step, using the principles found in this chapter.
