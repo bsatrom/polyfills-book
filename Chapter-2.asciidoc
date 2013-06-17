@@ -32,9 +32,10 @@ Let's look at an example. In the next chapter, I'm going to walk  step-by-step t
 * It's goals
 * It's non-goals
 
-This vision statement can be found on the https://github.com/kendo-labs/kendo-ui-forms[home page for the project], but I'll include it here so you can see an example of what I mean:
+This vision statement can be found on the https://github.com/kendo-labs/kendo-ui-forms[home page for the project], but I'll include it in <<EX1>> so you can see an example of what I mean:
 
-[quote]
+[[EX1]]
+. Purpose and Goals of the Kendo UI HTML5 Forms Polyfill
 ____
 The purpose of this project is to serve as a complete polyfill for http://www.w3.org/TR/2011/WD-html5-20110525/forms.html[HTML5 Forms] functionality, including support for new input types--like color and datetime--new attributes--like placeholder and pattern--and validation. This project includes built-in feature detection and, by-default, will only polyfill those forms features not present in the user's browser. To polyfill forms features, Kendo UI widgets and framework features will be used.
 
@@ -76,16 +77,59 @@ Let's talk about each of these, in turn.
     
 ==== Read the Spec
 
+I do a lot of reading. About half of my reading is technical, blog posts, articles and books, and the other half is not, from great novels to books about the joys and trials of raising two precocious boys. Across these, there are a lot of things I love to read, and many things that require a monumental force of will for me to power through.
+
+Specifications, be they the W3C or WHATWG variety, fall squarely into that latter category for me. If I'm being completely honest and in a private conversation with a close friend, I'd probably even admit that I'd rather paint my living room, pull up a lawn chair and watch that paint dry while licking 9-volt batteries than willingly read a W3C specification.
+
+This is not to say that specifications aren't useful, or even a worthwhile read. As a matter of fact, they are enormously useful to their primary audience: browser implementers. And they are worth your time. Much like my four-year old needs to be reminded that eating one's vegetables are important, I have to be reminded from time-to-time that specifications are very useful, even to us lowly web developers.
+
+For the polyfill developer, reading and understanding a specification is almost as important as it is to browser implementers themselves. As we'll discuss in the next principle, reading the spec is the best way to understand *what* your polyfill needs to provide and thus, is essential. It's the most "rule-like" of all these principles, but also the most important. So pull up a chair, put on a pot of coffee, get yourself a Ludovico apparatus and get to work. 
+
 ==== Respect the API… if possible
 
-==== Mind (only) the Gaps
+When reading W3C specifications, you'll often come across blocks of code-like text, similar to those found in <<EX2>>. This code is called Web IDL, an interface definition language designed for browsers. According to http://www.w3.org/TR/WebIDL[its specification], Web IDL "…is an IDL variant with a number of features that allow the behavior of common script objects in the web platform to be specified more readily."
+
+[[EX2]]
+    .Example WebIDL Snippet
+    image::images/ch2-ex2.png[]
+
+So Web IDL specifies the interface that browsers are to use when building a standard implementation, and all of the browsers do exactly that. Most of them--perhaps even all of them, but I can't claim all without seeing Internet Explorer's code base, which is not open source--in fact, automatically generate Web IDL bindings at runtime from the spec-defined IDL. 
+
+[NOTE]
+====
+While it's true that not ALL W3C specifications use Web IDL, the Web IDL spec itself was moved into Candidate Recommendation in early 2012, so it's likely that the spec you're looking to polyfill will be written using Web IDL.
+====
+
+There's no doubt that JavaScript API design is hard work. It's easy to get it wrong, and the chances of doing something you'll later regret is high. One of the best parts of building polyfills is that your API is already defined for you! While W3C specs contain a lot of information you'll need to absorb for your polyfill, Web IDL is the icing on the cupcake, giving you the exact shape of your API, and all you need to do is make sense of it. What's more, with efforts like https://github.com/extensibleweb/webidl.js[WebIDL.js] from the Extensible Web Community Group, getting the API for your library might soon be as easy as running some IDL through the terminal. We'll talk about using WebIDL.js in Chapter 5.
+
+The bottom line of this principle is that, most of the time, the API of your polyfill should be a pretty cut and dry effort. My advice is to extract the defined interfaces from the spec and make sure to implement those. No more, and no less.
+
+Of course, this principle does have the caveat of "… if possible." For some libraries, you might not be able to implement the entire API because part of the API depends on low-level networking or platform features that aren't available to you. For example, if you're building a polyfill for the http://dev.w3.org/geo/api/spec-source-orientation.html[DeviceOrientation Event] spec, you might find it possible to support the +deviceorientation+ event via existing platform features, but not the +devicemotion+ or other aspects of the spec. This is fine, of course, as long as you're crystal clear with your users that you're providing an incomplete polyfill implementation, be design.
+
+In other cases, you might be dealing with a specification that has experienced changes to it's API. One example of this scenario is the http://dev.w3.org/csswg/css-flexbox/[CSS Flexbox] module which has changed its property syntax a couple of times during it's lifetime, but also experienced early browser implementations. If you're maintaining a Flexbox library, chances are you'll need to support the legacy CSS property syntax in your implementation for at least a time. The bottom line is this: Specs and their APIs change, and building a polyfill might require your to bridge the gap created by API changes, in addition to merely filling in the gaps for browsers.
+
+==== Mind (only) the gaps
 
 ==== Think like a browser developer
 
 ==== Build with performance in mind
+
 Performance is important when adopting HTML5 features, even when polyfilling older browsers. While this library cannot hope to match native browser performance, every effort will be made  
 
-==== . Plan for obsolescence
+==== Plan for obsolescence
+
+Polyfills, by their nature, are temporary. Unless you're building a shim with a brand new API--and thus, not a polyfill--your goal should never be to build the next jQuery or Backbone. As a polyfill developer, recognize that you're in the humbling business of building libraries that you *want* to become irrelevant at some point in the near future. The good news is that, for as long as developers need your library to fill in a key feature, your library will be a welcome addition to their toolset. That said, we should never forget that the ultimate goal is to push for a world where these features exist native to all the browsers. It may seem that it goes without saying, but planning for obsolescence, along with complimentary principles like "Mind (only) the gaps," will help you stay focused on polyfilling and only polyfilling, while resisting the urge to morph your library into something that's part polyfill and part shim. A _phrankenfill_, if you will.
+
+If you look back at the <<EX1>> above, specifically the second bullet under goals. The second sentence indicates that a goal of the library is to allow the developer to remove my library for a fully-compliant browser and not lose any functionality whatsoever. Not only does this keep me focused on the spec, and only the spec, but its an example of planning for obsolescence.
+
+Another great example of planned obsolescence comes from the Cordova/PhoneGap project. In a post entitled, "http://phonegap.com/2012/05/09/phonegap-beliefs-goals-and-philosophy/[PhoneGap Beliefs, Goals and Philosophy]," from Brian Leroux states that "the ultimate goal of the PhoneGap project is to cease to exist". He goes to to explain this seemingly defeatist statement as anything but:
+
+[quote, Brian Leroux]
+____
+Our second goal is not nihilistic but is rather a commitment to standardization of the web as a platform. We believe in a web open to everyone to participate however they will. No locked doors. No walls. The things we do with PhoneGap are directly influenced by the work we see at the W3C, WHATWG, and other research such as Mozilla's WebAPI, BONDI, WAC, Webinos, webOS, Tizen and the like.
+____
+
+Over the last five years, PhoneGap/Cordova has become the de facto wrapper for building hybrid mobile apps with HTML5. It would be easy for the founders and their beneficiaries to focus on sustaining this little kingdom of theirs. But instead, they point to the open web as the reason they exist, as well as the reason they one day hope to shutter the project. It's an admirable attitude, and one we'd be wise to emulate when building polyfills of our own.
 
 Each principle above is designed to reinforce the goal of building responsible polyfills for developers. If you build your polyfill with some or all of these principles in mind, you'll go a long was towards building a robust, well-performing library that developers will love to use.
 
