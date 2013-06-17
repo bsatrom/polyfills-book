@@ -40,18 +40,18 @@ The purpose of this project is to serve as a complete polyfill for http://www.w3
 
 If developers prefer not to use the default behavior, they will be able to configure the polyfill to always use Kendo UI widgets and features, even in cases where the browser natively supports these.
 
-This library will function as an opt-in polyfill, meaning that the developer will need to initialize a form using Kendo UI's imperative, plugin syntax (eg. +$('form').kendoForm();+) or with declarative syntax on an HTML form element (eg. +<form data-role="form">+). 
+This library will function as an opt-in polyfill, meaning that the developer will need to initialize a form using Kendo UI's imperative, plugin syntax (eg. +$("form").kendoForm();+) or with declarative syntax on an HTML form element (eg. +<form data-role="form">+). 
 
 *Goals*
 
-- *Provide a complete HTML5 Forms solution that leverages Kendo UI for visual widgets and features like validation*.
-- *Enable developers to mark up forms using HTML5 Forms semantics and automatically gain support for these in non-supporting browsers*. Anecdotally, in a future world where all browser fully support the forms spec, a developer should be able to remove the script reference for this library and the single attribute or line of code that initializes it and have a non-broken, fully-functional experience.
-- *Ensure that performance is a feature*. This library should tax the developer and end user as little as possible, making the benefit of use far higher than the cost of development, maintenance or performance.
+* *Provide a complete HTML5 Forms solution that leverages Kendo UI for visual widgets and features like validation*.
+* *Enable developers to mark up forms using HTML5 Forms semantics and automatically gain support for these in non-supporting browsers*. Anecdotally, in a future world where all browser fully support the forms spec, a developer should be able to remove the script reference for this library and the single attribute or line of code that initializes it and have a non-broken, fully-functional experience.
+* *Ensure that performance is a feature*. This library should tax the developer and end user as little as possible, making the benefit of use far higher than the cost of development, maintenance or performance.
 
 *Non-Goals*
 
-- This library will not support configurable or drop-in replacement for another UI/Widget library.
-- This library will not diverge from the http://www.w3.org/TR/2011/WD-html5-20110525/forms.html[HTML5 Forms] spec in order to add convenience features or non-standard behaviors.
+* This library will not support configurable or drop-in replacement for another UI/Widget library.
+* This library will not diverge from the http://www.w3.org/TR/2011/WD-html5-20110525/forms.html[HTML5 Forms] spec in order to add convenience features or non-standard behaviors.
 ____
 
 As you can see, in just a few hundred words, I'm able to clarify important features of the library, why it exists and even spend some time being specific about what the library does and doesn't do. If I hadn't written this ahead of time, I might have missed important features, like configuration options or making performance a feature, or potentially taken on big features--like swappable library support--without thinking them through ahead of time.
