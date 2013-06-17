@@ -62,11 +62,21 @@ Speaking of success, let's build on our vision statement and talk about some pri
 
 === Principles of responsible polyfill development
 
+As anyone who knows me will tell you, I'm a big fan of guiding principles and patterns, and not so much a fan of lists of rules. In my experience, it's too easy to allow lists of rules to turn into checklists and, when that happens, one can lose all sense of the current problem when applying those rules. Putting it another way, rules tend to be rote, often applied without context. Principles, on the other hand, encourage the application of context because they force us to consider how to uniquely apply a given principle to our problem. Sometimes, a principle will be incorporated in a straightforward matter. In other scenarios, a given principle may not even apply to the problem at hand. In both cases, it's up to the developer to decide, not the crafter of the principles themselves.
 
+With that bit of soapboxing out of the way, let's talk about principles for responsible polyfill development. Remember that the goal of responsible polyfilling is to build for the needs of  developers using your library. With that goal in mind, here are the five principles that, I believe, can help you build reliable polyfills for other developers:
+
+. Read the Spec
+. Respect the API… if possible
+. Mind (only) the gaps
+. Think like a browser developer
+. Build with performance in mind
+
+Let's talk about each of these, in turn.
     
 ==== Read the Spec
 
-==== Respect the API, if possible
+==== Respect the API… if possible
 
 ==== Mind (only) the Gaps
 
@@ -75,7 +85,9 @@ Speaking of success, let's build on our vision statement and talk about some pri
 ==== Build with performance in mind
 Performance is important when adopting HTML5 features, even when polyfilling older browsers. While this library cannot hope to match native browser performance, every effort will be made  
 
-==== Plan for obsolescence
+==== . Plan for obsolescence
+
+Each principle above is designed to reinforce the goal of building responsible polyfills for developers. If you build your polyfill with some or all of these principles in mind, you'll go a long was towards building a robust, well-performing library that developers will love to use.
 
 === Building Polyfills: Challenges & Considerations
 		- Cover the case where an API/subset cannot be polyfilled. Eric B. ran into this with idb.filesystem.js
