@@ -32,9 +32,9 @@ Let's look at an example. In the next chapter, I'm going to walk  step-by-step t
 . It's goals
 . It's non-goals
 
-This vision statement can be found on the https://github.com/kendo-labs/kendo-ui-forms[home page for the project], but I'll include it in <<EX1>> so you can see an example of what I mean:
+This vision statement can be found on the https://github.com/kendo-labs/kendo-ui-forms[home page for the project], but I'll include it in <<EX2-1>> so you can see an example of what I mean:
 
-[[EX1]]
+[[EX2-1]]
 . Purpose and Goals of the Kendo UI HTML5 Forms Polyfill
 ____
 The purpose of this project is to serve as a complete polyfill for http://www.w3.org/TR/2011/WD-html5-20110525/forms.html[HTML5 Forms] functionality, including support for new input types--like color and datetime--new attributes--like placeholder and pattern--and validation. This project includes built-in feature detection and, by-default, will only polyfill those forms features not present in the user's browser. To polyfill forms features, Kendo UI widgets and framework features will be used.
@@ -88,11 +88,11 @@ For the polyfill developer, reading and understanding a specification is almost 
 
 ==== Respect the API… if possible
 
-When reading W3C specifications, you'll often come across blocks of code-like text, similar to those found in <<EX2>>. This code is called Web IDL, an interface definition language designed for browsers. According to http://www.w3.org/TR/WebIDL[its specification], Web IDL "…is an IDL variant with a number of features that allow the behavior of common script objects in the web platform to be specified more readily."
+When reading W3C specifications, you'll often come across blocks of code-like text, similar to those found in <<EX2-2>>. This code is called Web IDL, an interface definition language designed for browsers. According to http://www.w3.org/TR/WebIDL[its specification], Web IDL "…is an IDL variant with a number of features that allow the behavior of common script objects in the web platform to be specified more readily."
 
-[[EX2]]
-    .Example WebIDL Snippet
-    image::images/ch2-ex2.png[]
+[[EX2-2]]
+.Example WebIDL Snippet
+image::images/ch2-ex2.png[]
 
 So Web IDL specifies the interface that browsers are to use when building a standard implementation, and all of the browsers do exactly that. Most of them in fact--perhaps even all of them, but I can't claim all without seeing Internet Explorer's code base, which is not open source--automatically generate Web IDL bindings at runtime from the spec-defined IDL. 
 
@@ -135,7 +135,7 @@ There are a couple of ways you can build for performance. First, you can benchma
 
 Polyfills, by their nature, are temporary. Unless you're building a shim with a brand new API--and thus, not a polyfill--your goal should never be to build the next jQuery or Backbone. As a polyfill developer, recognize that you're in the humbling business of building libraries that you *want* to become irrelevant in the future. The good news is that, for as long as developers need your library to fill in a key feature, it will be a welcome addition to their toolset. But we should never forget that the ultimate goal is to push for a world where these features exist native to all the browsers. It may seem that it goes without saying, but planning for obsolescence, along with complimentary principles like "Mind (only) the gaps," will help you stay focused on polyfilling and only polyfilling, while resisting the urge to morph your library into something that's part polyfill and part shim. A _phrankenfill_, if you will.
 
-If you look back at the <<EX1>> above, specifically the second bullet under goals. The second sentence indicates that a goal of my Kendo Ui Forms polyfill is to allow the developer to remove the library in a fully-compliant browser and not lose any functionality whatsoever. Not only does this keep me focused on the spec, and only the spec, but it is an example of planning for obsolescence.
+If you look back at the <<EX2-1>> above, specifically the second bullet under goals. The second sentence indicates that a goal of my Kendo Ui Forms polyfill is to allow the developer to remove the library in a fully-compliant browser and not lose any functionality whatsoever. Not only does this keep me focused on the spec, and only the spec, but it is an example of planning for obsolescence.
 
 Another great example of planned obsolescence comes from the Cordova/PhoneGap project. In a post entitled, "http://phonegap.com/2012/05/09/phonegap-beliefs-goals-and-philosophy/[PhoneGap Beliefs, Goals and Philosophy]," Brian Leroux states that "the ultimate goal of the PhoneGap project is to cease to exist". He goes to to explain this seemingly defeatist statement as anything but:
 
