@@ -84,7 +84,7 @@ Specifications, be they the W3C or WHATWG variety, fall squarely into that latte
 
 This is not to say that these specifications aren't useful, or even a worthwhile read. As a matter of fact, they are enormously useful to their primary audience: browser implementers. And they are worth your time. Much like my four-year old needs to be reminded that eating one's vegetables are important, I have to be reminded from time-to-time that specifications are very useful, even to us lowly web developers.
 
-For the polyfill developer, reading and understanding a specification is almost as important as it is to browser implementers themselves. As we'll discuss in the next principle, reading the spec is the best way to understand *what* your polyfill needs to provide and thus, is essential. It's the most "rule-like" of all these principles, but also the most important. So pull up a chair, put on a pot of coffee, get yourself a Ludovico apparatus and get to work. 
+For the polyfill developer, reading and understanding a specification is almost as important as it is to browser implementers themselves. As we'll discuss in the next principle, reading the spec is the best way to understand _what_ your polyfill needs to provide and thus, is essential. It's the most "rule-like" of all these principles, but also the most important. So pull up a chair, put on a pot of coffee, get yourself a Ludovico apparatus and get to work. 
 
 ==== Respect the API… if possible
 
@@ -113,7 +113,7 @@ In other cases, you might be dealing with a specification that has experienced c
 
 This is a simple principle, but an important one to highlight nonetheless. When building your polyfill, it's important to never lose sight of the fact that your library's purpose in life is to "fill in" the gaps in other browsers--or to iterate on experimental APIs, is is the case of a prollyfill--and nothing more. You should resist the temptation to add non standard features simply because you want them or developers are clamoring for them. You can always create a separate shim that depends on your polyfill and adds these features, but you'd be wise to keep them out of your main library.
 
-Of course, prollyfills are an exception to this principle. Because the point of a prollyfill is to help vet an emerging API, you *should* experiment with new ideas and interfaces that you believe belong in the spec.
+Of course, prollyfills are an exception to this principle. Because the point of a prollyfill is to help vet an emerging API, you _should_ experiment with new ideas and interfaces that you believe belong in the spec.
 
 ==== Think like a browser developer
 
@@ -133,7 +133,7 @@ There are a couple of ways you can build for performance. First, you can benchma
 
 ==== Plan for obsolescence
 
-Polyfills, by their nature, are temporary. Unless you're building a shim with a brand new API--and thus, not a polyfill--your goal should never be to build the next jQuery or Backbone. As a polyfill developer, recognize that you're in the humbling business of building libraries that you *want* to become irrelevant in the future. The good news is that, for as long as developers need your library to fill in a key feature, it will be a welcome addition to their toolset. But we should never forget that the ultimate goal is to push for a world where these features exist native to all the browsers. It may seem that it goes without saying, but planning for obsolescence, along with complimentary principles like "Mind (only) the gaps," will help you stay focused on polyfilling and only polyfilling, while resisting the urge to morph your library into something that's part polyfill and part shim. A _phrankenfill_, if you will.
+Polyfills, by their nature, are temporary. Unless you're building a shim with a brand new API--and thus, not a polyfill--your goal should never be to build the next jQuery or Backbone. As a polyfill developer, recognize that you're in the humbling business of building libraries that you _want_ to become irrelevant in the future. The good news is that, for as long as developers need your library to fill in a key feature, it will be a welcome addition to their toolset. But we should never forget that the ultimate goal is to push for a world where these features exist native to all the browsers. It may seem that it goes without saying, but planning for obsolescence, along with complimentary principles like "Mind (only) the gaps," will help you stay focused on polyfilling and only polyfilling, while resisting the urge to morph your library into something that's part polyfill and part shim. A _phrankenfill_, if you will.
 
 If you look back at the <<EX2-1>> above, specifically the second bullet under goals. The second sentence indicates that a goal of my Kendo Ui Forms polyfill is to allow the developer to remove the library in a fully-compliant browser and not lose any functionality whatsoever. Not only does this keep me focused on the spec, and only the spec, but it is an example of planning for obsolescence.
 
@@ -144,7 +144,7 @@ ____
 Our second goal is not nihilistic but is rather a commitment to standardization of the web as a platform. We believe in a web open to everyone to participate however they will. No locked doors. No walls. The things we do with PhoneGap are directly influenced by the work we see at the W3C, WHATWG, and other research such as Mozilla's WebAPI, BONDI, WAC, Webinos, webOS, Tizen and the like.
 ____
 
-Over the last five years, PhoneGap/Cordova has become the *de facto* wrapper for building hybrid mobile apps with HTML5. It would be easy for the founders and their benefactors to focus on sustaining this little kingdom of theirs. Instead, they point to the open web as the reason they exist, as well as the reason they one day hope to shutter the project. It's an admirable attitude, and one we'd all be wise to emulate when building polyfills of our own.
+Over the last five years, PhoneGap/Cordova has become the _de facto_ wrapper for building hybrid mobile apps with HTML5. It would be easy for the founders and their benefactors to focus on sustaining this little kingdom of theirs. Instead, they point to the open web as the reason they exist, as well as the reason they one day hope to shutter the project. It's an admirable attitude, and one we'd all be wise to emulate when building polyfills of our own.
 
 Each principle above is designed to reinforce the goal of building responsible polyfills for developers. If you build your polyfill with some or all of these principles in mind, you'll go a long was towards delivering a robust, dependable, well-performing library that developers will love to use.
 
