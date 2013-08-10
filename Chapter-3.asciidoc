@@ -17,19 +17,25 @@ What better area of HTML5 to venture into as a polyfill developer, no? It's a bi
 
 === Setting up Your Polyfill project
 
-When starting work on a cross-browser polyfill, you want to begin with the end in mind. That is, before you write a single line of code, you should think about how you plan to distribute your hard work, and how you expect other developers to leverage your polyfill in their apps, and even how you can enable others to contribute to your project. All of these considerations can be addressed at the start of your project with a solid development workflow, which includes several core pieces.
+When starting work on a cross-browser polyfill, you want to begin with the end in mind. That is, before you write a single line of code, you should think about how you plan to distribute your hard work, and how you expect other developers to leverage your polyfill in their apps, and even how you can enable others to contribute to your project. All of these considerations can be addressed at the start of your project with a solid development workflow, which includes several core pieces:
 
-==== 1. Source control and collaboration
+. Source control and collaboration
+. Package and dependency management
+. Build and Workflow Management
+. Automated and Cross-Browser Testing
+. Continuous Integration
+
+==== Source control and collaboration
 
 The first step is to think about how and where you'll want to host your code so that a) you've got a backup and full project history in case things go wrong and b) other developers can find, leverage and contribute to your project. For the first part, you'll want to choose a source control solution that's open-source and widely-used. Two examples are http://git-scm.com[Git] and http://mercurial.selenic.com/[Mercurial]. These two systems have a similar command-line syntax for working with files and code repositories, so some developers are comfortable working with either. That said, Git is far and away the most popular source control system in use today, so you'll reach a larger body of potential collaborators by sticking with this system.
 
 When paired with a solid code-sharing site, your source control solution also gives you a platform for making your polyfill available to the world. Not only can you store your polyfill source and history in these sites, but you can make that source and history available for others, which is hopefully your goal as a Polyfill developer. Much as Git is the most popular source control option around today, http://github.com[GitHub] is the most popular option for hosting and collaborating on all manner of open-source software projects. Other options worth considering, if GitHub is not your cup of tea are http://www.bitbucket.com[BitBucket]--which allows you to host both Git and Mercurial projects--and Microsoft's http://www.codeplex.com/[CodePlex]--which supports Mercurial projects only. For the examples in this book, I've chosen Git as my source control solution and GitHub for code sharing and distribution.
 
-==== 2. Package and Dependency Management
+==== Package and Dependency Management
 
 Once you've chosen a source control solution, you'll want to think about how to manage dependencies. By dependencies, I'm not referring to "this polyfill depends on jQuery," but, rather, the 3rd party libraries that your polyfill depends on for things like static analysis, minification, testing and more. We'll talk about those specific tools in a bit, but before you start using them, you need to think about how you plan to include them in your project, and declare those dependencies for others who download your work. In the world of JavaScript development, there's no better general-purpose package manager than http://npmjs.org[NPM], the Node.js Package Manager. If you have http://nodejs.org[Node.js] installed, you already have npm. If not, head over to http://nodejs.org and grab the appropriate installer for your OS. You'll be using Node and NPM heavily throughout your polyfill project. These tools are also a prerequisite for the next few items on our list.
 
-==== 3. Build and Workflow Management
+==== Build and Workflow Management
 
 Developing open-source software, including Polyfills, is about more than just throwing together a quick sample, some basic tests and a source file. Sure, it's possible to put something online that consists of only these things, I've even done it myself before. Five years ago, it was even a common practice among the front-end community. But as our community has matured, our tools and our processes have evolved, as well. Perhaps one could even make the argument that our tools have matured us, but that's neither here nor there. 
 
@@ -41,7 +47,7 @@ Once such tool is http://gruntjs.com/[Grunt], a simple JavaScript task runner cr
 
 I use grunt in my projects , and will do so in this book as well. The tool can be installed via npm. For more information, see the online http://gruntjs.com/getting-started[getting started guide]. We'll walkthrough configuring an initial grunt setup in a moment.  
 
-==== 4. Automated and Cross-Browser Testing
+==== Automated and Cross-Browser Testing
 
 If you're building a front-end library, testing is important. Vitally important if you building a shim or Polyfill! Almost every programming language out there has one or more options for unit testing, and JavaScript is no different. Unit testing, that is, the act of writing and executing code that exercises program code and performs assertions to verify that the program functioned as expected, has become quite popular over the last decade, especially in Agile, eXtreme Programming and Lean Software circles. Not only does unit testing aid the developer in properly shaping the API and behavior of his or her library by writing code (the tests) in the mindset of the consumer, but a suite of tests, over time, serve as a wonderful safety net. With this net in place a developer is free to refactor, reword and otherwise enhance her library, and remain confident in the fact that her tests will catch and regressions that fall through the cracks.
 
@@ -49,7 +55,7 @@ In the world of JavaScript development, there are countless unit testing librari
 
 Of course, unit testing is great, but we also need to consider cross-browser testing for this project. It is a cross-browser polyfill. As such, our project will also need to include an automated tool that can launch multiple browsers and load our unit tests up in each, thereby ensuring at least basic test coverage across browsers. The tool that I prefer to use for such a task is http://karma-runner.github.io/0.10/index.html[Karma], which you can also install via NPM. There's a bit of setup involved in getting Karma up and running the way I like, and we'll cover that below.
 
-=== 5. Continuous Integration  
+=== Continuous Integration  
 
 The last tool you need to consider for your initial project setup is a remote CI server. This step is completely optional, so if you want to take my advice on items 1-4 and ignore me on this one, that's ok. That said, the biggest advantage of a remote CI server for an open-source project is, in my mind, the ability to run basic project setup and unit tests in a clean environment. Doing so ensures that you properly declare dependencies via npm and that you never check-in code that fails one or more tests and just walk away. In my mind, it's better to get the news that you did something wrong from a CI server than from a human.
 
@@ -59,7 +65,190 @@ For my projects, I prefer to use https://travis-ci.org/[Travis], a CI server tha
 
 Once you've made all of the appropriate tool choices, from source control to your build system, you're ready to create your project! For the rest of the book I'll be using the tools I indicated in each section above, so if you're choosing otherwise and following along, you might need to adjust things here and there to get the same result.
 
-First
+First things first, make sure you have all of the tools I mentioned above installed on your development machine. Then, create an empty directory for your polyfill and open a terminal or console window in that new directory. Next, we'll initialize a new GitHub repo
+
+[[EX3-1]]
+.Initializing a new Git repository
+====
+[source, shell]
+----
+git init
+----
+====
+
+Once you've initialized your local git repository, you'll want to connect it to the remote repository that will be hosting your project online, which you can do by running a command similar to  <<EX3-2>>.
+
+[[EX3-2]]
+.Setting up a new Git remote
+====
+[source, shell]
+----
+git remote add git@github.com:bsatrom/html5-forms-polyfill.git
+----
+====
+
+Now, your local and remote repositories are all set-up and it's time to add some essential project files. Here's the basic project structure I recommend for an open-source polyfill (assuming a view from the folder root):
+
+. dist/ - The minified and concatenated files you plan to distribute; i.e. the "binaries" for your polyfill
+. lib/ - Any 3rd-party libraries that your Polyfill depends on (jQuery, Underscore, etc.)
+. sample/ - The sample project for the polyfill
+. spec/ - Home for your unit tests
+. src/ - Source JavaScript and CSS files
+. .gitignore - A list of files for Git to ignore when found in your project. GitHub can create one of these files for you when creating a new project. If you go that route, select the "Node" template.
+. CHANGELOG.md - A laundry-list of minor and breaking changes for each version of your project. 
+. CONTRIBUTING.md - Essential if you plan to accept contribution s to your project. 
+. README.md - the readme for your project. GitHub automatically treats this file as the main entry point when anyone visits your project. It should describe the purpose and goals of the polyfill, like I discussed in Chapter 1, features of the project, a roadmap for the projects, installation and usage instructions and anything else you think might be useful to consumers of or collaborators on your polyfill.
+. LICENSE.md - Every open-source project needs a license. Which license you choose is up to you, but permissive licenses, such as MIT and Apache 2.0 will garner more interest and, possibly, participation from other developers. GitHub can also generate this file for you, based on a license chosen at project creation. 
+
+[NOTE]
+====
+The advice of a no-talent hack, such as yours truly, should not be confused for legal expertise. As such, your best bet is to consult with a legal expert before choosing an open source license. You can also visit the great http://choosealicense.com/[ChooseALicense.com] for more information about the dizzying array of open-source licenses available. But still, you should talk to a lawyer if you need expert legal advice. 
+====
+
+With your basic project structure in place, your next steps are to configure npm and grunt. First, I'll run +npm init+ inside my project directory and follow the interactive prompts. You can see the result of running the command in my terminal in <<EX3-3>>. Once you're done, npm will create a package.json file that looks similar to <<EX3-4>>. While this file it's strictly required unless you plan to publish your polyfill to NPM, it will make it easier to work with Grunt, which we'll set up next. 
+
+[[EX3-2]]
+.Running +npm init+ to configure your package.json file
+image::images/ch3-ex3.tiff[]
+
+[[EX3-4]]
+.Sample package.json file
+====
+[source, js]
+----
+{
+  "name": "html5-forms-polyfill",
+  "version": "0.0.1",
+  "description": "A cross-browser polyfill for HTML5 forms features",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bsatrom/html5-forms-polyfill.git"
+  },
+  "keywords": [
+    "html5",
+    "polyfill",
+    "forms",
+    "validation"
+  ],
+  "author": "Brandon Satrom",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "gitHead": "4a2f3578443f539d52c645563fe47824bf4fb377"
+}
+----
+====
+
+Before you run the Grunt config step, you'll need to add the following to your package.json and run +npm install+ from the terminal, which will make sure that the Grunt command-line interface is available in your project.
+
+[[EX3-5]]
+.Grunt dependencies in package.json
+====
+[source, js]
+----
+"devDependencies": {
+  "grunt": "~0.4.1",
+	"grunt-contrib-jshint": "~0.6.0",
+  "grunt-contrib-uglify": "~0.2.2"
+  "grunt-contrib-concat": "~0.3.0",
+  "grunt-contrib-cssmin": "~0.6.1"
+}
+----
+====
+
+Configuring grunt at this point is a bit more manual. While there are http://gruntjs.com/project-scaffolding[several +grunt-init+ tasks] available for you to use, since our project is a bit specific, it's easier if we just start with a very basic gruntfile, as shown in <<EX3-6>>. Create a new file at the project root called +gruntfile.js+ and copy the contents below into that new file.
+
+[[EX3-6]]
+.Starter gruntfile.js for our Polyfill
+====
+[source, js]
+----
+module.exports = function(grunt) {
+  // Project configuration.
+  grunt.initConfig({
+    pkg: grunt.file.readJSON('package.json'),
+    concat: {
+      options: {
+        separator: ';',
+        banner: '// kendo-ui-forms v<%= pkg.version %>'
+      },
+      dist: {
+        src: [ 'src/js/*.js' ],
+        dest: 'dist/js/kendo.forms.js'
+      }
+    },
+    uglify: {
+      options: {
+        banner: '// kendo-ui-forms v<%= pkg.version %>'
+      },
+      dist: {
+        files: {
+          'dist/js/kendo.forms.min.js': '<%= concat.dist.dest %>'
+        }
+      }
+    },
+    cssmin: {
+      options: {
+        banner: '// kendo-ui-forms v<%= pkg.version %>'
+      },
+      combine: {
+        files: {
+          'dist/css/kendo.forms.css': 'src/css/*.css'
+        }
+      },
+      minify: {
+        expand: true,
+        cwd: 'src/css/',
+        src: ['*.css', '!*.min.css'],
+        dest: 'dist/css/',
+        ext: '.forms.min.css'
+      }
+    },
+    jshint: {
+      files: ['gruntfile.js', 'src/**/*.js', 'spec/js/*.js'],
+      options: {
+        globals: {
+          jQuery: true,
+          console: true,
+          module: true,
+          document: true
+        }
+      }
+    },
+    watch: {
+      scripts: {
+        files: ['<%= jshint.files %>'],
+        tasks: ['minify'],
+        options: {
+          nospawn: true
+        }
+      }
+    }
+  });
+
+  // Load the plugin that provides the "uglify" task.
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
+  
+  // Default task(s).
+  grunt.registerTask('default', ['jshint']);
+  grunt.registerTask('minify', ['jshint', 'concat', 'cssmin', 'uglify']);
+};
+----
+====
+
+Though it seems like a lot is going on here, a grunt file is pretty easy to parse once you get the hang of it. Basically, a gruntfile is made up of a series of named tasks, like +concat+, +uglify+ and the like. Each task tells grunt what actions to perform, and which files to perform those actions on when that task is executed. In this starter gruntfile, I've defined five tasks.
+
+1. +concat+ - Combines all of the JavaScript files in the +src+ directory into a single file.
+2. +uglify+ - Minifies the concatenated JavaScript file
+3. +cssmin+ - Combines and Minifies any CSS files defined in +src+.
+4. +jshint+ - Performs static analysis on my JavaScript source files to make sure I'm following a consistent coding style.
+5. +watch+ - a built-in task that will watch for changes to key files in your project and, when changed, trigger one or more additional tasks.
+
+At the bottom of my gruntfile, I've also defined a +default+ task, which runs when I execute the grunt command with no other task, and a custom +minify+ command, which is a combination of several commands defined above.
+
+Once your gruntfile is complete and the options match your project, run +grunt+ from the terminal. If your gruntfile checks out, you'll get a "Done, without errors" message, which means we can continue on! Now, let's get some unit tests set up!
 
 === Configuring Unit Tests with Jasmine
 
@@ -67,7 +256,3 @@ First
 
 === Automate your Polyfill Testing with Grunt and Travis-CI
 
-=== To Feature Detect, or Not to Feature Detect
-
-- First thing to consider when starting development
-- Ways to support handle optional feature detection

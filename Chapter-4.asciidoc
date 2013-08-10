@@ -1,0 +1,4 @@
+=== To Feature Detect, or Not to Feature Detect
+
+- First thing to consider when starting development
+- Ways to support handle optional feature detection
