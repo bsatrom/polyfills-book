@@ -225,7 +225,7 @@ module.exports = function(grunt) {
     }
   });
 
-  // Load the plugin that provides the "uglify" task.
+  // Plugin's for other grunt tasks.
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-concat');
@@ -251,6 +251,116 @@ At the bottom of my gruntfile, I've also defined a +default+ task, which runs wh
 Once your gruntfile is complete and the options match your project, run +grunt+ from the terminal. If your gruntfile checks out, you'll get a "Done, without errors" message, which means we can continue on! Now, let's get some unit tests set up!
 
 === Configuring Unit Tests with Jasmine
+
+Testing is critical for a good, "responsible" polyfill, and I recommend that your own project be covered by at least a good set of unit tests. Testing frameworks like Jasmine and qUnit are easy to set up and configure and, once you get going with them, you'll be glad that you have a set of tests backing up your polyfill development. Your users will too!
+
+To start using Jasmine for my unit tests, I'll create a +lib+ directory inside of my +spec+ directory and place the jasmine bits inside. I'm also going to include the https://github.com/velesin/jasmine-jquery[jasmine-jquery] library, which I'll need in order to automatically execute my tests via grunt. 
+
+Next, I'll create a +runner.html+ file at the root of the +spec+ folder, and I'll populate it with the contents of [[EX3-7]]. Many JavaScript frameworks, Jasmine include, use an html file as their "test runner" by loading up dependencies, the project source and then executing those tests against DOM interactions on the page. On this page, we'll specify all of the CSS and JavaScript dependencies for our polyfill, including jQuery and Kendo UI for widgets and framework features, and then load up our tests via +fixtures.js+. 
+
+[[EX3-7]]
+.Jasmine runner.html file
+====
+[source, html]
+----
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Kendo UI Forms Test Runner (Jasmine)</title>
+    <meta charset="UTF-8">
+    <!-- Styles -->
+    <link rel="shortcut icon" type="image/png" href="lib/jasmine-1.3.1/jasmine_favicon.png">
+    <link rel="stylesheet" type="text/css" href="lib/jasmine-1.3.1/jasmine.css">
+    <link rel="stylesheet" href="../lib/css/kendo.common.min.css" />
+    <link rel="stylesheet" href="../lib/css/kendo.default.min.css" /> <1>
+    
+    <!-- Jasmine and Jasmine-jQuery -->
+    <script type="text/javascript" src="lib/jasmine-1.3.1/jasmine.js"></script>
+    <script type="text/javascript" src="lib/jasmine-1.3.1/jasmine-html.js"></script>
+    <script src="../lib/js/jquery.min.js"></script>
+    <script type="text/javascript" src="lib/jasmine-jquery.js"></script>
+        
+    <!-- Kendo UI -->
+    <script src="../lib/js/kendo.web.min.js"></script> <2>
+    <script src="../src/js/kendo.forms.js"></script> <3>
+    
+    <!-- Specs -->
+    <script src="js/fixtures.js"></script> <4>
+  </head>
+  <body>
+    <!-- Jasmine -->
+    <script type="text/javascript">
+      (function() {
+        var jasmineEnv = jasmine.getEnv();
+        jasmineEnv.updateInterval = 1000;
+
+        var htmlReporter = new jasmine.HtmlReporter();
+
+        jasmineEnv.addReporter(htmlReporter);
+
+        jasmineEnv.specFilter = function(spec) {
+          return htmlReporter.specFilter(spec);
+        };
+
+        var currentWindowOnload = window.onload;
+
+        window.onload = function() {
+          if (currentWindowOnload) {
+            currentWindowOnload();
+          }
+          execJasmine();
+        };
+
+        function execJasmine() {
+          jasmineEnv.execute();
+        }
+
+      })();
+    </script>
+  </body>
+</html>
+----
+<1> These two lines include the Kendo UI CSS Styles
+<2> The main source file for Kendo UI Web, which our polyfill needs for UI widgets and framework features
+<3> This is the main source file for our polyfill
+<4> This file contains all of the script-based tests
+====  
+
+With the runner done, let's create the key file for our testing, +fixtures.js+. [[EX3-8]] contains an initial test file with a couple of tests. You'll notice that Jasmine uses functions like +describe+, +it+ and +expect+, and that my test names are written in narrative form. Because Jasmine is a BDD-style testing framework, you'll hopefully find, as I do, that it's easy to write readable test names and assertions that make sense, not just now, but when you're hunting down regressions later. 
+
+<<EX3-8>>
+.Basic Jasmine fixtures file for our polyfill
+====
+[source, js]
+----
+describe('Kendo Forms Widget Test Suite', function() {
+  
+  describe('Form initialization tests', function() {
+		
+		describe('Form Widget initialization', function() {
+			
+			it('should exist in the kendo.ui namespace', function() {
+				expect(kendo.ui.Form).toBeDefined();
+			});
+
+			it('should be able to perform imperative initialization with JavaScript',
+				function() {
+				expect($('#imperative-form').kendoForm).toBeDefined();
+			});
+
+		});
+	});
+});
+----
+====
+
+With this setup done, let's go ahead and run these tests in the browser. If Jasmine is properly configured, you should see two failing tests, as in [[EX3-9]]. Awesome, we have successfully configured our testing framework. Now, let's go make these tests pass!
+
+[[EX3-9]]
+.Jasmine running in the browser
+image::images/ch3-ex9.tiff[]
+
+=== Red to Green: Making the First Tests Pass
 
 === Configuring Cross-Browser Tests with Karma
 
