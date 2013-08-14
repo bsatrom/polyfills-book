@@ -1,5 +1,9 @@
 = Polyfilling the Web Platform
 
+include::preface.asciidoc[]
+
 include::Chapter-1.asciidoc[]
 
 include::Chapter-2.asciidoc[]
+
+include::Chapter-3.asciidoc[]
