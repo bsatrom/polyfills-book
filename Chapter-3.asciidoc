@@ -1,9 +1,9 @@
 [[polyfills_chapter_3]]
-== Building Your First Polyfill, Part 1 - Setup and Testing
+== Building Your First Polyfill, Part 1 - Project Setup and Testing
 
-Over the first two chapters of this book, we've established a good foundation for polyfill development, first by discussing the continuing importance of polyfilling to the web platform in Chapter 1. In Chapter 2, I shared some essential principles to keep in mind when building "responsible polyfills." Principles are nice, but you want some proof that these principles work, don't you? With that in mind, let's turn our attention to the construction of a real world cross-browser polyfill: an HTML5 Forms polyfill. 
+Over the first two chapters of this book, we established a solid foundation for polyfill development, first in Chapter 1 with a discussion of the continued importance of polyfilling to the web platform. In Chapter 2, I shared some essential principles to keep in mind when building "responsible polyfills." These were important chapters to start with, but I'll bet your about ready to get hands on. I know I am. With that in mind, let's turn our attention to the construction of a real world cross-browser polyfill: an HTML5 Forms polyfill. 
 
-Over the next two chapters, we'll take a deep-dive look at the creation of an actual polyfill. In this chapter, we'll look at some good practices for setting up your project, and how to configure your dev environment for automated cross-browser testing.
+Over the next two chapters, I'll take a deep-dive look at the creation of an actual polyfill. In this chapter, we'll look at some good practices for setting up your project, and how to configure your dev environment for automated cross-browser testing.
 
 === The HTML5 Forms Polyfill
 
@@ -89,16 +89,16 @@ git remote add git@github.com:bsatrom/html5-forms-polyfill.git
 
 Now, your local and remote repositories are all set-up and it's time to add some essential project files. Here's the basic project structure I recommend for an open-source polyfill (assuming a view from the folder root):
 
-. dist/ - The minified and concatenated files you plan to distribute; i.e. the "binaries" for your polyfill
-. lib/ - Any 3rd-party libraries that your Polyfill depends on (jQuery, Underscore, etc.)
-. sample/ - The sample project for the polyfill
-. spec/ - Home for your unit tests
-. src/ - Source JavaScript and CSS files
-. .gitignore - A list of files for Git to ignore when found in your project. GitHub can create one of these files for you when creating a new project. If you go that route, select the "Node" template.
-. CHANGELOG.md - A laundry-list of minor and breaking changes for each version of your project. 
-. CONTRIBUTING.md - Essential if you plan to accept contribution s to your project. 
-. README.md - the readme for your project. GitHub automatically treats this file as the main entry point when anyone visits your project. It should describe the purpose and goals of the polyfill, like I discussed in Chapter 1, features of the project, a roadmap for the projects, installation and usage instructions and anything else you think might be useful to consumers of or collaborators on your polyfill.
-. LICENSE.md - Every open-source project needs a license. Which license you choose is up to you, but permissive licenses, such as MIT and Apache 2.0 will garner more interest and, possibly, participation from other developers. GitHub can also generate this file for you, based on a license chosen at project creation. 
+- +dist/+ - The minified and concatenated files you plan to distribute; i.e. the "binaries" for your polyfill
+- +lib/+ - Any 3rd-party libraries that your Polyfill depends on (jQuery, Underscore, etc.)
+- +sample/+ - The sample project for the polyfill
+- +spec/+ - Home for your unit tests
+- +src/+ - Source JavaScript and CSS files
+- +.gitignore+ - A list of files for Git to ignore when found in your project. GitHub can create one of these files for you when creating a new project. If you go that route, select the "Node" template.
+- +CHANGELOG.md+ - A laundry-list of minor and breaking changes for each version of your project. 
+- +CONTRIBUTING.md+ - Essential if you plan to accept contribution s to your project. 
+- +README.md+ - the readme for your project. GitHub automatically treats this file as the main entry point when anyone visits your project. It should describe the purpose and goals of the polyfill, like I discussed in Chapter 1, features of the project, a roadmap for the projects, installation and usage instructions and anything else you think might be useful to consumers of or collaborators on your polyfill.
+- +LICENSE.md+ - Every open-source project needs a license. Which license you choose is up to you, but permissive licenses, such as MIT and Apache 2.0 will garner more interest and, possibly, participation from other developers. GitHub can also generate this file for you, based on a license chosen at project creation. 
 
 [NOTE]
 ====
@@ -147,7 +147,7 @@ Before you run the Grunt config step, you'll need to add the following to your p
 ----
 "devDependencies": {
   "grunt": "~0.4.1",
-	"grunt-contrib-jshint": "~0.6.0",
+  "grunt-contrib-jshint": "~0.6.0",
   "grunt-contrib-uglify": "~0.2.2"
   "grunt-contrib-concat": "~0.3.0",
   "grunt-contrib-cssmin": "~0.6.1"
@@ -229,13 +229,12 @@ module.exports = function(grunt) {
 ----
 ====
 
-Though it seems like a lot is going on here, a grunt file is pretty easy to parse once you get the hang of it. Basically, a gruntfile is made up of a series of named tasks, like +concat+, +uglify+ and the like. Each task tells grunt what actions to perform, and which files to perform those actions on when that task is executed. In this starter gruntfile, I've defined five tasks.
+Though it seems like a lot is going on here, a grunt file is pretty easy to parse once you get the hang of it. Basically, a gruntfile is made up of a series of named tasks, like +concat+, +uglify+ and the like. Each task tells grunt what actions to perform, and which files to perform those actions on when that task is executed. In this starter gruntfile, I've defined four tasks.
 
-1. +concat+ - Combines all of the JavaScript files in the +src+ directory into a single file.
-2. +uglify+ - Minifies the concatenated JavaScript file
-3. +cssmin+ - Combines and Minifies any CSS files defined in +src+.
-4. +jshint+ - Performs static analysis on my JavaScript source files to make sure I'm following a consistent coding style.
-5. +watch+ - a built-in task that will watch for changes to key files in your project and, when changed, trigger one or more additional tasks.
+. +concat+ - Combines all of the JavaScript files in the +src+ directory into a single file.
+. +uglify+ - Minifies the concatenated JavaScript file
+. +cssmin+ - Combines and Minifies any CSS files defined in +src+.
+. +jshint+ - Performs static analysis on my JavaScript source files to make sure I'm following a consistent coding style.
 
 At the bottom of my gruntfile, I've also defined a +default+ task, which runs when I execute the grunt command with no other task, and a custom +minify+ command, which is a combination of several commands defined above.
 
@@ -364,7 +363,7 @@ Kendo UI itself exposes it's UI widgets to developers in two ways. Developers ca
 [source, html]
 ----
 <form id="myForm">
-	<!-- Rest of form declaration -->
+  <!-- Rest of form declaration -->
 </form>
 <script>
   $('#myForm').kendoForm();
@@ -378,7 +377,7 @@ Kendo UI itself exposes it's UI widgets to developers in two ways. Developers ca
 [source, html]
 ----
 <form action="input.html" data-role="form">
-	<!-- Rest of form declaration -->
+  <!-- Rest of form declaration -->
 </form>
 <script>
   kendo.init(document.body);
@@ -478,10 +477,10 @@ First, let's add our third test, and the first to access the DOM. I'll open +fix
 [source, js]
 ----
 it('should be able to perform declarative initialization with data attributes', function() {
-				kendo.init(document.body);
+  kendo.init(document.body);
 
-				expect($('#declarative-form').data('kendoForm')).not.toBe(null);
-			});
+  expect($('#declarative-form').data('kendoForm')).not.toBe(null);
+});
 ----
 ====
 
@@ -513,7 +512,7 @@ First, I'll need to move the form tag from <<EX3-17>> into a standalone HTML fil
 var fixtures = jasmine.getFixtures();
 if (document.location.pathname.indexOf('runner.html') > 0) {
   // We're running jasmine in the browser
-	fixtures.fixturesPath = '../spec/javascripts/fixtures';
+  fixtures.fixturesPath = '../spec/javascripts/fixtures';
 }
 ----
 ====
@@ -525,11 +524,11 @@ In order to run jasmine in multiple environments, I do have to add a bit of path
 [source, js]
 ----
 it('should be able to perform declarative initialization with data attributes', function() {
-		fixtures.load('declarative-form.html');
+  fixtures.load('declarative-form.html');
 
-		kendo.init(document.body);
+  kendo.init(document.body);
 
-		expect($('#declarative-form').data('kendoForm')).not.toBe(null);
+  expect($('#declarative-form').data('kendoForm')).not.toBe(null);
 });
 ----
 ====
@@ -666,10 +665,10 @@ Once I've installed those two additional launchers, I should be able to run karm
 ----
 if (document.location.pathname === '/context.html') {
   // Karma is running the test, so change the base
-	fixtures.fixturesPath = 'base/spec/javascripts/fixtures';
+  fixtures.fixturesPath = 'base/spec/javascripts/fixtures';
 } else if (document.location.pathname.indexOf('runner.html') > 0) {
 	// We're running jasmine in the browser
-	fixtures.fixturesPath = '../spec/javascripts/fixtures';
+  fixtures.fixturesPath = '../spec/javascripts/fixtures';
 }
 ----
 ====
