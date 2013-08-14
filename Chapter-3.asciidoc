@@ -480,13 +480,75 @@ Done, without errors.
 
 Now you've got Jasmine running in the browser, and in your terminal, which is nice! Unfortunately, your configuration work isn't quite done yet. Everything works great so far because neither of your initial tests access the DOM. Once you need to access the DOM, things get a bit tricky, so we'll need to add a little more configuration to keep this happy testing party going.
 
---->>> HERE
+First, let's add our third test, and the first to access the DOM. I'll open +fixtures.js+ back up and add the following test:
 
-First, let's add our third test, and the first to access the DOM. I'll open +fixtures.js+ back up 
+[[EX3-16]]
+.Testing declarative form initialization
+====
+[source, js]
+----
+it('should be able to perform declarative initialization with data attributes', function() {
+				kendo.init(document.body);
 
---> ADD the imperative test back in here, b/c it needs markup.
+				expect($('#declarative-form').data('kendoForm')).not.toBe(null);
+			});
+----
+====
+
+As I mentioned above, Kendo UI widgets can be declared one of two ways, either using JavaScript, or via +data-role+ declaration and calling +kendo.init+ on a container, which creates widgets for every element inside of that container. The test above calls +kendo.init+ on +document.body+ which will look for every element with a +data-role+ attribute, and initialize that element, accordingly.
+
+When we first add this test, it will fail, but we can make it pass by adding the following to our +runner.html+ file, just inside the +<body>+:
+
+[[EX3-17]]
+.Declarative initialization of a Form widget
+====
+[source, html]
+----
+<form id="declarative-form" data-role="form"></form>
+----
+====
+
+Now, if we rerun our Jasmine tests in the browser, all three will pass. That's nice, but in the spirit of keeping our test options option, let's rerun the +grunt jasmine+ command and see what happens. Spoiler alert: it looks like [[EX3-18]]. Why did our test fail in my terminal, even though it worked in the browser? The answer is the DOM, or lack thereof, that is. When I'm using Jasmine via the console, there is no DOM by default, so in order to leverage the DOM for testing, I need to do a bit of additional set-up. For that, I'll use the https://github.com/velesin/jasmine-jquery[jasmine-jquery] library, which allows me to load HTML files into my specs and execute my tests against them.
+
+[[EX3-18]]
+.Running Jasmine DOM tests in the console
+image::images/ch3-ex18.tiff[]
+
+First, I'll need to move the form tag from <<EX3-17>> into a standalone HTML file, and I'll place that file in a +spec/fixtures/+ directory. Then, I need to add the jasmine-jquery fixture loader to my +fixtures.js+ file, so I'll add the following to line 4:
+
+[[EX3-19]]
+====
+[source, js]
+----
+var fixtures = jasmine.getFixtures();
+if (document.location.pathname.indexOf('runner.html') > 0) {
+  // We're running jasmine in the browser
+	fixtures.fixturesPath = '../spec/javascripts/fixtures';
+}
+----
+====
+
+In order to run jasmine in multiple environments, I do have to add a bit of path manipulation, as you can see in the sample above. If I'm running my tests in the console, the default path works for loading fixtures. If I'm in the browser, however, I need to adjust things a bit. Finally, in my latest test, <<EX3-16>>, I'll add a call to jasmine-jquery's +load+ method to load up my HTML fixture. The complete test is listed in <<EX3-20>>.
+
+[[EX3-20]]
+====
+[source, js]
+----
+it('should be able to perform declarative initialization with data attributes', function() {
+		fixtures.load('declarative-form.html');
+
+		kendo.init(document.body);
+
+		expect($('#declarative-form').data('kendoForm')).not.toBe(null);
+});
+----
+====
+
+Now, when I re-run +grunt jasmine+ in the console, I should see green, as in <<EX3-21>>. I can also re-run the tests in my browser, where everything also passes with flying colors. I now have a complete unit test setup that works in the browser and via the console!
 
 === Configuring Cross-Browser Tests with Karma
+
+
 
 === Automate your Polyfill Testing with Grunt and Travis-CI
 
