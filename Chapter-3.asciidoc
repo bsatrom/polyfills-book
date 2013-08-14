@@ -109,7 +109,7 @@ With your basic project structure in place, your next steps are to configure npm
 
 [[EX3-2]]
 .Running +npm init+ to configure your package.json file
-image::images/ch3-ex3.tiff[]
+image::images/ch3-ex3.png[]
 
 [[EX3-4]]
 .Sample package.json file
@@ -348,7 +348,7 @@ With this setup done, let's go ahead and run these tests in the browser. If Jasm
 
 [[EX3-9]]
 .Jasmine running in the browser
-image::images/ch3-ex9.tiff[]
+image::images/ch3-ex9.png[]
 
 === Red to Green: Making the First Tests Pass
 
@@ -421,7 +421,7 @@ There's a lot more I'll need to add inside of +kendo.forms.js+ before I have a f
 
 [[EX3-13]]
 .Jasmine running in the browser
-image::images/ch3-ex13.tiff[]
+image::images/ch3-ex13.png[]
 
 === Running Jasmine Tests via Grunt
 
@@ -502,7 +502,7 @@ Now, if we rerun our Jasmine tests in the browser, all three will pass. That's n
 
 [[EX3-18]]
 .Running Jasmine DOM tests in the console
-image::images/ch3-ex18.tiff[]
+image::images/ch3-ex18.png[]
 
 First, I'll need to move the form tag from <<EX3-17>> into a standalone HTML file, and I'll place that file in a +spec/fixtures/+ directory. Then, I need to add the jasmine-jquery fixture loader to my +fixtures.js+ file, so I'll add the following to line 4:
 
