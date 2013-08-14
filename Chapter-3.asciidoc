@@ -213,15 +213,6 @@ module.exports = function(grunt) {
           document: true
         }
       }
-    },
-    watch: {
-      scripts: {
-        files: ['<%= jshint.files %>'],
-        tasks: ['minify'],
-        options: {
-          nospawn: true
-        }
-      }
     }
   });
 
@@ -691,7 +682,92 @@ image::images/ch3-ex37.png[]
 
 === Automate your Polyfill Testing with Grunt and Travis-CI
 
----> Bringing it all together with "grunt watch"
----> Setting up travis-ci
+So far, in this chapter, we've set up a new polyfill project, we've configured npm and grunt for our development workflow, and we've added Jasmine and Karma for unit and cross-browser testing. All of these moving pieces work great alone, but we're now going to bring them together for a killer polyfill development workflow. As mentioned earlier, Grunt gives you the ability to create custom tasks that chain together predefined tasks in interesting ways. One example is the +minify+ task in <<EX3-6>> which automatically runs JSHint, concatenates your source files and then runs uglifyJS to minify them. 
+
+Now that we've added some testing, let's add a few more custom tasks that combine our test frameworks with our JSHint and magnification tasks. 
+
+[[EX3-38]]
+====
+[source, js]
+----
+grunt.registerTask('test', ['minify', 'jasmine']);
+grunt.registerTask('x-test', ['minify', 'jasmine', 'karma:forms']);
+----
+====
+
+Now, I can run +grunt test+ in the console and have my files linted, minified, combined and tested, or I can run +grunt x-test+, which will do all of the above and then run my tests across all browsers.
+
+Task customization is nice, but what I'd really like to be able to do is execute a grunt command once, and have that command watch my source files for changes. Then, when one of those files is saved, grunt will execute one or more tasks, automatically. Sounds awesome, right? It is, and with grunt, it's built in. All I need is the grunt-contrib-watch plugin, which I can install via npm:
+
+[[EX3-39]]
+====
+[source, shell]
+----
+npm install grunt-contrib-watch --save-dev
+----
+====
+
+Then I'll include the task via a call to +loadNpmTasks+
+
+[[EX3-40]]
+====
+[source, js]
+----
+grunt.loadNpmTasks('grunt-contrib-watch');
+----
+====
+
+And finally, I'll add the task to +grunt.initConfig+:
+
+[[EX3-41]]
+====
+[source, js]
+----
+watch: {
+  scripts: {
+    files: ['<%= jshint.files %>'],
+    tasks: ['test'],
+    options: {
+      nospawn: true
+    }
+  }
+}
+----
+====
+
+Now, I can run +grunt watch+ before I begin working on my polyfill. As I make changes to important files, grunt will pick those up, lint the files and run my Jasmine tests, automatically, as shown in <<EX3-42>>.
+
+[[EX3-42]]
+.Developing iteratively with +grunt watch+
+image::images/ch3-ex42.png[]
+
+Before we wrap up this chapter, there's one final piece of setup I suggest you perform when building a cross-browser polyfill. That is, configuring a CI server to run your tests and provide you with that extra-level sanity check. As I said above, I prefer Travis CI because the service is free for open source projects, and it's dead-simple to configure. In fact, all I need in my project is to add a file called +.travis.yml+ with a few options, as shown in <<EX3-43>>.
+
+[[EX3-43]]
+====
+[souce, yaml]
+----
+language: node_js
+node_js:
+  - "0.10"
+  - "0.8"
+before_script:
+  - npm install -g grunt-cli
+----
+====
+
+This file, which I'll include in my Git repository and push to GitHub, tells Travis that I'm running a NodeJS app, and that I'd like to test using Node v0.10 and v0.8. I've also included the +before_script+ option to ensure that the CI server has the grunt cli installed, which I need to run my tests. Once I've added this file and pushed it to GitHub, I can head over to the http://travis-ci.org[Travis website] and follow their http://about.travis-ci.org/docs/user/getting-started/[Getting Started] guide to configure my project with their service.
+
+Once everything is set up, any time I push a commit to my repo from GitHub to Travis, the service will spin up and run my tests, giving me that extra measure of defense for my polyfill. <<EX3-44>> shows an example status screen for my HTML5 Forms polyfill. Looks like green!
+
+[[EX3-44]]
+.Developing iteratively with +grunt watch+
+image::images/ch3-ex44.png[]
 
 === A Final Note: Use What Works for you!
+
+We've covered a TON of ground in this chapter, and while very little of it has been specific to polyfill development, I felt it was an important one to include because a great polyfill needs test--and lots of 'em--and a rock-solid development workflow. As you'll see in the next chapter, polyfill development can get hairy at times, especially as you delve into oldIE, so the more rock-solid your tests and your workflow, the better off you'll be as you head down the narrow road.
+
+In this chapter, I mentioned a lot of third-party and open source technologies that I prefer to use when building polyfills. Some of these might work for you as well, while in other cases you have a personal favorite you like to use. That's ok! All that matters is that you get a good dev and test workflow in place early on, no matter which tools your choose to use.
+
+Now that our development and testing workflow is in place, let's talk about some of the critical ins and outs of building that cords-browser polyfill of yours.
