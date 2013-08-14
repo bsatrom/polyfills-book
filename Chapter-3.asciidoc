@@ -687,7 +687,7 @@ With this additional condition, I'm looking for +context.html+ in the path, whic
 
 [[EX3-37]]
 .Running cross-browser tests with Karma
-image::images/ch3-ex37.tiff[]
+image::images/ch3-ex37.png[]
 
 === Automate your Polyfill Testing with Grunt and Travis-CI
 
