@@ -337,19 +337,18 @@ describe('Kendo Forms Widget Test Suite', function() {
   
   describe('Form initialization tests', function() {
 		
-		describe('Form Widget initialization', function() {
-			
-			it('should exist in the kendo.ui namespace', function() {
-				expect(kendo.ui.Form).toBeDefined();
-			});
+    describe('Form Widget initialization', function() {
+      
+      it('should exist in the kendo.ui namespace', function() {
+        expect(kendo.ui.Form).toBeDefined();
+      });
 
-			it('should be able to perform imperative initialization with JavaScript',
-				function() {
-				expect($('#imperative-form').kendoForm).toBeDefined();
-			});
+      it('should be able to perform imperative initialization with JavaScript', function() {
+        expect($('#imperative-form').kendoForm).toBeDefined();
+      });
 
-		});
-	});
+    });
+  });
 });
 ----
 ====
@@ -449,14 +448,14 @@ Then, I need to add a jasmine task to the +initConfig+ section of the file, as s
 [source, js]
 ----
 jasmine: {
-      src: ['lib/**/*.js', 'dist/js/kendo.forms.min.js'],
-      options: {
-        specs: 'spec/js/*.js',
-        vendor: [
-          'spec/lib/jasmine-jquery.js'
-        ]
-      }
-    }
+  src: ['lib/**/*.js', 'dist/js/kendo.forms.min.js'],
+  options: {
+    specs: 'spec/js/*.js',
+    vendor: [
+      'spec/lib/jasmine-jquery.js'
+    ]
+  }
+}
 ----
 ====
 
@@ -548,7 +547,151 @@ Now, when I re-run +grunt jasmine+ in the console, I should see green, as in <<E
 
 === Configuring Cross-Browser Tests with Karma
 
+Now that we have a good testing setup with Jasmine and Grunt, let's take this party to the next level and add in some cross-browser testing. While automated cross-browser testing might be considered overkill for some types of projects, it's a must when building a polyfill. As you build your polyfill, you'll quickly discover cases where a certain test isn't needed in your everyday development browser because the feature is present, but the feature still needs a good solid test because your polyfill provides some capabilities in another browser. Performing automated testing across several installed browsers can be a quick sanity check to ensure that development of your polyfill is progressing along without a hitch and thankfully, there are some great tools out there that we can pair with our existing grunt workflow. My tool of choice is Karma, a simple test runner than can call out to all major browsers using test runner plugins.
 
+[NOTE]
+====
+While automated, cross-browser testing is a great safety net for the polyfill developer, it's no substitute for real, actual testing across browsers, especially those older versions of IE where browser quirks lie in wait. Fear not, however! As I'll share in Chapter 4, there are some great options for performing physical testing of older browsers, even IE 6-8.
+====
+
+To get started with Karma, I'll need to install grunt-karma via npm:
+
+
+[[EX3-21]]
+====
+[source, shell]
+----
+npm install grunt-karma --save-dev
+----
+====
+
+both Karma and grunt-karma will be installed, and a series of karma-related dependencies will be added to your +package.json+ file. Next, you'll want to add the line +grunt.loadNpmTasks('grunt-karma');+ to the end of the +loadNpmTasks+ calls in your +gruntfile+. Next, I'll add the karma task to my +gruntfile,+ starting with a bit of logic to populate an array of browsers I want to test with, at the top of the file.
+
+[[EX3-22]]
+====
+[source, js]
+----
+var browsers;
+(function() {
+  var os = require('os');
+  browsers = ['Chrome', 'Firefox', 'Opera'];
+  if (os.type() === 'Darwin') {
+    browsers.push('ChromeCanary');
+    browsers.push('Safari');
+  }
+  if (os.type() === 'Windows_NT') {
+    browsers.push('IE');
+  }
+})();
+----
+====
+
+In this snippet, I'm using Nodejs to interrogate which OS I'm testing on. If I'm on OSX ("Darwin"), I'll add Chrome Canary and Safari. If, on the other hand, I'm on Windows, I'll add IE to my browsers array. Now, let's add a task for Karma to the +grunt.initConfig+ method:
+
+[[EX3-23]]
+====
+[source, js]
+----
+karma: {
+  options: {
+    configFile: 'conf/karma.conf.js',
+    keepalive: true
+  },
+  forms: {
+    browsers: browsers
+  }
+}
+----
+====
+
+Key in this section is the +configFile+ property, which accepts a path to a separate Karma configuration file. Karma has a lot of configuration options, so placing these in a separate file is usually a good approach. The contents of my +karma.conf.js+ can be found in <<EX3-24>>.
+
+[[EX3-24]]
+====
+[source, js]
+----
+module.exports = function(config) {
+  config.set({
+    // base path, that will be used to resolve files and exclude
+    basePath: '../',
+
+    // list of files / patterns to load in the browser
+    files: [
+      'lib/js/*.js',
+      'dist/js/kendo.forms.min.js',
+      {pattern: 'lib/js/jquery.min.js', watched: false, served: true, included: true},
+      {pattern: 'spec/lib/jasmine-jquery.js', watched: false, served: true, included: true},
+      {pattern: 'src/js/*.js', watched: true, served: true, included: false},
+      {pattern: 'spec/**/*.html', included: false},
+      'spec/javascripts/*.js',
+    ],
+
+    // list of files to exclude
+    exclude: [],
+
+    frameworks: ['jasmine'],
+    reporters: ['progress'],
+    port: 9876,
+    runnerPort: 9100,
+    colors: true,
+    logLevel: config.LOG_INFO,
+    autoWatch: true,
+		
+		browsers: ['ChromeCanary'],
+		captureTimeout: 50000,
+    singleRun: true,
+    reportSlowerThan: 500,
+    preprocessors: {},
+
+    plugins: [
+      'karma-jasmine',
+      'karma-chrome-launcher',
+      'karma-firefox-launcher',
+      'karma-safari-launcher',
+      'karma-opera-launcher',
+      'karma-script-launcher'
+    ]
+  });
+};
+----
+====
+
+By default, Karma includes the launchers for Firefox and Chrome, so I'll need to install the Opera and Safari launchers to use them
+
+[[EX3-35]]
+====
+[source, shell]
+----
+npm install karma-opera-launcher --save-dev
+npm install karma-safari-launcher --save-dev
+----
+====
+
+Once I've installed those two additional launchers, I should be able to run karma using grunt with the +grunt karma+ command. If I do that, I should see all of my browsers launch, but one of my three initial tests will fail. Can you guess which ones? That's right, the DOM tests. Much as I did for Jasmine in the console, I need to add a path condition for Karma to my +fixtures.js+ file, as shown in <<EX3-26>>.
+
+[[EX3-36]]
+====
+[source, js]
+----
+if (document.location.pathname === '/context.html') {
+  // Karma is running the test, so change the base
+	fixtures.fixturesPath = 'base/spec/javascripts/fixtures';
+} else if (document.location.pathname.indexOf('runner.html') > 0) {
+	// We're running jasmine in the browser
+	fixtures.fixturesPath = '../spec/javascripts/fixtures';
+}
+----
+====
+
+With this additional condition, I'm looking for +context.html+ in the path, which is the context under which Karma runs. If that value is found, I'll adjust the base +fixturesPath+ to account for where Karma loads these files. Otherwise, I'll look for my in-browser +runner.html+, as before. And that's it, I can return to the console and run +grunt karma+ and watch all my tests pass in five browsers, as shown in <<EX3-37>>. It's a thing of beauty!
+
+[[EX3-37]]
+.Running cross-browser tests with Karma
+image::images/ch3-ex37.tiff[]
 
 === Automate your Polyfill Testing with Grunt and Travis-CI
 
+---> Bringing it all together with "grunt watch"
+---> Setting up travis-ci
+
+=== A Final Note: Use What Works for you!
