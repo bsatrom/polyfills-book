@@ -362,6 +362,130 @@ image::images/ch3-ex9.tiff[]
 
 === Red to Green: Making the First Tests Pass
 
+When I start a new project, or add unit tests to an existing project, I like to start small and try to get a few quick win tests under my belt. This is partly because I'm still feeling out functionality in the early stages of a project, but also because I want to see my test suite running and passing as quickly as possible. 
+
+With that in mind, the first two failing specs we've added to my project are minor, and easy to fix, but they help lay the foundation for my polyfill. As discussed previously, my Forms polyfill will be built on top of http://www.kendoui.com[Kendo UI], a rich library from http://www.telerik.com[Telerik] that provides all of the UI widgets and forms framework features I need, so that all I have to do with my polyfill is to wire up the automated intelligence that knows how to perform an "HTML5 form" into a smart form that uses Kendo UI widgets and validation features when the browser doesn't support these.
+
+Kendo UI itself exposes it's UI widgets to developers in two ways. Developers can either initialize Kendo UI Widgets using a jQuery plugin-style syntax, or by using declarative +data-+ style widget initialization. When building extension widgets to Kendo UI, which is something I've chosen to do with my polyfill, I need to follow the same pattern, so users of my library will be able to interact with my polyfill just as they would with a Kendo UI Autocomplete or DateTimePicker widget. As such, I'll need to support the initialization styles depicted in <<EX3-10>> and <<EX3-11>>.
+
+[[EX3-10]]
+.Initializing the Forms polyfill via JavaScript
+====
+[source, html]
+----
+<form id="myForm">
+	<!-- Rest of form declaration -->
+</form>
+<script>
+  $('#myForm').kendoForm();
+</script>
+----
+====
+
+[[EX3-11]]
+.Initializing the Forms polyfill via declarative initialization
+====
+[source, html]
+----
+<form action="input.html" data-role="form">
+	<!-- Rest of form declaration -->
+</form>
+<script>
+  kendo.init(document.body);
+</script>
+----
+====
+
+The tests in [[EX3-8]] are looking for key pieces of information. First, we check to make sure that our polyfill exists as a widget in the Kendo UI namespace, as +kendo.ui.Form+. Next, we want to ensure that the polyfill widget is available as a jQuery plugin, as illustrated in <<EX3-10>>. To make those tests pass, we can create the initial skeleton of our polyfill in a new file (in +src/+) called +kendo.forms.js+ and add the code in <<EX3-12>>
+
+[[EX3-12]]
+.Creating the core widget definition for our Kendo UI Forms polyfill
+====
+[source, js]
+----
+(function($, kendo) {
+  var ui = kendo.ui,
+    Widget = ui.Widget,
+    formWidget;
+
+  var Form = Widget.extend({
+    init: function(element, options) {
+      // base call to widget initialization
+      Widget.fn.init.call(this, element, options);
+    },
+    options: {
+      // the name is what it will appear in the kendo namespace (kendo.ui.Form).
+      // The jQuery plugin would be jQuery.fn.kendoForm.
+      name: 'Form'
+    }
+  });
+
+  ui.plugin(Form);
+} (jQuery, kendo));
+----
+====
+
+The contents of <<EX3-12>> which is the standard way of creating extended Kendo UI widgets, first creates a new +Form+ widget by extending the +kendo.ui.Widget+ base type. The name "Form," which I set in the options configuration value is ultimately what's exposed publicly, and is what my two tests are looking for. Finally, I'll "enable" my new polyfill by adding the Form variable to Kendo UI's widget collection via the +kendo.ui.plugin()+ method.
+
+There's a lot more I'll need to add inside of +kendo.forms.js+ before I have a function polyfill, but the baseline code we've written do far lays the foundation for my library, and it also makes my first tests pass, as you can see in <<EX3-13>>.
+
+[[EX3-13]]
+.Jasmine running in the browser
+image::images/ch3-ex13.tiff[]
+
+=== Running Jasmine Tests via Grunt
+
+So far, we've gotten Jasmine configured for our unit tests, and we've even gotten a couple of failing tests to pass. This is a great start, but all of our work is in the browser, and running our tests requires that we refresh a browser tab to verify. And while this is ok for many projects, I'd like to be able to execute my tests in both the browser and via the command-line, which will come in handy when I start working with Travis CI, later.
+
+Thankfully, I'm not alone in my desire for console-based JavaScript testing, and there just so happens to be a Grunt plugin for Jasmine that I can add to my project. First, I'll want to configure jasmine by adding a few lines to my +gruntfile+. First, I'll add the +grunt-contrib-jasmine+ task declaration to the bottom of the file:
+
++grunt.loadNpmTasks('grunt-contrib-jasmine');+
+
+Then, I need to add a jasmine task to the +initConfig+ section of the file, as shown in <<EX3-14>>.
+
+[[EX3-14]]
+.Adding a jasmine grunt task
+====
+[source, js]
+----
+jasmine: {
+      src: ['lib/**/*.js', 'dist/js/kendo.forms.min.js'],
+      options: {
+        specs: 'spec/js/*.js',
+        vendor: [
+          'spec/lib/jasmine-jquery.js'
+        ]
+      }
+    }
+----
+====
+
+Finally, you'll want to install the jasmine grunt plugin via the terminal command +npm install grunt-contrib-jasmine --save-dev+. Once you've done so, you can run the command +grunt jasmine+ via the console, and you should get a result similar to <<EX3-15>>.
+
+[[EX3-15]]
+.Running jasmine via the console
+====
+[source, shell]
+----
+$ grunt jasmine
+Running "jasmine:src" (jasmine) task
+Testing jasmine specs via phantom
+..
+2 specs in 0.001s.
+>> 0 failures
+
+Done, without errors.
+----
+====
+
+Now you've got Jasmine running in the browser, and in your terminal, which is nice! Unfortunately, your configuration work isn't quite done yet. Everything works great so far because neither of your initial tests access the DOM. Once you need to access the DOM, things get a bit tricky, so we'll need to add a little more configuration to keep this happy testing party going.
+
+--->>> HERE
+
+First, let's add our third test, and the first to access the DOM. I'll open +fixtures.js+ back up 
+
+--> ADD the imperative test back in here, b/c it needs markup.
+
 === Configuring Cross-Browser Tests with Karma
 
 === Automate your Polyfill Testing with Grunt and Travis-CI
