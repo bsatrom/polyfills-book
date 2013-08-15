@@ -55,7 +55,7 @@ In the world of JavaScript development, there are countless unit testing librari
 
 Unit testing is a great foundation, but we also need to consider cross-browser testing for this project. It is a cross-browser polyfill, after all. As such, our project will also need to include an automated tool that can launch multiple browsers and load our unit tests up in each, thereby ensuring at least basic test coverage across browsers. The tool that I prefer to use for such a task is http://karma-runner.github.io/0.10/index.html[Karma], which you can also install via NPM. There's a bit of setup involved in getting Karma up and running the way I like, but we'll cover that below.
 
-=== Continuous Integration  
+==== Continuous Integration  
 
 The last tool you need to consider for your initial project setup is a remote CI server. This step is completely optional, so if you want to take my advice on items 1-4 and ignore me on this one, that's ok. That said, the biggest advantage of a remote CI server for an open-source project is, in my mind, the ability to run basic project setup and unit tests in a clean environment. Doing so ensures that you properly declare dependencies via npm and that you never check-in code that fails one or more tests and just walk away. In my mind, it's better to get the news that you did something wrong from a CI server than from a human struggling to run the latest bits from your project.
 
@@ -309,7 +309,7 @@ Next, I'll create a +runner.html+ file at the root of the +spec+ folder, and I'l
 
 With the runner done, let's create the key file for our testing, +fixtures.js+. [[EX3-7]] contains an initial test file with a couple of tests. You'll notice that Jasmine uses functions like +describe+, +it+ and +expect+, and that my test names are written in narrative form. Because Jasmine is a BDD-style testing framework, you'll hopefully find, as I do, that it's easy to write readable test names and assertions that make sense, not just now, but when you're hunting down regressions later. 
 
-<<EX3-7>>
+[[EX3-7]]
 .Basic Jasmine fixtures file for our polyfill
 ====
 [source, js]
