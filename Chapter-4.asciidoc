@@ -3,7 +3,30 @@
 
 === Setting Up Your Polyfill Project
 
---> Grab this content from Chapter 3
+==== Choosing Source Control
+
+
+==== Setting up the Initial Project Structure
+
+[TODO: EDIT]
+
+Then, create an empty directory for your polyfill and open a terminal or console window in that new directory. Next, we'll initialize a new GitHub repo by running the +git init+ command. Now, your local and remote repositories are all set-up and it's time to add some essential project files. Here's the basic project structure I recommend for most open-source polyfills (assuming a view from the folder root):
+
+- +dist/+ - The minified and concatenated files you plan to distribute; i.e. the "binaries" for your polyfill
+- +lib/+ - Any 3rd-party libraries that your Polyfill depends on (jQuery, Underscore, etc.)
+- +sample/+ - The sample project for the polyfill
+- +spec/+ - Home for your unit tests, which we'll discuss in Chapter 4
+- +src/[js,css]+ - Source JavaScript and CSS files
+- +.gitignore+ - A list of files for Git to ignore when found in your project. GitHub can create one of these files for you when creating a new project. If you go that route, select the "Node" template.
+- +CHANGELOG.md+ - A laundry-list of minor and breaking changes for each version of your project. 
+- +CONTRIBUTING.md+ - Essential if you plan to accept contributions for your project. 
+- +README.md+ - the readme for your project. GitHub automatically treats this file as the main entry point when anyone visits your project. It should describe the purpose and goals of the polyfill--as I discussed in Chapter 1--features of the project, a roadmap for the projects, installation and usage instructions and anything else you think might be useful to consumers of or collaborators on your polyfill.
+- +LICENSE.md+ - Every open-source project needs a license. Which license you choose is up to you, but permissive licenses, such as MIT and Apache 2.0 will garner more interest and, possibly, participation from other developers. GitHub can also generate this file for you, based on the license chosen at project creation. 
+
+[NOTE]
+====
+The advice of a no-talent hack, such as yours truly, should not be confused for legal expertise. As such, your best bet is to consult with a legal expert before choosing an open source license. You can also visit the great http://choosealicense.com/[ChooseALicense.com] for more information about the dizzying array of open-source licenses available. But still, you should talk to a lawyer if you want an expert legal perspective in your choice of license. 
+====
 
 === Specifying the API
 
