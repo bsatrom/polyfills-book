@@ -1,4 +1,49 @@
-=== To Feature Detect, or Not to Feature Detect
+[[polyfills_chapter_4]]
+== Building Your First Polyfill, Part 2 - Development
 
-- First thing to consider when starting development
-- Ways to support handle optional feature detection
+=== Setting Up Your Polyfill Project
+
+--> Grab this content from Chapter 3
+
+=== Specifying the API
+
+- Determining how your polyfill will be initialized (if opt-in).
+- Checking the spec to ensure that your matching features, as specced
+
+=== Deciding what to build
+
+- Tackling simple features first and building up
+- Creating a roadmap
+- Omitting hairy features, and being ok with it
+
+=== Adding Basic Features
+
+- Creating the Sample / Test Form
+- Creating the skeleton for the polyfill (as a Kendo UI Widget) [also grab from Chapter 3]
+- Adding the first feature (support for the color type)
+- Adding Feature Detection and an "Always Use" mode
+
+	==== To Feature Detect, or Not to Feature Detect
+
+	- First thing to consider when starting development
+	- Ways to support handle optional feature detection
+
+=== Expanding your Polyfill and Refactoring
+
+- Adding the second feature (support for the numeric type)
+- Refactoring type support for consistency and ease of maintenance
+- Adding features 3-n
+- When things get hairy, adding support for date types
+
+=== Polyfilling visual features with CSS
+
+- Show the addition of CSS and JavaScript to add support for the "placeholder" attribute
+- Talk about cross-browser quirks that arose and how to address those
+
+=== Testing out your work across browsers
+
+- Running your sample project in "Evergreen" Chrome, Safari, Firefox, Opera and IE
+- Testing oldIE with VMs from modern.ie
+- Testing across browsers with browserstack, testling, etc.
+
+=== Conclusion

@@ -1,0 +1,9 @@
+[[polyfills_chapter_5]]
+== Building Your First Polyfill, Part 3 - Edge Cases, Performance and Publication
+
+=== Detecting the Undetectables
+- and dealing with extreme edge-case features
+
+=== Building for Performance
+
+=== Publishing your Polyfill
