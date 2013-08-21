@@ -115,7 +115,7 @@ As you can see from the code above, my polyfill starts with an IIFE that specifi
 
 For my HTML5 Forms polyfill, this is all I need to create a public API for initializing my library. With this skeleton code in place, I can now use either initialization method described in <<EX3-1>> and <<EX3-2>> and things will resolve. My polyfill won't do anything at this point, but it will run without errors, so that's progress!
 
-With the opt-in API of our library set, we can move on to building out the core functionality of our polyfill. Regardless of the type of polyfill you're building, much of the API you'll be exposing should already be decided for you via the specification for the technology you're targeting. As discussed in the last chapter, it's important to adhere to this specification as much as possible. If you're planning to support an aspect of the spec, you should try your best to support it _as specced_. You should also be clear in your documentation and in source comments which aspects of the spec you support and which you don't. 
+With the opt-in API of our library set, we can move on to building out the core functionality of our polyfill. Regardless of the type of polyfill you're building, much of the API you'll be exposing should already be decided for you via the specification for the technology you're targeting. As discussed in the last chapter, it's important to adhere to this specification as much as possible. If you're planning to support an aspect of the spec, you should try your best to support it _as speced_. You should also be clear in your documentation and in source comments which aspects of the spec you support and which you don't. 
 
 === Deciding what to build
 
@@ -126,7 +126,15 @@ In the context of HTML5 Forms, the simpler features are those new input types li
 Since we're talking about releases, this is probably a good time to think about the roadmap for your polyfill. Assuming you're talking a complex feature, you'll probably want to write down what you plan to support, and when. For the HTML5 Forms polyfill, I chose to include a roadmap on the README for the project, which I've also included below in <<EX3-4>>.
 
 [[EX3-4]]
-TODO: TABLE with roadmap 
+.Roadmap for the Kendo UI Forms Polyfill
+[options="header"]
+|=======
+|Release|Features
+|v0.1   |Support upgrading all HTML5 input types (color, numeric, range, file, datatime, time, month, week)
+|v0.1.1 |Button support & date type support
+|v0.2   | Add support for progress and datalist elements; add a placeholder fallback and search box UI; autocomplete attribute support.
+|v0.3   | Add validation support
+|=======
 
 In addition to creating a roadmap and plan for your polyfill, you'll also want to consider if there's anything under the technology umbrella that you're planning to polyfill that you don't plan to or cannot support. Sometimes, it's not possible to reliably polyfill an aspect of a specification, so you'll want to avoid even trying to support it. Other times, adding support for a given feature is possible, but not something you're prepared to take on. No matter the reason, be sure that your roadmap is clear about what you're not planning to polyfill so that developers are informed when considering your library. 
 
@@ -137,7 +145,7 @@ Ok, so we've got our basic polyfill skeleton in place, an API for calling it and
 To that end, let's create a new HTML page in the +samples/+ folder and call it form-sample.html. Since our library is an HTML5 Forms polyfill, it makes sense that the sample page itself be a form. Since this sample page will also seve as a part of my docs, the HTML page will include references to bootstrap and some additional markup. Beyond that, the relevant portion of this sample page, that is the form itself is shown in <<EX3-4>>.
 
 [[EX3-04]]
-.Polyfill sample form markfup
+.Polyfill sample form markup
 ====
 [source, html]
 ----
