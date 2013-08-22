@@ -142,37 +142,402 @@ In addition to creating a roadmap and plan for your polyfill, you'll also want t
 
 Ok, so we've got our basic polyfill skeleton in place, an API for calling it and a roadmap for which features we plan to add. Now it's time to get to work and add our first, real feature. Of course, if we're going to add features to our polyfill, we also need ways to test them out, don't we? IN Chapter 4, I'll discuss setting up unit and cross-browser testing in-depth, but in the meantime, let's create a "sample" form that we can use to test out our library as we work on it. This sample will serve as a live demonstration and part of our docs when we publish our polyfill, so it's something you'll want to add to your projects even if you're also performing automated or unit testing.
 
-To that end, let's create a new HTML page in the +samples/+ folder and call it form-sample.html. Since our library is an HTML5 Forms polyfill, it makes sense that the sample page itself be a form. Since this sample page will also seve as a part of my docs, the HTML page will include references to bootstrap and some additional markup. Beyond that, the relevant portion of this sample page, that is the form itself is shown in <<EX3-4>>.
+==== Creating a Sample Form
+
+To that end, let's create a new HTML page in the +samples/+ folder and call it +form.html+. Since our library is an HTML5 Forms polyfill, it makes sense that the sample page itself contain a form showing off all of our bells and whistles. Since this sample page will also serve as a part of my docs, the HTML page in will include references to bootstrap and some additional markup. Beyond that, the relevant portion of this sample page, that is the form itself is shown in <<EX3-4>>.
 
 [[EX3-04]]
 .Polyfill sample form markup
 ====
 [source, html]
 ----
-<!-- TODO -->
+<form action="#" id="sampleForm">
+  <fieldset>
+    <legend>Essentials</legend>
+    <div>
+	    <label for="name">Name</label>
+	    <input type="text" required placeholder="ex. Hugo Reyes" />
+    </div>
+    <div>
+      <label for="email">Email</label>
+      <input type="email" required placeholder="ex. hugo@dharma.com" />
+    </div>
+    <div>
+      <label for="phone">Phone</label>
+      <input type="tel" placeholder="ex. 555-555-5555"
+             pattern="^[2-9]\d{2}-\d{3}-\d{4}$"
+             title="Use a XXX-XXX-XXXX format" />
+    </div>
+    <div>
+      <label for="phone">Gratuitous Search</label>
+      <input type="search" id="search" />
+    </div>
+  </fieldset>
+  <fieldset>
+    <legend>Dates and Times</legend>
+    <div>
+		  <label for="birthday">Birthday</label>
+      <input type="date" />
+		</div>
+		<div>
+		  <label for="doctor">Next Doctor's Appointment</label>
+      <input type="datetime-local" value="2012-12-14T19:00"/>
+		</div>
+		<div>
+		  <label for="favMonth">What month is it?</label>
+      <input type="month" />
+		</div>
+		<div>
+			<label for="favMonth">When is Shark Week?</label>
+    	<input type="week" />
+		</div>
+		<div>
+			<label for="favMonth">What time is Beer O'Clock?</label>
+    	<input type="time" />
+		</div>
+  </fieldset>
+  <fieldset>
+    <legend>Other Stuff</legend>
+    <div>
+      <label for="age">Age</label>
+      <input type="number" min=13 max=128 required placeholder="13 - 128" />
+    </div>
+		<div>
+      <label for="color">Favorite Color</label>
+      <input type="color" value="#fd49eb" />
+    </div>
+		<div>
+		  <label for="GPA">College GPA</label>
+      <input type="range" min=0.0 max=4.0 value=3.0 step=0.25 /><span id="rangeValue"></span>
+		</div>
+		<div>
+		  <label for="browser">Favorite Browser</label>
+      <input type="text" list="browsers" />
+      <datalist id="browsers">
+        <option value="Chrome">
+        <option value="Firefox">
+        <option value="Internet Explorer">
+        <option value="Opera">
+        <option value="Safari">
+      </datalist>
+    </div>
+		<div>
+		  <label for="picture">Recent Photo</label>
+			<input type="file" />
+	  </div>
+  </fieldset>
+  <hr />
+  <div>
+    <div>Progress
+      <progress id="completionPct" min=1 max=12 value=3></progress> 
+    </div>
+    <br />
+    <input type="submit" value="Submit this mess!" />
+		<input type="submit" formnovalidate value="Save for later" />
+  </div>
+</form>
 ----
 ====
 
-As you can see from the sample, it's a pretty robust form, and it also uses pretty much all of the new HTML5 Forms features introduced in the spec. 
+As you can see from the sample, it's a pretty robust form, and it also uses pretty much all of the new HTML5 Forms features introduced in the spec, like new input types (color, datetime, etc), new attributes (autocomplete, pattern, required, etc.) and form validation features. To give you an idea of what this form looks like in various browsers, <<EX3-5>> shows what our form looks like, by default, in Chrome 29, while <<EX3-6>> shows what the form looks like in Safari 6.1. Notice the difference in the Date fields, the Color field and others. We've certainly got our work cut out for us with this polyfill, even without taking oldIE into account! 
 
-- Creating the Sample / Test Form
-- Creating the skeleton for the polyfill (as a Kendo UI Widget) [also grab from Chapter 3]
-- Adding the first feature (support for the color type)
-- Adding Feature Detection and an "Always Use" mode
+[[EX3-5]]
+.Sample Form as viewed in Google Chrome 29
+image::images/ch3-ex5.png[]
 
-  ==== To Feature Detect, or Not to Feature Detect
+[[EX3-6]]
+.Sample Form as viewed in Safari 6.1
+image::images/ch?-ex6.png[]
 
-  - First thing to consider when starting development
-  - Ways to support handle optional feature detection
+With my sample form in place, I'll next need to add a reference to my polyfill source file. In <<EX3-3>>, we created the main +kendo.forms.js+ file, which included the skeleton for our Forms widget and polyfill. I'll add a reference to that file in my +form.html+ sample form, and then add a script block or new file reference to activate the sample form, as illustrated in <<EX3-7>>.
 
-=== Expanding your Polyfill and Refactoring
+[[EX3-7]]
+.Activating our Forms opt-in polyfill via JavaScript
+====
+[source, js]
+----
+(function($, kendo) {
+  $('#sampleForm').kendoForm();
+}(jQuery, kendo));
+----
+====
 
-- Adding the second feature (support for the numeric type)
-- Refactoring type support for consistency and ease of maintenance
-- Adding features 3-n
-- When things get hairy, adding support for date types
+Now, if I refresh the page in my browser, I'll see… that nothing is different. I'm not getting any console errors though, which means that my polyfill is being properly initialized. All that's left is to add some real functionality. Let's add that much anticipated first feature.
+
+==== The First Feature: Color Support
+
+As mentioned earlier, when I created the roadmap for my polyfill, I decided to tackle new input types first, and build up in complexity from there. The first type I'll add support for is the color type, which http://www.w3.org/TR/html5/forms.html#color-state-(type=color)[according to the Forms section of the HTML5 spec] is meant to offer a simple "color well" control that supports visual selection of simple colors and retrieving sRGB or Hexadecimal equivalents of these. You can see from <<EX3-5>> and <<EX3-6>> above that Chrome supports this attribute, but Safari 6.1 does not (safari simply shows the hex value I set in the sample form). Coincidentally, Kendo UI Web provides a +ColorPicker+ widget, so this control is a great first addition to our polyfill.
+
+When I initialize my polyfill by calling +kendoForm()+ (or via the declarative approach), the +init+ method in <<EX3-3>> will be fired, so that's the right place to start adding my functionality. Inside that method, and just after the call to +Widget.fn.init+, I'll add the code in <<EX3-8>>.
+
+[[EX3-8]]
+.Adding color type support to the Forms polyfill
+====
+[source, js]
+----
+var form = $(element);
+
+form.find('input[type=color]').each(function(index, val) {
+  $(val).kendoColorPicker({ palette: 'basic' });
+});
+----
+====
+
+In this sample, I'm looking for every input on my form with the attribute +type=color+, looping over each element and finally, initializing a +kendoColorPicker+ for each, using the +basicPallete+ option. The HTML5 specification doesn't have anything to say about what the color control should look like or how it should behave, so I've chosen a sensible default for the +ColorPicker+. Now, when I view the sample form in Safari, Firefox or Internet Explorer (all browsers which do not support the color type at the time of writing), I'll see a Kendo UI ColorPicker in place of the default text input, as seen in <<EX3-9>>.
+
+[[EX3-9]]
+.Color Support in the Forms Polyfill (Safari 6.1)
+image::images/ch3-ex9.png[]
+
+==== To Feature Detect, or Not to Feature Detect
+
+Of course, there's a catch. As it happens, if you view the sample page in a browser that _does_ support the color type (like Chrome or Opera), you'll notice that a ColorPicker was created in these browsers as well. This is because my current implementation doesn't bother to perform feature detection for the color type, instead overriding every occurrence of the type on every browser.
+
+[NOTE]
+====
+_Feature detection_ is the practice of executing code against the browser for the purpose of determining whether that browser supports the feature or not. Feature detection is most often performed by executing JavaScript that checks for the existence of a property in a Global browser object (for instance +geolocation in navigator+ tests for the presence of the +gelocation+ object, and thus, Geolocation support, on the global +navigator+ object) or via various other tests and checks in more complex cases. Feature detection is considered superior to the classical practice of _Browser or User-Agent Sniffing_ because, rather than making wholesale decisions about which features to provide to a user based on the browser they're using, you can enable or disable functionality at the feature level, based on support and regardless of the browser.
+====
+
+When building a cross-browser polyfill, you'll need to consider how you wish to approach feature detection for your library. You essentially have two choices:
+
+. Require that the user perform feature detection before including or opting-in to your polyfill
+. Perform feature detection on behalf of (or in addition to) the user
+
+The first approach is common for polyfills that cover a limited feature-set, or those that are activated on a per-element or frequent basis. As http://modernizr.com[Modernizr] is widely used by developers, it's common to see polyfills used in a manner similar to <<EX1-3>> from Chapter 1. In this example, I'm  using Modernizr to query for CSS Border Radius support and, if it's not available in the user's browser, I'll opt-in to PIE for a given set of elements.
+
+When building polyfills that are a bit more expansive, or even more "intrusive" in the functionality they provide, I recommend performing feature detection on the developer's behalf. In the case of HTML5 Forms, my polyfill is instantiated at the form-level, so asking the user to perform feature detection before calling my library would be an all-or-nothing proposition that would lead to my library being used for all HTML5 Forms features, or none of them at all. Instead, I'd rather provide the ability for the polyfill to selectively upgrade only those features *not* supported in the browser.
+
+To check for support for the color +input+ type, I'll first create a function inside of my +init+ function to test for support for individual form types:
+
+====
+[source, js]
+----
+function isFormTypeSupported(type) {
+  var input = document.createElement('input');
+  input.setAttribute('type', type);
+  return input.type !== 'text';
+}
+----
+====
+
+First, I'll create an in-memory +input+ element. Then, I'll set it's +type+ attribute to the type variable provided by the caller. Finally, I'll check the type attribute. If it's value is  still "text" even after I set it to another value, that means that the browser does *not* support this input type. As such, I'll return false. If the value is retained, I'll return true.
+
+To leverage this home-grown feature detection method, I'll modify the code in <<EX3-8>> to first check for support, as shown in <<EX3-10>>. Now, if I refresh Chrome or Opera, the built-in browser support is back, while custom widget support provided by my polyfill will be leveraged for all other browsers.
+
+[[EX3-10]]
+.Checking for color type support before adding a ColorPicker widget
+====
+[source, js]
+----
+if (!isFormTypeSupported("color")) {
+  form.find('input[type=color]').each(function(index, val) {
+    $(val).kendoColorPicker({ palette: 'basic' });
+  });
+}
+----
+====
+
+==== Adding Opt-In "Overrides" to Your Polyfill
+
+Now that we've added feature detection to our polyfill, the color type will only be "upgraded" when the browser doesn't support this type. This is excellent for a default behavior, but what if the developer *wants* to author HTML5 Forms markup *and* have all of fields upgraded to widgets, regardless of browser support? This is obviously a case that falls outside of specified HTML5 Forms behavior, but it's a feature I've chosen to add to my Forms polyfill, for a couple of reasons:
+
+. As an opt-in polyfill, allowing developers to pass in options is easy.
+. Since the visual aspects of HTML5 Forms vary greatly from one browser to the next, even between browsers that *support* a new type, some developers may prefer the ability to author HTML5 forms markup while gaining a consistent look and feel for visual widgets across browsers.
+
+To add an "override" for visual elements to my polyfill, I can leverage the built-in +options+ object required by all Kendo UI widgets. In <<EX3-3>>, we used this object to specify the name of our widget, +Form+ which Kendo UI uses when adding our polyfill to the library namespace. I can use this object to specify any number of developer-defined features, and I'll use it now to add an +alwaysUseWidgets+ boolean value. Once I've added that option, I'll modify my +isFormTypeSupported+ method to check for this property. If +alwaysUseWidgets+ is true, I'll skip the feature detection test and return +false+. The full listing for our polyfill source including color type support and the override is shown in <<EX3-11>>.
+
+[[EX3-11]]
+.Polyfill source with color type support & an +alwaysUseWidgets+ option
+====
+[source, js]
+----
+(function($, kendo) {
+  var ui = kendo.ui,
+    Widget = ui.Widget,
+    formWidget;
+
+  var Form = Widget.extend({
+    init: function(element, options) {
+      var form = $(element),
+          that = this;
+
+      // base call to widget initialization
+      Widget.fn.init.call(this, element, options);
+
+      function isFormTypeSupported(type) {
+        if (that.options.alwaysUseWidgets) { <1>
+          return false;
+        }
+
+        var input = document.createElement('input');
+        input.setAttribute('type', type);
+        return input.type !== 'text';
+      }
+
+      if (!isFormTypeSupported("color")) {
+        form.find('input[type=color]').each(function(index, val) {
+          $(val).kendoColorPicker({ palette: 'basic' });
+        });
+      }
+    },
+    options: {
+      // the name is what it will appear in the kendo namespace (kendo.ui.Form).
+      // The jQuery plugin would be jQuery.fn.kendoForm.
+      name: 'Form',
+      alwaysUseWidgets: false <2>
+    }
+  });
+
+  ui.plugin(Form);
+} (jQuery, kendo));
+----
+<1> Test the override property to determine if the element should always be upgraded
+<2> Specify the override property and set the default value to false
+====
+
+With this functionality in place, I can modify my initialization  code to pass in the +alwaysUseWidgets+ option:
+
+====
+[source, js]
+----
+$('#sampleForm').kendoForm({ alwaysUseWidgets: true });
+----
+====
+
+Now, the Kendo UI ColorPicker widget will be used in all browsers.
+
+=== Beefing up Your Polyfill with Additional Features
+
+So far, we've added basic support for the color +input+ type, feature detection for that type and the ability to override detection and always upgrade the type to use a UI widget. And while it's nice to have support for a single type, it doesn't make for a terribly useful polyfill. Let's expand our polyfill by adding support for an additional input type.
+
+==== Adding Support for the Number Type
+
+The next feature for which I'll add support in my polyfill is the +number+ +input+ type. As defined in the http://www.w3.org/TR/html5/forms.html#number-state-(type=number)[HTML5 spec] the number type is basically an edit mask that ensures that a user only enter numeric values into fields given the +type=number+ value. Kendo UI Web has a http://demos.kendoui.com/web/numerictextbox/index.html[NumericTestBox] widget that behaves in a very similar manner, so we'll use this widget to polyfill non-supporting browsers. <<EX3-12>> contains the number specific code that I'll add to +kendo.forms.js+, just after my color type code:
+
+[[EX3-12]]
+.Adding number +input+ type support to my Forms polyfill
+====
+[source, js]
+----
+if (!isFormTypeSupported("number")) {
+  form.find('input[type=number]').each(function(index, val) {
+    $(val).kendoNumericTextBox();
+  });
+}
+----
+====
+
+To test this feature out, I can load my sample form up in a browser that doesn't support the number type, like IE9 or Firefox, or use the +alwaysUseWidgets+ option. It works like a charm, and you'll also notice that attributes like +min+ and +max+, which I specified for the age field on my sample form, were preserved by the Kendo UI NumericTextBox widget. I get that for free, which is awesome. Even still, I can't help but get this creeping feeling that things could be better. 
+
+Let's look at our two features together:
+
+[[EX3-13]]
+.Color and Number Type Support
+====
+[source, js]
+----
+if (!isFormTypeSupported("color")) {
+  form.find('input[type=color]').each(function(index, val) {
+    $(val).kendoColorPicker({ palette: 'basic' });
+  });
+}
+
+if (!isFormTypeSupported("number")) {
+  form.find('input[type=number]').each(function(index, val) {
+   $(val).kendoNumericTextBox();
+  });
+}
+----
+====
+
+Do you see it now? That's right, it's repetition everywhere! And while it doesn't look *terrible* with only two features, I can't even bear the thought of what my polyfill will look like once I add support for all of the 12+ visual types and features. So, before we add our next input type, it's time to refactor!
+
+[NOTE]
+====
+Refactoring is the practice of reorganizing code for maintenance, readability and ease of use, while leaving its behavior unchanged. It's most often associated with the agile discipline of TDD (where the phrase "Red, Green, Refactor" was born), but it's a useful practice regardless of your specific development workflow. With that said, refactoring is *worlds* easier when your production code is covered by a good suite of unit tests. And though I'm going to perform my refactor without a safety net now, I'll be covering unit testing, as well as some performance-driven refactoring in Chapters 4 and 5.
+====
+
+==== Refactoring Type Support
+
+When refactoring JavaScript code, I prefer to think not just of the refactor that will benefit my current code, but the code I plan to add next. This might sound like a bit of "You're not gonna need it" (or YAGNI) to you, but there are cases when I do indeed know "But I'm gonnna need it, and soon." (I tried to coin the anagram _BIGNIAS_ for this, but it doesn't quite roll off the tongue) My polyfill is such a time, where I know that much of the process of adding support for additional types will be consistent from one type to the next, with only a few, specific differences. 
+
+Because of this, the first step in my refactor is to move all of my +input+ type specific upgrades into a "lookup table," essentially just an array of objects that contains the type name and the upgrade function to execute for that type. My initial lookup object can be found in <<EX3-14>>.
+
+[[EX3-14]]
+.Type lookup table for the color and number input types
+====
+[source, js]
+----
+var typeUpgrades = [
+{
+  type: 'color',
+  upgrade: function(index, val) {
+    $(val).kendoColorPicker({ palette: 'basic' });
+  }
+},
+{
+  type: 'number',
+  upgrade: function(index, val) {
+    $(val).kendoNumericTextBox();
+  }
+}];
+----
+====
+
+Once I have my lookup array, I can refactor the code in <<EX3-13>> into something more like <<EX3-15>>:
+
+[[EX3-15]]
+.Using the lookup table to add input type support
+====
+[source, js]
+----
+var i, len;
+for (i = 0, len = typeUpgrades.length; i < len; i++) {
+  var typeObj = typeUpgrades[i];
+
+  if (!isFormTypeSupported(typeObj.type)) {
+    form.find('input[type=' + typeObj.type + ]').each(typeObj.upgrade);
+  }
+}
+----
+====
+
+If I re-run the sample page in a browser, I'll note that things still work, just as before. That's nice, but the real benefit to refactoring comes when I add additional features to my polyfill, which I'll do next.
+
+Before I move on, however, it's worth mentioning that the refactoring doesn't have to stop with the simple changes I detail above. While it's out of the scope of this short book to belabor the refactoring conversation any further, it's worth mentioning that, in the production version of my polyfill, I did perform some additional refactoring, including breaking my type upgrades and feature tests into two additional files (which I combine during my build process, but more on that in Chapter 4). If you're interested in seeing those additional changes, you can view https://github.com/kendo-labs/kendo-ui-forms/blob/master/src/js/kendo.forms.types.js[kendo.ui.form.types.js] and https://github.com/kendo-labs/kendo-ui-forms/blob/master/src/js/kendo.forms.features.js[kendo.forms.features.js] in the https://github.com/kendo-labs/kendo-ui-forms[online GitHub repo] for my polyfill.
+
+==== Adding Input Types 3-_n_
+
+Now that we've refactored things a bit, let's add support for a third input type: the range type. The http://www.w3.org/TR/html5/forms.html#range-state-(type=range)[range +input+ type] enables developers to capture numeric data via a slider control with built-in min, max and step values. In Kendo UI, the equivalent is the http://demos.kendoui.com/web/slider/index.html[Slider] control, which has identical behavior, and supports all of the necessary attributes. To add support for the range type, I'll add another object literal to my +typeUpgrades+ array, as shown in <<EX3-16>>:
+
+[[EX3-16]]
+.Adding support for the +range+ input type 
+====
+[source, js]
+----
+{
+  type: 'range',
+  upgrade: function(index, val) {
+    $(val).kendoSlider({
+      showButtons: false,
+      tickPlacement: 'none'
+    });
+  }
+}
+----
+====
+
+For the range type, I'll need to pass in a couple of configuration settings so that the default behavior of the Kendo UI Slider matches that of browsers that do support this type. That means no buttons or ticks. Just a simple slider, as depicted in <<EX3-17>>. And the best news is that there is no step two, other than refreshing your browser and viewing the slider in the sample form! With the refactor that we made in the last section, adding support for additional input types is a simple matter of adding a new entry to our lookup table. Now, adding features 3-_n_ is quick and painless.
+
+[[EX3-17]]
+.Sample form with range support
+image::images/ch3-ex17.png[]
 
 === Polyfilling visual features with CSS
+
+With the input type refactor done, adding support for most of the remaining types (datetime, date, time, month, etc.) is pretty straightforward and not really worth covering in this book. There are a few quirks here and there with some of the date/time types, especially when it comes to the proper way to format data attribute values, but as long as you ensure you're value="2012-12-14T19:00"[properly handling date and time strings as covered in the spec], you should be fine. Your author failed to do so when he first started building an HTML5 Forms polyfill, so do take my word for it. Not coincidentally, it was this experience that lead yours truly to make "Read the Spec" the first principle of responsible polyfill development, as covered in Chapter 2.
+
+Instead of explicitly covering support for the rest of the input types, I'd like to switch focus a bit and talk about scenarios where your polyfill needs a little bit of CSS to do it's job. [HERE] 
 
 - Show the addition of CSS and JavaScript to add support for the "placeholder" attribute
 - Talk about cross-browser quirks that arose and how to address those
