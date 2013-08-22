@@ -537,15 +537,159 @@ image::images/ch3-ex17.png[]
 
 With the input type refactor done, adding support for most of the remaining types (datetime, date, time, month, etc.) is pretty straightforward and not really worth covering in this book. There are a few quirks here and there with some of the date/time types, especially when it comes to the proper way to format data attribute values, but as long as you ensure you're value="2012-12-14T19:00"[properly handling date and time strings as covered in the spec], you should be fine. Your author failed to do so when he first started building an HTML5 Forms polyfill, so do take my word for it. Not coincidentally, it was this experience that lead yours truly to make "Read the Spec" the first principle of responsible polyfill development, as covered in Chapter 2.
 
-Instead of explicitly covering support for the rest of the input types, I'd like to switch focus a bit and talk about scenarios where your polyfill needs a little bit of CSS to do it's job. [HERE] 
+Rather than covering the rest of the HTMl5 input types explicitly, let's turn our focus to a different part of the HTML5 forms spec, and take a look at a scenario where adding polyfill support requires JavaScript and CSS to get the job done. While there are a few areas of the HTML5 spec that require us to delve into CSS, The +placeholder+ attribute is probably the best example of this type of feature. According to http://www.w3.org/TR/html5/forms.html#the-placeholder-attribute[the spec], the placeholder attribute "represents a short hint (a word or short phrase) intended to aid the user with data entry when the control has no value." In contrast to the +<label>+ element, the placeholder attribute is intended to contain hint text that is overlaid on or displayed inside of input controls, and which disappears when a user enters a value.
 
-- Show the addition of CSS and JavaScript to add support for the "placeholder" attribute
-- Talk about cross-browser quirks that arose and how to address those
+Since the spec is pretty straightforward about this attribute, it enjoys pretty broad browser support. However, since IE8 and previous don't support this attribute, and most of us still support these browsers in our sites and apps, it makes sense to polyfill this feature in our library.
+
+To do so, I'm going to start by adding a new css file in my project, under the +src/css/+ directory, and I'll call it +kendo.forms.css+. Then, I'll add the css in <<EX3-18>>
+
+[[EX3-18]]
+.CSS for polyfilling placeholder support
+====
+[source, css]
+----
+label.placeholder {
+    color: gray;
+    display: block;
+    font-size: small;
+    padding-top: 3px;
+    position: relative;
+    text-indent: 5px;
+}
+
+input.placeholder {
+    background-color: transparent;
+    left: 0;
+    position: absolute;
+    top: 0;
+    z-index: 1;
+}
+
+input.relPlaceholder {
+    position: relative;
+}
+
+input.placeholder:focus, input.placeholder:first-line {
+    background-color: white;
+}
+
+span.hidden {
+    opacity: 0;
+}
+----
+====
+
+The CSS above is adding a few classes and pseudo elements that I'll need to manipulate elements that my polyfill will be creating at runtime in order to provide placeholder support. The +label.placeholder+ selector applies to an element that I'll create to hold placeholder text, while the +input.placeholder+ selector applies to the original input for which I'm polyfilling attribute support. The remaining selectors cover positioning and visibility for elements and content.
+
+With our CSS in place, let's switch gears to the JavaScript needed to add placeholder support. First, I'll need to add a feature test for this attribute in order to make sure that I don't do any necessary work (which will include some DOM interaction) if the browser already supports it. Since I know that this won't be the only attribute my polyfill will need to test for--it will also need to support new attributes like +required+, +pattern+, and more--I'll go ahead and great a generic test function, just like I did for the input types:
+
+====
+[source, js]
+----
+function isAttributeSupported(attr) {
+  return attr in document.createElement('input') &&
+         attr in document.createElement('textarea');
+}
+----
+====
+
+In the case of HTML5 attributes, testing for support is a simple matter of creating a new in-memory input (and textarea), and checking for the presence of an attribute via JavaScript's +in+ property operator. If the attribute is available on both input types, our test will return true, otherwise, false. Now, we can leverage our test and, if not supported, add in some logic to activate placeholder support, as shown in <<EX3-19>>.
+
+[[EX3-19]]
+.Polyfilling placeholder support with CSS and JavaScript
+====
+[source, js]
+----
+if(!isAttributeSupported('placeholder')) {
+  form.find('[placeholder]').each(function(index, val) {
+    var el = $(val);
+    // Strip CR and LF from attribute vales, as specified in
+    // www.w3.org/TR/html5/forms.html#the-placeholder-attribute
+    var placeholderText = el.attr('placeholder')
+    												.replace(/(\\r\\n|\\n|\\r)/gm,'');
+
+    // When the field loses focus, clear out the placeholder if
+    // the input contains a value.
+    el.on('blur', function() {
+      var $el = $(this);
+      var labelNode = this.previousSibling;
+      if (this.value) {
+        labelNode.nodeValue = '';
+        $el.addClass('relPlaceholder');
+      } else if (labelNode.nodeValue !== placeholderText) {
+        labelNode.nodeValue = placeholderText;
+        $el.removeClass('relPlaceholder');
+      }
+    });
+    el.wrap('<label class="placeholder">' 
+								+ placeholderText + '</label>');
+    el.addClass('placeholder');
+  });
+}
+----
+====
+
+Let's walk through this sample step-by-step and take a look at what's going on. First, I'm grabbing all of the inputs with a +placeholder+ attribute from my form. The rest of this block contains the callback for each placeholder-containing element. I start by caching the jQuery object for the element, then grab the placeholder value. The RegEx on that line serves to strip out any newlines that might sneak into the placeholder attribute. This requirement is http://www.w3.org/TR/html5/forms.html#the-placeholder-attribute[explicitly covered in the spec] and since we're polyfilling to the spec, it's a no-brainer to add this support.
+
+Once I have a sanitized attribute value, I'll bind my element to a blur event, wrap my element in a new +<label>+ element that contains the placeholder text, and then add the "placeholder" class to that label and the original element, which applies the CSS I defined in <<EX3-18>>. The CSS rules give my label some contrast so that it's obvious to the user that this is not input text (again, as per the spec) and slide the label over to sit on top of my input.
+
+The final piece of the puzzle is my +blur+ event, which clears out the dummy placeholder label if the user has entered text in the input. Without this event, my placeholder text would show up over any text the user enters after he or she navigates off of the element.
+
+Of course, this is all fine in theory, but as with every other feature we've had so far, it doesn't mean a thing until we test this new feature in a non-supporting browser. However, since +placeholder+ support is so darn good, it's not as simple as testing in one of the new browsers installed on your machine. Often, testing out polyfill support means getting your hands on IE 6, 7 or 8, and we'll discuss how to do that in the next section. 
 
 === Testing out your work across browsers
 
-- Running your sample project in "Evergreen" Chrome, Safari, Firefox, Opera and IE
-- Testing oldIE with VMs from modern.ie
-- Testing across browsers with browserstack, testling, etc.
+So far in this chapter, we've been "testing" out our polyfill by viewing the sample HTML form in modern browsers like Chome, Firefox, Opera, Safari and IE9+. If you're following along, you've probably even been testing using just a single browser, which tends to be my own manual testing workflow, as well. And while this strategy is fine when you're getting up and running and just trying to get things to work, eventually you're going to need to test in more than one browser. In fact, you're going to need to test in all of them, and often. In Chapter 4, I'll discuss some strategies for automating your cross-browser testing, but let's first look at a few ways that you can get started with cross-browser testing.
+
+==== Install all the "Evergreen" Browsers
+
+First, I recommend that you install every single browser that you can get your hands on for your OS. This might seem obvious, but it can't be overstated. When building cross-browser polyfills, you're venturing into the weeds so that other developers don't have to, so you'd better have access to every browser you can. 
+
+And I don't just mean the consumer release of every browser, but also the Betas, dev channel, nightly releases and platform previews of all of these. You not only need to know what you're polyfill needs to support today, but tomorrow as well. Sometimes, browser updates will modify their support for a feature in ways that could break your polyfill (spec API changes and vendor prefixes are two examples), and you'll want to be covered. 
+
+Modern, self-updating browsers are commonly referred to as "Evergreen," because they're always considered new and up-to-date. Nearly every major browser vendor now supports a self-updating model, and <<EX3-20>> lists out all of these browsers, and where to find them, as well as pre-release versions of the browsers.
+
+[[EX3-20]]
+.Listing of Evergreen and Pre-release desktop browsers
+[options="header"]
+|=======
+|Browser            |Update Cadence|Download URL
+|Chrome             |~6 Weeks      |https://www.google.com/intl/en/chrome/browser/
+|Chrome Beta        |~6 Weeks      |https://www.google.com/intl/en/chrome/browser/beta.html
+|Chrome Canary      |Nightly       |https://www.google.com/intl/en/chrome/browser/canary.html
+|Firefox            |~6 Weeks      |https://www.mozilla.org/en-US/firefox/new/?icn=tabz
+|Firefox Beta       |~6 Weeks      |http://www.mozilla.org/en-US/firefox/beta/
+|Firefox Nightly    |Nightly       |http://nightly.mozilla.org/
+|Internet Explorer  |Varies        |http://windows.microsoft.com/en-us/internet-explorer/download-ie
+|IE Platform Preview|Varies        |http://windows.microsoft.com/en-us/internet-explorer/ie-11-worldwide-languages
+|Opera              |Varies        |http://www.opera.com/
+|Opera Next         |Varies        |http://www.opera.com/computer/next
+|Safari             |Varies        |http://www.apple.com/safari/
+|Safari Beta        |Varies        |https://developer.apple.com/technologies/safari/
+|=======
+
+==== Testing in oldIE
+
+In addition to testing out your polyfill in the latest version of all of the browsers above--not to mention mobile browsers if you're supporting those--I highly recommend getting your hands on Internet Explorer 7 and 8, and 6, if needed. If you're a Windows user, you might be tempted to use the "Browser Mode" and "Document Mode" features in IE's F12 Developer Tools to simulate IE 7 and 8, but I humbly ask that you resist that temptation but for the simplest of tests. These modes do a decent job of _simulating_ the behaviors of oldIE, sure, but they aren't foolproof. For example, <<EX3-21>> and <<EX3-22>> illustrate the differences I see when running my HTML5 Forms polyfill test suite (which I'll introduce in the next chapter) in IE 10 with simulation, and in IE 8. It's the same code and same test suite for both, and even though Document Mode is providing me an IE 8 experience, in theory, in practice you'll find that this is not always the case.
+
+[[EX3-21]]
+.Testing IE8 Via IE 10's Browser Mode simulator
+image::images/ch3-ex21.png[]
+
+[[EX3-22]]
+.Testing IE8 via an actual IE8 installation
+image::images/ch3-ex22.png[]
+
+Thankfully, testing oldIE doesn't require that you buy old Windows Vista and XP licenses and install these browsers on the old hardware sitting in your closet. On the contrary, Microsoft hosts a fantastic site called http://modern.ie[modern.ie] that's purpose built around the idea of providing developers with all the tools they need to support and test the various Internet Explorer browsers. In addition to providing tools like a page scanning service and documentation on standards support for newer versions of the browser, the site provides free virtual machines for testing all versions of IE, including 6, 7 and 8. Whether you use VirtualBox, VMWare, Parallels, Virtual PC or Hyper-V, there are free VMs available for you to download, fire-up and use to test out your hard work. To grab a VM, just head over to http://modern.ie[modern.ie] and click the "Test Across Browsers" menu option. You--and your users--will thank me for it.  
+
+==== Cross-Browser Testing and Verification with Online Services
+
+In addition to testing with your own browsers, and testing oldIE with VMs, there are a growing number of online services available that you can use to easily test your work across browsers without installing another browser or running a VM. One popular service is http://www.browserstack.com/[BrowserStack] which allows you to test public and internal urls across a variety of OSes and browsers, from within a browser window. You can also automate BrowserStack tests via Selenium for automated testing. The only catch with BrowserStack is that the service is not free, so it's not likely to be an option for most open-source cross-browser polyfills.
+
+Another great option for cross-browser testing is http://ci.testling.com/[Testling], a CI server that tests your code across browsers each time you push to your remote repo. Testling requires some form of automated unit test suite, but I consider this to be a plus because automated testing across the 18 versions Testling supports is far more ideal than manual tests, in my opinion. We'll discuss setting up unit and cross-browser tests in the next chapter.
 
 === Conclusion
+
+In this chapter, we covered the basics of getting your polyfill project setup, and we also added basic features, did a simple refactor to improve polyfill maintenance, and we even added support for the +placeholder+ forms attribute in oldIE. Congratulations, you've come a long way already, and I hope you've learned a thing or two about putting those principles of responsible polyfill development into practice.
+
+As great as our progress has been so far, though, you might find yourself bothered by the fact that a) our polyfill isn't terribly easy to test and b) we don't really have a strategy in place for linting our code, perfuming minification, or doing anything else that a good project should do before releasing "production quality" code. Buckle up, because in Chapter 4, we're going to cover all of these, and more!
