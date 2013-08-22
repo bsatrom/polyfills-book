@@ -1,35 +1,17 @@
 [[polyfills_chapter_4]]
-== Building Your First Polyfill, Part 2 - Project Setup and Testing
+== Building Your First Polyfill, Part 2 - Build Workflows and Cross-Browser Testing
 
-Over the first two chapters of this book, we established a solid foundation for polyfill development, first in Chapter 1 with a discussion of the continued importance of polyfilling to the web platform. In Chapter 2, I shared some essential principles to keep in mind when building "responsible polyfills." These were important chapters to start with, but I'll bet your about ready to get hands on. I know I am. With that in mind, let's turn our attention to the construction of a real world cross-browser polyfill: an HTML5 Forms polyfill. 
+In Chapter 3, you got your first taste of cross-browser polyfill development via the construction of an HTML5 Forms polyfill. We managed to cover a lot of ground in a short time, but there's no doubt that our polyfill is missing some critical pieces. Some of these relate to our build and deploy process, while others relate to improving the quality and performance of the code itself with some unit and performance texts. Over these next two chapters, we'll round out the construction of our first polyfill. In this chapter, we'll covering the ins and outs of setting up your build process and performing automated testing. Then, in Chapter 5, we'll discuss how to deal with hairy edge cases in a spec, testing and refactoring for performance and finally, publishing your polyfill to the world.
 
-Over the next two chapters, I'll take a deep-dive look at the creation of an actual polyfill. In this chapter, we'll look at some good practices for setting up your project, and how to configure your dev environment for automated cross-browser testing.
+=== Setting up Your Project Workflow
 
-=== The HTML5 Forms Polyfill
+In Chapter 3, we got right to work building our polyfill without considering much beyond simple project and source control setup. At this point, I'd like to back up and discuss some important workflow considerations that polyfill developers should address when starting up a project. Specifically, we want to begin with the end in mind. That is, before we write a single line of code, we should think about how we plan to distribute our hard work, and how we expect other developers to leverage our polyfill in their apps, and even how we can enable others to contribute to our project. All of these considerations can be addressed at the start of a project with a solid development workflow, which includes several core pieces:
 
-When I first set out to write this book, I considered a lot of different options for a guinea pig polyfill to use. I wanted to target something that was reasonably complex, but straightforward enough to introduce in bits and pieces via text. I also wanted to choose a technology that's implementation status across browsers was more than just "supported in everything but IE." And even though IE will factor into some of the hairier aspects of our polyfill development, I wanted to walk through an example with quirks in as many browsers as possible. For those purposes, there's no better technology to attempt to polyfill than "HTML5 Forms."
-
-What we know of today as "http://www.w3.org/TR/2011/WD-html5-20110525/forms.html[HTML5 forms]" was actually the first technology to be proposed under the umbrella of what we refer to as "HTML5." First introduced outside of the WC3 as "Web Forms 2.0" by a consortium of browser vendors that included Google, Mozilla, Opera Software and Apple, this proposal arrived at a time when the W3C was still pouring much of their effort into the now-deduct XHTML 2.0. As an outflow of "Web Forms 2.0," these vendors formed the Web Hypertext Application Technology Working Group (WHATWG), a sibling standards body to the W3C that still exists today. 
-
-And while it's outside of the scope of this book to discuss the politics of HTML5, various collected standards and competing standards bodies, it is important to note that HTML5 forms has not only been around a while, but it's still one of the most hotly-debated aspects of the HTML5 spec. Certain aspects of the forms spec have near universal support (i.e. forms validation), some of the more visual aspects of the spec--new input types like number, color and datetime--have yet to be consistently implemented across all browsers. What's more, in some cases for those browsers that do support certain types, the specifics of said support are often inconsistent from one implementation to the next, meaning that you, the developer, might not get exactly the behavior you expect, every time.
-
-HTML5 Forms is a minefield. What better area to venture into as a polyfill developer, then, no? It's a bit hairy for sure, but this area of the spec if sufficiently complex enough to expose many of the polyfilling practices that I introduced in the last chapter. 
-
-=== Setting up Your Polyfill project
-
-When starting work on a cross-browser polyfill, we want to begin with the end in mind. That is, before we write a single line of code, we should think about how we plan to distribute our hard work, and how we expect other developers to leverage our polyfill in their apps, and even how we can enable others to contribute to our project. All of these considerations can be addressed at the start of a project with a solid development workflow, which includes several core pieces:
-
-. Source control and collaboration
+. Source control and collaboration (covered in Chapter 3)
 . Package and dependency management
 . Build and Workflow Management
 . Automated and Cross-Browser Testing
 . Continuous Integration
-
-==== Source control and collaboration
-
-The first step is to think about how and where you'll want to host your code so that a) you've got a backup and full project history in case things go wrong and b) other developers can find, leverage and contribute to your project. For the first part, you'll want to choose a source control solution that's open-source and widely-used. Two examples are http://git-scm.com[Git] and http://mercurial.selenic.com/[Mercurial]. These two systems have a similar command-line syntax for working with files and code repositories, so some developers are comfortable working with either. That said, Git is far and away the most popular source control system in use today, so you'll reach a larger body of potential collaborators by choosing that system.
-
-When paired with a solid code-sharing site, your source control solution also gives you a platform for making your polyfill available to the world. Not only can you store your polyfill source and history in these sites, but you can make that source and history available for others, which is hopefully your goal as a polyfill developer. Just as Git is the most popular source control option around today, http://github.com[GitHub] is the most popular option for hosting and collaborating on all manner of git-based open-source software projects. Other options worth considering, if GitHub is not your cup of tea are http://www.bitbucket.com[BitBucket]--which allows you to host both Git and Mercurial projects--and Microsoft's http://www.codeplex.com/[CodePlex]--which supports Mercurial projects only. For the examples in this book, I've chosen Git as my source control solution and GitHub for code sharing and distribution.
 
 ==== Package and Dependency Management
 
@@ -61,42 +43,13 @@ The last tool you need to consider for your initial project setup is a remote CI
 
 For my projects, I prefer to use https://travis-ci.org/[Travis], a CI server used by many in the open-source community. It's easy to set-up and configure, and you can even place status badges on your project's home page signifying it's current pass/fail status on the server. Another, newer option that I've recently discovered is http://wercker.com/[Wercker]. I'll be using Travis for this book, but Wercker is certainly worth checking out for your next project, open source or otherwise.
 
-=== Initial Project Structure
+=== Jumpstarting Your Workflow
 
-Once we've made all of the appropriate tool choices, from source control to your build system, we're ready to create our project! For the rest of the book I'll be using the tools I indicated in each section above, so if you're choosing otherwise and following along, you might need to adjust things here and there to get the same result.
+In Chapter 3, I covered initial project setup, including a recommended directory structure and essential files. With your basic project structure in place, your next key workflow steps are to configure +npm+ and +grunt+, which we'll cover in this section.
 
-First things first, make sure you have all of the tools I mentioned above installed on your development machine. Then, create an empty directory for your polyfill and open a terminal or console window in that new directory. Next, we'll initialize a new GitHub repo by running the +git init+ command.
+==== Configuring npm
 
-Once you've initialized your local git repository, you'll want to connect it to the remote repository that will be hosting your project online, which you can do by running a command similar to  <<EX3-1>>.
-
-[[EX3-1]]
-.Setting up a new Git remote
-====
-[source, shell]
-----
-git remote add git@github.com:bsatrom/html5-forms-polyfill.git
-----
-====
-
-Now, your local and remote repositories are all set-up and it's time to add some essential project files. Here's the basic project structure I recommend for most open-source polyfills (assuming a view from the folder root):
-
-- +dist/+ - The minified and concatenated files you plan to distribute; i.e. the "binaries" for your polyfill
-- +lib/+ - Any 3rd-party libraries that your Polyfill depends on (jQuery, Underscore, etc.)
-- +sample/+ - The sample project for the polyfill
-- +spec/+ - Home for your unit tests
-- +src/[js,css]+ - Source JavaScript and CSS files
-- +.gitignore+ - A list of files for Git to ignore when found in your project. GitHub can create one of these files for you when creating a new project. If you go that route, select the "Node" template.
-- +CHANGELOG.md+ - A laundry-list of minor and breaking changes for each version of your project. 
-- +CONTRIBUTING.md+ - Essential if you plan to accept contributions for your project. 
-- +README.md+ - the readme for your project. GitHub automatically treats this file as the main entry point when anyone visits your project. It should describe the purpose and goals of the polyfill--as I discussed in Chapter 1--features of the project, a roadmap for the projects, installation and usage instructions and anything else you think might be useful to consumers of or collaborators on your polyfill.
-- +LICENSE.md+ - Every open-source project needs a license. Which license you choose is up to you, but permissive licenses, such as MIT and Apache 2.0 will garner more interest and, possibly, participation from other developers. GitHub can also generate this file for you, based on the license chosen at project creation. 
-
-[NOTE]
-====
-The advice of a no-talent hack, such as yours truly, should not be confused for legal expertise. As such, your best bet is to consult with a legal expert before choosing an open source license. You can also visit the great http://choosealicense.com/[ChooseALicense.com] for more information about the dizzying array of open-source licenses available. But still, you should talk to a lawyer if you want an expert legal perspective in your choice of license. 
-====
-
-With your basic project structure in place, your next steps are to configure +npm+ and +grunt+. First, I'll run +npm init+ inside my project directory and follow the interactive prompts. You can see the result of running the command in my terminal in <<EX3-2>>. Once you're done, npm will create a +package.json+ file that looks similar to <<EX3-3>>. While this file isn't strictly required unless you plan to publish your polyfill to npm, it will make it easier to work with Grunt, which we'll set up next. 
+To configure nom, I'll run +npm init+ inside my project directory and follow the interactive prompts. You can see the result of running the command in my terminal in <<EX3-2>>. Once done, npm will create a +package.json+ file that looks similar to <<EX3-3>>. While this file isn't strictly required unless you plan to publish your polyfill to npm, it will make it easier to work with Grunt, which we'll set up next. 
 
 [[EX3-2]]
 .Running +npm init+ to configure your package.json file
@@ -129,7 +82,10 @@ image::images/ch3-ex3.png[]
 ----
 ====
 
-Next, let's install Grunt. Before you run the Grunt config step, you'll need to add the following to your package.json and run +npm install+ from the terminal, which will make sure that the Grunt command-line interface is available in your project.
+==== Configuring Grunt
+
+Now, let's install Grunt. Before you run the Grunt config step, you'll need to add the following to your 
++package.json+ and run +npm install+ from the terminal. The settings below will make sure that the Grunt command-line interface is available in your project.
 
 [[EX3-4]]
 .Grunt dependencies in package.json
@@ -146,7 +102,7 @@ Next, let's install Grunt. Before you run the Grunt config step, you'll need to 
 ----
 ====
 
-Configuring grunt at this point is a bit more manual. While there are http://gruntjs.com/project-scaffolding[several +grunt-init+ tasks] available for you to use, since our project is a bit specific, it's easier if we just start with a very basic gruntfile, as shown in <<EX3-5>>. Create a new file at the project root called +gruntfile.js+ and copy the contents below into that new file.
+Once you've installed Grunt, configuring the tool is a bit more manual. While there are http://gruntjs.com/project-scaffolding[several +grunt-init+ tasks] available for you to use, our project is pretty specific-use, so it's easier if we just start with a very basic gruntfile, which you can pull from <<EX3-5>>. Create a new file at the project root called +gruntfile.js+ and copy the contents below into that new file.
 
 [[EX3-5]]
 .Starter gruntfile.js for our Polyfill
@@ -231,9 +187,11 @@ At the bottom of my +gruntfile+, I've also defined two additional tasks: a +defa
 
 Once your gruntfile is complete and the options match your project, run +grunt+ from the terminal. If your gruntfile checks out, you'll get a "Done, without errors" message, which means we can continue on! If not, grunt will point you in the direction of the problem, which is usual a minor syntax issue. Now, let's get some unit tests set up!
 
-=== Configuring Unit Tests with Jasmine
+=== Adding Unit Tests to Your Polyfill
 
 Testing is critical for a good, "responsible" polyfill, and I recommend that your own project be covered by at least a good set of unit tests. Testing frameworks like Jasmine and qUnit are easy to set up and configure and, once you get going with them, you'll be glad that you have a full suite of tests backing up your polyfill development.
+
+==== Configuring Unit Tests with Jasmine
 
 To start using Jasmine for my unit tests, I'll create a +lib+ directory inside of my +spec+ directory and place the jasmine bits inside. I'm also going to include the https://github.com/velesin/jasmine-jquery[jasmine-jquery] library, which I'll need in order to automatically execute my tests via grunt. 
 
@@ -334,49 +292,17 @@ describe('Kendo Forms Widget Test Suite', function() {
 ----
 ====
 
-With this setup done, let's go ahead and run these tests in the browser. If Jasmine is properly configured, you should see two failing tests, as we do [[EX3-8]]. So we have successfully configured our testing framework. Now, let's go make these tests pass!
+With this setup done, let's go ahead and run these tests in the browser. First, if you're following along and you created the +kendo.forms.js+ source file in Chapter 3, the tests above should pass. That nice, but for the sake of exploration, let's delete everything from that file and re-run our tests. If Jasmine is properly configured, you should see two failing tests, as we do [[EX3-8]]. So we have successfully configured our testing framework. Now, let's go make these tests pass!
 
 [[EX3-8]]
 .Jasmine running in the browser
 image::images/ch3-ex9.png[]
 
-=== Red to Green: Making the First Tests Pass
+==== Red to Green: Making the First Tests Pass
 
 When I start a new project, or add unit tests to an existing project, I like to start small and try to get a few quick win tests under my belt. This is partly because I'm still feeling out functionality in the early stages of a project, but also because I want to see my test suite running and passing as quickly as possible. It's far easier to suss out problems with my test suite setup with a smaller number of tests.
 
-With that in mind, the first two failing specs we've added to my project are minor, and easy to fix, but they help lay the foundation for my polyfill. As discussed previously, my HTML5 Forms polyfill will be built on top of http://www.kendoui.com[Kendo UI], a library from http://www.telerik.com[Telerik] that provides all of the UI widgets and forms framework features I need. As a result, all I need to do with my polyfill is to wire up the automated intelligence that knows how to perform an "HTML5 form" into a smart form that uses Kendo UI widgets and validation features when the browser doesn't support these.
-
-Kendo UI itself exposes it's UI widgets to developers in two ways. Developers can either initialize Kendo UI Widgets using a jQuery plugin-style syntax, or by using declarative +data-+ style widget initialization. When building extension widgets to Kendo UI, which is something I've chosen to do with my polyfill, I need to follow the same pattern, so users of my library will be able to interact with my polyfill just as they would with a Kendo UI Autocomplete or DateTimePicker widget. As such, I'll need to support the initialization styles depicted in <<EX3-9>> and <<EX3-10>>.
-
-[[EX3-9]]
-.Initializing the Forms polyfill via JavaScript
-====
-[source, html]
-----
-<form id="myForm">
-  <!-- Rest of form declaration -->
-</form>
-<script>
-  $('#myForm').kendoForm();
-</script>
-----
-====
-
-[[EX3-10]]
-.Initializing the Forms polyfill via declarative initialization
-====
-[source, html]
-----
-<form action="input.html" data-role="form">
-  <!-- Rest of form declaration -->
-</form>
-<script>
-  kendo.init(document.body);
-</script>
-----
-====
-
-The tests in [[EX3-7]] are looking for key pieces of information. First, we check to make sure that our polyfill exists as a widget in the Kendo UI namespace, as +kendo.ui.Form+. Next, we want to ensure that the polyfill widget is available as a jQuery plugin, as illustrated in <<EX3-9>>. To make those tests pass, we can create the initial skeleton of our polyfill in a new file (in +src/+) called +kendo.forms.js+ and add the code in <<EX3-11>>
+With that in mind, the first two failing specs we've added to my project are minor, and easy to fix, but they help lay the foundation for my polyfill. As discussed in Chapter 3, Kendo UI itself exposes it's UI widgets to developers in two ways, and the tests above are designed to exercise that behavior. The tests in [[EX3-7]] are looking for key pieces of information. First, we check to make sure that our polyfill exists as a widget in the Kendo UI namespace, as +kendo.ui.Form+. Next, we want to ensure that the polyfill widget is available as a jQuery plugin, as illustrated in <<EX3-9>>. To make those tests pass, we can create the initial skeleton of our polyfill in a new file (in +src/+) called +kendo.forms.js+ and add the code in <<EX3-11>>, or add the code back in if you already did so in Chapter 3.
 
 [[EX3-11]]
 .Creating the core widget definition for our Kendo UI Forms polyfill
@@ -405,15 +331,13 @@ The tests in [[EX3-7]] are looking for key pieces of information. First, we chec
 ----
 ====
 
-The contents of <<EX3-11>> represent the standard way of creating extended Kendo UI widgets. First, we create a new +Form+ widget by extending the +kendo.ui.Widget+ base type. The name "Form," which I set in the options configuration value is ultimately what's exposed publicly, and is what my two tests are looking for. Finally, I'll "enable" my new polyfill by adding the Form variable to Kendo UI's widget collection via the +kendo.ui.plugin()+ method.
-
-There's a lot more I'll need to add inside of +kendo.forms.js+ before I have a functional polyfill, but the code we've written do far lays the foundation for my library, and it's also enough to make my first tests pass, as you can see in <<EX3-12>>.
+We added a lot more code to this file in Chapter 3 before all was said and done, but this skeleton code we've written so far lays the foundation for my library, and it's also enough to make my first tests pass, as you can see in <<EX3-12>>.
 
 [[EX3-12]]
 .Jasmine running in the browser
 image::images/ch3-ex13.png[]
 
-=== Running Jasmine Tests via Grunt
+==== Running Jasmine Tests via Grunt
 
 So far, we've gotten Jasmine configured for our unit tests, and we've even gotten a couple of failing tests to pass. This is a great start, but all of our work is in the browser, and running our tests requires that we refresh a browser tab to verify. This is probably fine for many projects, but I'd like to be able to execute my tests in both the browser and via the command-line, which will come in handy when I start working with Karma and Travis CI, later.
 
@@ -476,7 +400,7 @@ it('should be able to perform declarative initialization with data attributes', 
 ----
 ====
 
-As I mentioned above, Kendo UI widgets can be declared one of two ways, either using JavaScript, or via +data-role+ declaration and calling +kendo.init+ on a container, which creates widgets for every element inside of that container. The test above calls +kendo.init+ on +document.body+ which will look for every element with a +data-role+ attribute, and initialize that element, accordingly.
+As discussed previously, Kendo UI widgets can be declared one of two ways, either using JavaScript, or via +data-role+ declaration and calling +kendo.init+ on a container, which creates widgets for every element inside of that container. The test above calls +kendo.init+ on +document.body+ which will look for every element with a +data-role+ attribute, and initialize that element, accordingly.
 
 When I first add this test, it will fail, but I can make it pass by adding the following to the +runner.html+ file, just inside the +<body>+ element:
 
@@ -489,7 +413,9 @@ When I first add this test, it will fail, but I can make it pass by adding the f
 ----
 ====
 
-Now, if I rerun my Jasmine tests in the browser, all three will pass. That's nice, but in the spirit of keeping our test options option, let's rerun the +grunt jasmine+ command and see what happens. Spoiler alert: it looks like [[EX3-17]]. That's a failing test. Why did our test fail in my terminal, even though it worked in the browser? The answer lies in the DOM, or lack thereof, that is. When I'm using Jasmine via the console, there is no DOM available for my tests, so in order to leverage the DOM for testing, I need to do a bit of additional set-up. For that, I'll use the https://github.com/velesin/jasmine-jquery[jasmine-jquery] library, which allows me to load HTML files into my specs and execute my tests against them.
+==== Configuring Jasmine for the Browser and the Console
+
+After adding the markup in <<EX3-16> all three of my tests will pass. That's nice, but in the spirit of keeping our test options option, let's rerun the +grunt jasmine+ command and see what happens. Spoiler alert: it looks like [[EX3-17]]. That's a failing test. Why did our test fail in my terminal, even though it worked in the browser? The answer lies in the DOM, or lack thereof, that is. When I'm using Jasmine via the console, there is no DOM available for my tests, so in order to leverage the DOM for testing, I need to do a bit of additional set-up. For that, I'll use the https://github.com/velesin/jasmine-jquery[jasmine-jquery] library, which allows me to load HTML files into my specs and execute my tests against them.
 
 [[EX3-17]]
 .Running Jasmine DOM tests in the console
@@ -527,14 +453,16 @@ it('should be able to perform declarative initialization with data attributes', 
 
 When I re-run +grunt jasmine+ in the console, I should see all green. I can also re-run the tests in my browser, where everything also passes with flying colors. I now have a complete unit test setup that works in the browser and via the console, which is about to come in quite handy!
 
-=== Configuring Cross-Browser Tests with Karma
+=== Automating Cross-Browser Polyfill Testing
 
 Now that we have a good testing setup with Jasmine and Grunt, let's take this party to the next level and add in some cross-browser testing. While automated cross-browser testing might be considered overkill for some types of projects, it's a must when building a polyfill. As you build your polyfill, you'll quickly discover cases where a certain test isn't needed in your everyday development browser because the feature is present, but the feature still needs a good solid test because your polyfill provides capabilities for another browser to leverage. Performing automated testing across several installed browsers can be a quick sanity check to ensure that development of your polyfill is progressing along without a hitch and, thankfully, there are some great tools out there that we can pair with our existing grunt workflow. My tool of choice is Karma, a simple test runner than can call out to all major browsers using test runner plugins.
 
 [NOTE]
 ====
-While automated, cross-browser testing is a great safety net for the polyfill developer, it's no substitute for real, actual testing across browsers, especially those older versions of IE where browser quirks lie in wait. Fear not, however! As I'll share in Chapter 4, there are some great options for performing physical testing of older browsers, even IE 6-8.
+As I discussed in Chapter 3, while automated, cross-browser testing is a great safety net for the polyfill developer, it's no substitute for real, actual testing across browsers, especially those older versions of IE where browser quirks lie in wait.
 ====
+
+=== Configuring Cross-Browser Tests with Karma
 
 To get started with Karma, I'll need to install grunt-karma via npm:
 
@@ -648,6 +576,8 @@ npm install karma-safari-launcher --save-dev
 ----
 ====
 
+==== Making Karma, Jasmine and the Browser Play Nice
+
 Once I've installed those two additional launchers, I should be able to run karma using grunt with the +grunt karma+ command. If I do that, I should see all of my browsers launch, but one of my three initial tests will fail. Can you guess which ones? That's right, the DOM tests. Much as I did for Jasmine in the console, I need to add a path condition for Karma to my +fixtures.js+ file, as shown in <<EX3-35>>.
 
 [[EX3-35]]
@@ -670,7 +600,7 @@ With this additional condition, I'm looking for +context.html+ in my path, which
 .Running cross-browser tests with Karma
 image::images/ch3-ex37.png[]
 
-=== Automate your Polyfill Testing with Grunt and Travis-CI
+==== Automating Polyfill Development with Grunt Tasks
 
 Thus far in this chapter, we've set up a new polyfill project, we've configured npm and grunt for our development workflow, and we've added Jasmine and Karma for unit and cross-browser testing. All of these moving pieces work great alone, but we're now going to bring them together for a killer polyfill development workflow. As mentioned earlier, Grunt gives you the ability to create custom tasks that chain together predefined tasks in interesting ways. One example is the +minify+ task in <<EX3-5>> which automatically runs JSHint, concatenates your source files and then runs uglifyJS to minify them. 
 
@@ -729,6 +659,8 @@ Now, I can run +grunt watch+ before I begin working on my polyfill. As I make ch
 .Developing iteratively with +grunt watch+
 image::images/ch3-ex42.png[]
 
+==== Performing Remote Testing with Travis-CI
+
 Before we wrap up this chapter, there's one final piece of setup I suggest you perform when building a cross-browser polyfill. That is, configuring a CI server to run your tests and provide you with that extra-level sanity check. As I said above, I prefer Travis CI because the service is free for open source projects, and it's dead-simple to configure. In fact, all I need in my project is to add a file called +.travis.yml+ with a few options, as shown in <<EX3-42>>.
 
 [[EX3-42]]
@@ -758,4 +690,4 @@ We've covered a TON of ground in this chapter, and while very little of it has b
 
 In this chapter, I mentioned a lot of third-party and open source technologies that I prefer to use when building polyfills. Some of these might work for you as well, while in other cases you have a personal favorite you like to use. That's ok! All that matters is that you get a good dev and test workflow in place early on, no matter which tools your choose to use.
 
-Now that our development and testing workflow is in place, let's talk about some of the critical ins and outs of building that cross-browser polyfill of yours.
+Now that our development and testing workflow is in place, and we've built a nice cross-browser polyfill, let's take a look at edge cases, performance considerations and finally, how to deploy your polyfill into the wild.
