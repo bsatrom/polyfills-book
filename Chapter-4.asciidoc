@@ -49,13 +49,13 @@ In Chapter 3, I covered initial project setup, including a recommended directory
 
 ==== Configuring npm
 
-To configure nom, I'll run +npm init+ inside my project directory and follow the interactive prompts. You can see the result of running the command in my terminal in <<EX3-2>>. Once done, npm will create a +package.json+ file that looks similar to <<EX3-3>>. While this file isn't strictly required unless you plan to publish your polyfill to npm, it will make it easier to work with Grunt, which we'll set up next. 
+To configure nom, I'll run +npm init+ inside my project directory and follow the interactive prompts. You can see the result of running the command in my terminal in <<EX4-2>>. Once done, npm will create a +package.json+ file that looks similar to <<EX4-3>>. While this file isn't strictly required unless you plan to publish your polyfill to npm, it will make it easier to work with Grunt, which we'll set up next. 
 
-[[EX3-2]]
+[[EX4-2]]
 .Running +npm init+ to configure your package.json file
-image::images/ch3-ex3.png[]
+image::images/ch4-ex3.png[]
 
-[[EX3-3]]
+[[EX4-3]]
 .Sample package.json file
 ====
 [source, js]
@@ -87,7 +87,7 @@ image::images/ch3-ex3.png[]
 Now, let's install Grunt. Before you run the Grunt config step, you'll need to add the following to your 
 +package.json+ and run +npm install+ from the terminal. The settings below will make sure that the Grunt command-line interface is available in your project.
 
-[[EX3-4]]
+[[EX4-4]]
 .Grunt dependencies in package.json
 ====
 [source, js]
@@ -102,9 +102,9 @@ Now, let's install Grunt. Before you run the Grunt config step, you'll need to a
 ----
 ====
 
-Once you've installed Grunt, configuring the tool is a bit more manual. While there are http://gruntjs.com/project-scaffolding[several +grunt-init+ tasks] available for you to use, our project is pretty specific-use, so it's easier if we just start with a very basic gruntfile, which you can pull from <<EX3-5>>. Create a new file at the project root called +gruntfile.js+ and copy the contents below into that new file.
+Once you've installed Grunt, configuring the tool is a bit more manual. While there are http://gruntjs.com/project-scaffolding[several +grunt-init+ tasks] available for you to use, our project is pretty specific-use, so it's easier if we just start with a very basic gruntfile, which you can pull from <<EX4-5>>. Create a new file at the project root called +gruntfile.js+ and copy the contents below into that new file.
 
-[[EX3-5]]
+[[EX4-5]]
 .Starter gruntfile.js for our Polyfill
 ====
 [source, js]
@@ -195,9 +195,9 @@ Testing is critical for a good, "responsible" polyfill, and I recommend that you
 
 To start using Jasmine for my unit tests, I'll create a +lib+ directory inside of my +spec+ directory and place the jasmine bits inside. I'm also going to include the https://github.com/velesin/jasmine-jquery[jasmine-jquery] library, which I'll need in order to automatically execute my tests via grunt. 
 
-Next, I'll create a +runner.html+ file at the root of the +spec+ folder, and I'll populate it with the contents of [[EX3-6]]. Many JavaScript frameworks, Jasmine included, use an html file as their "test runner" by loading up dependencies, the project source and then executing those tests against DOM interactions on the page. On this page, we'll specify all of the CSS and JavaScript dependencies for our polyfill, including jQuery and Kendo UI for widgets and framework features, and then load up our tests via +fixtures.js+. 
+Next, I'll create a +runner.html+ file at the root of the +spec+ folder, and I'll populate it with the contents of [[EX4-6]]. Many JavaScript frameworks, Jasmine included, use an html file as their "test runner" by loading up dependencies, the project source and then executing those tests against DOM interactions on the page. On this page, we'll specify all of the CSS and JavaScript dependencies for our polyfill, including jQuery and Kendo UI for widgets and framework features, and then load up our tests via +fixtures.js+. 
 
-[[EX3-6]]
+[[EX4-6]]
 .Jasmine runner.html file
 ====
 [source, html]
@@ -265,9 +265,9 @@ Next, I'll create a +runner.html+ file at the root of the +spec+ folder, and I'l
 <4> This file contains all of the script-based tests
 ====  
 
-With the runner done, let's create the key file for our testing, +fixtures.js+. [[EX3-7]] contains an initial test file with a couple of tests. You'll notice that Jasmine uses functions like +describe+, +it+ and +expect+, and that my test names are written in narrative form. Because Jasmine is a BDD-style testing framework, you'll hopefully find, as I do, that it's easy to write readable test names and assertions that make sense, not just now, but when you're hunting down regressions later. 
+With the runner done, let's create the key file for our testing, +fixtures.js+. [[EX4-7]] contains an initial test file with a couple of tests. You'll notice that Jasmine uses functions like +describe+, +it+ and +expect+, and that my test names are written in narrative form. Because Jasmine is a BDD-style testing framework, you'll hopefully find, as I do, that it's easy to write readable test names and assertions that make sense, not just now, but when you're hunting down regressions later. 
 
-[[EX3-7]]
+[[EX4-7]]
 .Basic Jasmine fixtures file for our polyfill
 ====
 [source, js]
@@ -292,19 +292,19 @@ describe('Kendo Forms Widget Test Suite', function() {
 ----
 ====
 
-With this setup done, let's go ahead and run these tests in the browser. First, if you're following along and you created the +kendo.forms.js+ source file in Chapter 3, the tests above should pass. That nice, but for the sake of exploration, let's delete everything from that file and re-run our tests. If Jasmine is properly configured, you should see two failing tests, as we do [[EX3-8]]. So we have successfully configured our testing framework. Now, let's go make these tests pass!
+With this setup done, let's go ahead and run these tests in the browser. First, if you're following along and you created the +kendo.forms.js+ source file in Chapter 3, the tests above should pass. That nice, but for the sake of exploration, let's delete everything from that file and re-run our tests. If Jasmine is properly configured, you should see two failing tests, as we do [[EX4-8]]. So we have successfully configured our testing framework. Now, let's go make these tests pass!
 
-[[EX3-8]]
+[[EX4-8]]
 .Jasmine running in the browser
-image::images/ch3-ex9.png[]
+image::images/ch4-ex9.png[]
 
 ==== Red to Green: Making the First Tests Pass
 
 When I start a new project, or add unit tests to an existing project, I like to start small and try to get a few quick win tests under my belt. This is partly because I'm still feeling out functionality in the early stages of a project, but also because I want to see my test suite running and passing as quickly as possible. It's far easier to suss out problems with my test suite setup with a smaller number of tests.
 
-With that in mind, the first two failing specs we've added to my project are minor, and easy to fix, but they help lay the foundation for my polyfill. As discussed in Chapter 3, Kendo UI itself exposes it's UI widgets to developers in two ways, and the tests above are designed to exercise that behavior. The tests in [[EX3-7]] are looking for key pieces of information. First, we check to make sure that our polyfill exists as a widget in the Kendo UI namespace, as +kendo.ui.Form+. Next, we want to ensure that the polyfill widget is available as a jQuery plugin, as illustrated in <<EX3-9>>. To make those tests pass, we can create the initial skeleton of our polyfill in a new file (in +src/+) called +kendo.forms.js+ and add the code in <<EX3-11>>, or add the code back in if you already did so in Chapter 3.
+With that in mind, the first two failing specs we've added to my project are minor, and easy to fix, but they help lay the foundation for my polyfill. As discussed in Chapter 3, Kendo UI itself exposes it's UI widgets to developers in two ways, and the tests above are designed to exercise that behavior. The tests in [[EX4-7]] are looking for key pieces of information. First, we check to make sure that our polyfill exists as a widget in the Kendo UI namespace, as +kendo.ui.Form+. Next, we want to ensure that the polyfill widget is available as a jQuery plugin, as illustrated in <<EX4-9>>. To make those tests pass, we can create the initial skeleton of our polyfill in a new file (in +src/+) called +kendo.forms.js+ and add the code in <<EX4-11>>, or add the code back in if you already did so in Chapter 3.
 
-[[EX3-11]]
+[[EX4-11]]
 .Creating the core widget definition for our Kendo UI Forms polyfill
 ====
 [source, js]
@@ -331,19 +331,19 @@ With that in mind, the first two failing specs we've added to my project are min
 ----
 ====
 
-We added a lot more code to this file in Chapter 3 before all was said and done, but this skeleton code we've written so far lays the foundation for my library, and it's also enough to make my first tests pass, as you can see in <<EX3-12>>.
+We added a lot more code to this file in Chapter 3 before all was said and done, but this skeleton code we've written so far lays the foundation for my library, and it's also enough to make my first tests pass, as you can see in <<EX4-12>>.
 
-[[EX3-12]]
+[[EX4-12]]
 .Jasmine running in the browser
-image::images/ch3-ex13.png[]
+image::images/ch4-ex13.png[]
 
 ==== Running Jasmine Tests via Grunt
 
 So far, we've gotten Jasmine configured for our unit tests, and we've even gotten a couple of failing tests to pass. This is a great start, but all of our work is in the browser, and running our tests requires that we refresh a browser tab to verify. This is probably fine for many projects, but I'd like to be able to execute my tests in both the browser and via the command-line, which will come in handy when I start working with Karma and Travis CI, later.
 
-Thankfully, I'm not alone in my desire for console-based JavaScript testing, and there just so happens to be a Grunt plugin for Jasmine that I can add to my project. First, I'll want to configure jasmine by adding a few lines to my +gruntfile+. I'll add the +grunt-contrib-jasmine+ task declaration to the bottom of the file, like so +grunt.loadNpmTasks('grunt-contrib-jasmine');+. Then, I need to add a jasmine task to the +initConfig+ section of the file, as shown in <<EX3-13>>. This task definition tells Jasmine where to look to find my project source, the specs to run and finally, any 3rd party "vendor" libraries that should also be loaded.
+Thankfully, I'm not alone in my desire for console-based JavaScript testing, and there just so happens to be a Grunt plugin for Jasmine that I can add to my project. First, I'll want to configure jasmine by adding a few lines to my +gruntfile+. I'll add the +grunt-contrib-jasmine+ task declaration to the bottom of the file, like so +grunt.loadNpmTasks('grunt-contrib-jasmine');+. Then, I need to add a jasmine task to the +initConfig+ section of the file, as shown in <<EX4-13>>. This task definition tells Jasmine where to look to find my project source, the specs to run and finally, any 3rd party "vendor" libraries that should also be loaded.
 
-[[EX3-13]]
+[[EX4-13]]
 .Adding a jasmine grunt task
 ====
 [source, js]
@@ -360,14 +360,14 @@ jasmine: {
 ----
 ====
 
-Next, I'll want to install the jasmine grunt plugin via the terminal command +npm install grunt-contrib-jasmine --save-dev+.  Once I've done so, I can run the command +grunt jasmine+ via the console, and I'll get a result that looks like <<EX3-14>>.
+Next, I'll want to install the jasmine grunt plugin via the terminal command +npm install grunt-contrib-jasmine --save-dev+.  Once I've done so, I can run the command +grunt jasmine+ via the console, and I'll get a result that looks like <<EX4-14>>.
 
 [NOTE]
 ====
 The +save-dev+ switch will automatically save the package as a +devDependency+ in your package.json file, ensuring that other devs, and your CI environment can quickly replicate your setup. 
 ====
 
-[[EX3-14]]
+[[EX4-14]]
 .Running jasmine via the console
 ====
 [source, shell]
@@ -387,7 +387,7 @@ Now I've got Jasmine running in the browser, and in the terminal, which is nice!
 
 Let's add our third test, and the first to access the DOM. I'll open +fixtures.js+ back up and add the following test:
 
-[[EX3-15]]
+[[EX4-15]]
 .Testing declarative form initialization
 ====
 [source, js]
@@ -404,7 +404,7 @@ As discussed previously, Kendo UI widgets can be declared one of two ways, eithe
 
 When I first add this test, it will fail, but I can make it pass by adding the following to the +runner.html+ file, just inside the +<body>+ element:
 
-[[EX3-16]]
+[[EX4-16]]
 .Declarative initialization of a Form widget
 ====
 [source, html]
@@ -415,15 +415,15 @@ When I first add this test, it will fail, but I can make it pass by adding the f
 
 ==== Configuring Jasmine for the Browser and the Console
 
-After adding the markup in <<EX3-16> all three of my tests will pass. That's nice, but in the spirit of keeping our test options option, let's rerun the +grunt jasmine+ command and see what happens. Spoiler alert: it looks like [[EX3-17]]. That's a failing test. Why did our test fail in my terminal, even though it worked in the browser? The answer lies in the DOM, or lack thereof, that is. When I'm using Jasmine via the console, there is no DOM available for my tests, so in order to leverage the DOM for testing, I need to do a bit of additional set-up. For that, I'll use the https://github.com/velesin/jasmine-jquery[jasmine-jquery] library, which allows me to load HTML files into my specs and execute my tests against them.
+After adding the markup in <<EX4-16> all three of my tests will pass. That's nice, but in the spirit of keeping our test options option, let's rerun the +grunt jasmine+ command and see what happens. Spoiler alert: it looks like [[EX4-17]]. That's a failing test. Why did our test fail in my terminal, even though it worked in the browser? The answer lies in the DOM, or lack thereof, that is. When I'm using Jasmine via the console, there is no DOM available for my tests, so in order to leverage the DOM for testing, I need to do a bit of additional set-up. For that, I'll use the https://github.com/velesin/jasmine-jquery[jasmine-jquery] library, which allows me to load HTML files into my specs and execute my tests against them.
 
-[[EX3-17]]
+[[EX4-17]]
 .Running Jasmine DOM tests in the console
-image::images/ch3-ex18.png[]
+image::images/ch4-ex18.png[]
 
-First, I'll need to move the form tag from <<EX3-17>> into a standalone HTML file, and I'll place that file in a +spec/javascripts/fixtures/+ directory--the location is a convention jasmine-jquery uses. Then, I need to add the jasmine-jquery fixture loader to my +fixtures.js+ file, so I'll add the following to line 4:
+First, I'll need to move the form tag from <<EX4-17>> into a standalone HTML file, and I'll place that file in a +spec/javascripts/fixtures/+ directory--the location is a convention jasmine-jquery uses. Then, I need to add the jasmine-jquery fixture loader to my +fixtures.js+ file, so I'll add the following to line 4:
 
-[[EX3-18]]
+[[EX4-18]]
 ====
 [source, js]
 ----
@@ -435,9 +435,9 @@ if (document.location.pathname.indexOf('runner.html') > 0) {
 ----
 ====
 
-In order to run jasmine in multiple environments, I do have to add a bit of path manipulation, as you can see in the sample above. If I'm running my tests in the console, the default path (spec/javascripts/fixtures) works for loading fixtures. If I'm in the browser, however, I need to adjust things a little. Finally, in my latest test, <<EX3-15>>, I'll add a call to jasmine-jquery's +load+ method to load up my HTML fixture. The complete test is listed in <<EX3-19>>.
+In order to run jasmine in multiple environments, I do have to add a bit of path manipulation, as you can see in the sample above. If I'm running my tests in the console, the default path (spec/javascripts/fixtures) works for loading fixtures. If I'm in the browser, however, I need to adjust things a little. Finally, in my latest test, <<EX4-15>>, I'll add a call to jasmine-jquery's +load+ method to load up my HTML fixture. The complete test is listed in <<EX4-19>>.
 
-[[EX3-19]]
+[[EX4-19]]
 ====
 [source, js]
 ----
@@ -466,7 +466,7 @@ As I discussed in Chapter 3, while automated, cross-browser testing is a great s
 
 To get started with Karma, I'll need to install grunt-karma via npm:
 
-[[EX3-20]]
+[[EX4-20]]
 ====
 [source, shell]
 ----
@@ -476,7 +476,7 @@ npm install grunt-karma --save-dev
 
 Both Karma and grunt-karma will be installed, and a series of karma-related dependencies will be added to your +package.json+ file. Next, you'll want to add the line +grunt.loadNpmTasks('grunt-karma');+ to the end of the +loadNpmTasks+ calls in your +gruntfile+. Then, I'll add the karma task to my +gruntfile,+ starting with a bit of logic to populate an array of browsers I want to test with, at the top of the file.
 
-[[EX3-21]]
+[[EX4-21]]
 ====
 [source, js]
 ----
@@ -497,7 +497,7 @@ var browsers;
 
 In this snippet, I'm using Nodejs to interrogate with which OS I'm testing. If I'm using OSX ("Darwin"), I'll add Chrome Canary and Safari. If, on the other hand, I'm on Windows, I'll add IE to my browsers array. Next, I'll add a task for Karma to the +grunt.initConfig+ method:
 
-[[EX3-22]]
+[[EX4-22]]
 ====
 [source, js]
 ----
@@ -513,9 +513,9 @@ karma: {
 ----
 ====
 
-Key in this section is the +configFile+ property, which accepts a path to a separate Karma configuration file. Karma has a lot of configuration options, so placing these in a separate file is usually a good approach. The contents of my +karma.conf.js+ can be found in <<EX3-23>>.
+Key in this section is the +configFile+ property, which accepts a path to a separate Karma configuration file. Karma has a lot of configuration options, so placing these in a separate file is usually a good approach. The contents of my +karma.conf.js+ can be found in <<EX4-23>>.
 
-[[EX3-23]]
+[[EX4-23]]
 ====
 [source, js]
 ----
@@ -567,7 +567,7 @@ module.exports = function(config) {
 
 By default, Karma includes the launchers for Firefox and Chrome, so I'll need to install the Opera and Safari launchers to use them:
 
-[[EX3-34]]
+[[EX4-34]]
 ====
 [source, shell]
 ----
@@ -578,9 +578,9 @@ npm install karma-safari-launcher --save-dev
 
 ==== Making Karma, Jasmine and the Browser Play Nice
 
-Once I've installed those two additional launchers, I should be able to run karma using grunt with the +grunt karma+ command. If I do that, I should see all of my browsers launch, but one of my three initial tests will fail. Can you guess which ones? That's right, the DOM tests. Much as I did for Jasmine in the console, I need to add a path condition for Karma to my +fixtures.js+ file, as shown in <<EX3-35>>.
+Once I've installed those two additional launchers, I should be able to run karma using grunt with the +grunt karma+ command. If I do that, I should see all of my browsers launch, but one of my three initial tests will fail. Can you guess which ones? That's right, the DOM tests. Much as I did for Jasmine in the console, I need to add a path condition for Karma to my +fixtures.js+ file, as shown in <<EX4-35>>.
 
-[[EX3-35]]
+[[EX4-35]]
 ====
 [source, js]
 ----
@@ -594,19 +594,19 @@ if (document.location.pathname === '/context.html') {
 ----
 ====
 
-With this additional condition, I'm looking for +context.html+ in my path, which is the context under which Karma runs. If that value is found, I'll adjust the base +fixturesPath+ to account for the location from which Karma loads these files. Otherwise, I'll look for my in-browser +runner.html+, as before. And that's it, I can return to the console and run +grunt karma+ and watch all my tests pass in five browsers, as shown in <<EX3-36>>. It's a thing of beauty!
+With this additional condition, I'm looking for +context.html+ in my path, which is the context under which Karma runs. If that value is found, I'll adjust the base +fixturesPath+ to account for the location from which Karma loads these files. Otherwise, I'll look for my in-browser +runner.html+, as before. And that's it, I can return to the console and run +grunt karma+ and watch all my tests pass in five browsers, as shown in <<EX4-36>>. It's a thing of beauty!
 
-[[EX3-36]]
+[[EX4-36]]
 .Running cross-browser tests with Karma
-image::images/ch3-ex37.png[]
+image::images/ch4-EX47.png[]
 
 ==== Automating Polyfill Development with Grunt Tasks
 
-Thus far in this chapter, we've set up a new polyfill project, we've configured npm and grunt for our development workflow, and we've added Jasmine and Karma for unit and cross-browser testing. All of these moving pieces work great alone, but we're now going to bring them together for a killer polyfill development workflow. As mentioned earlier, Grunt gives you the ability to create custom tasks that chain together predefined tasks in interesting ways. One example is the +minify+ task in <<EX3-5>> which automatically runs JSHint, concatenates your source files and then runs uglifyJS to minify them. 
+Thus far in this chapter, we've set up a new polyfill project, we've configured npm and grunt for our development workflow, and we've added Jasmine and Karma for unit and cross-browser testing. All of these moving pieces work great alone, but we're now going to bring them together for a killer polyfill development workflow. As mentioned earlier, Grunt gives you the ability to create custom tasks that chain together predefined tasks in interesting ways. One example is the +minify+ task in <<EX4-5>> which automatically runs JSHint, concatenates your source files and then runs uglifyJS to minify them. 
 
 Now that we've added some testing, let's add a few more custom tasks that combine our test frameworks with our JSHint and magnification tasks. 
 
-[[EX3-37]]
+[[EX4-37]]
 ====
 [source, js]
 ----
@@ -617,7 +617,7 @@ grunt.registerTask('x-test', ['minify', 'jasmine', 'karma:forms']);
 
 Now, I can run +grunt test+ in the console and have my files linted, minified, combined and tested, or I can run +grunt x-test+, which will do all of the above and then run my tests across all browsers using Karma. And while task customization is nice, what I'd really like to be able to do is execute a grunt command once, and have that command watch my source files for changes. Then, when one of those files is saved, grunt will execute one or more tasks, automatically. Sounds awesome, right? It is, and with grunt, it's built in. All I need is the grunt-contrib-watch plugin, which I can install via npm:
 
-[[EX3-38]]
+[[EX4-38]]
 ====
 [source, shell]
 ----
@@ -627,7 +627,7 @@ npm install grunt-contrib-watch --save-dev
 
 Then I'll include the task via a call to +loadNpmTasks+:
 
-[[EX3-39]]
+[[EX4-39]]
 ====
 [source, js]
 ----
@@ -637,7 +637,7 @@ grunt.loadNpmTasks('grunt-contrib-watch');
 
 And finally, I'll add the task to +grunt.initConfig+:
 
-[[EX3-40]]
+[[EX4-40]]
 ====
 [source, js]
 ----
@@ -653,17 +653,17 @@ watch: {
 ----
 ====
 
-Now, I can run +grunt watch+ before I begin working on my polyfill. As I make changes to important files, grunt will pick those up, lint the files and run my Jasmine tests, automatically, as shown in <<EX3-41>>.
+Now, I can run +grunt watch+ before I begin working on my polyfill. As I make changes to important files, grunt will pick those up, lint the files and run my Jasmine tests, automatically, as shown in <<EX4-41>>.
 
-[[EX3-41]]
+[[EX4-41]]
 .Developing iteratively with +grunt watch+
-image::images/ch3-ex42.png[]
+image::images/ch4-ex42.png[]
 
 ==== Performing Remote Testing with Travis-CI
 
-Before we wrap up this chapter, there's one final piece of setup I suggest you perform when building a cross-browser polyfill. That is, configuring a CI server to run your tests and provide you with that extra-level sanity check. As I said above, I prefer Travis CI because the service is free for open source projects, and it's dead-simple to configure. In fact, all I need in my project is to add a file called +.travis.yml+ with a few options, as shown in <<EX3-42>>.
+Before we wrap up this chapter, there's one final piece of setup I suggest you perform when building a cross-browser polyfill. That is, configuring a CI server to run your tests and provide you with that extra-level sanity check. As I said above, I prefer Travis CI because the service is free for open source projects, and it's dead-simple to configure. In fact, all I need in my project is to add a file called +.travis.yml+ with a few options, as shown in <<EX4-42>>.
 
-[[EX3-42]]
+[[EX4-42]]
 ====
 [souce, yaml]
 ----
@@ -678,11 +678,11 @@ before_script:
 
 This file, which I'll include in my Git repository and push to GitHub, tells Travis that I'm running a NodeJS app, and that I'd like to test using Node v0.10 and v0.8. I've also included the +before_script+ option to ensure that the CI server has the grunt cli installed, which I need to run my tests. Once I've added this file and pushed it to GitHub, I can head over to the http://travis-ci.org[Travis website] and follow their http://about.travis-ci.org/docs/user/getting-started/[Getting Started] guide to configure my project with their service.
 
-Once everything is set up, any time I push a commit to my repo from GitHub to Travis, the service will spin up and run my tests, giving me that extra measure of defense for my polyfill. <<EX3-43>> shows an example status screen for my HTML5 Forms polyfill. Looks like green!
+Once everything is set up, any time I push a commit to my repo from GitHub to Travis, the service will spin up and run my tests, giving me that extra measure of defense for my polyfill. <<EX4-43>> shows an example status screen for my HTML5 Forms polyfill. Looks like green!
 
-[[EX3-43]]
+[[EX4-43]]
 .Developing iteratively with +grunt watch+
-image::images/ch3-ex44.png[]
+image::images/ch4-ex44.png[]
 
 === The Bottom Line: Use What Works for you!
 
