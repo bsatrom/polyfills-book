@@ -56,7 +56,7 @@ If, on the other hand, you're building an "opt-in" polyfill, you'll need to prov
 Kendo UI allows developers to initialize widgets in one of two ways. I can use jQuery-style widget initialization, as illustrated in <<EX3-1>>, or I can use a declarative-style declaration, which hinges on placing +data-role+ attributes on relevant elements in my markup. This approach is illustrated in <<EX3-2>>.
 
 [[EX3-1]]
- .Initializing the Forms polyfill using JavaScript
+.Initializing the Forms polyfill using JavaScript
 ====
 [source, js]
 ----
@@ -247,7 +247,7 @@ image::images/ch3-ex5.png[]
 
 [[EX3-6]]
 .Sample Form as viewed in Safari 6.1
-image::images/ch?-ex6.png[]
+image::images/ch3-ex6.png[]
 
 With my sample form in place, I'll next need to add a reference to my polyfill source file. In <<EX3-3>>, we created the main +kendo.forms.js+ file, which included the skeleton for our Forms widget and polyfill. I'll add a reference to that file in my +form.html+ sample form, and then add a script block or new file reference to activate the sample form, as illustrated in <<EX3-7>>.
 
@@ -605,8 +605,7 @@ if(!isAttributeSupported('placeholder')) {
     var el = $(val);
     // Strip CR and LF from attribute vales, as specified in
     // www.w3.org/TR/html5/forms.html#the-placeholder-attribute
-    var placeholderText = el.attr('placeholder')
-    												.replace(/(\\r\\n|\\n|\\r)/gm,'');
+    var placeholderText = el.attr('placeholder').replace(/(\\r\\n|\\n|\\r)/gm,'');
 
     // When the field loses focus, clear out the placeholder if
     // the input contains a value.
@@ -621,8 +620,7 @@ if(!isAttributeSupported('placeholder')) {
         $el.removeClass('relPlaceholder');
       }
     });
-    el.wrap('<label class="placeholder">' 
-								+ placeholderText + '</label>');
+    el.wrap('<label class="placeholder">' + placeholderText + '</label>');
     el.addClass('placeholder');
   });
 }
