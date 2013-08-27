@@ -602,7 +602,7 @@ With this additional condition, I'm looking for +context.html+ in my path, which
 
 [[EX4-36]]
 .Running cross-browser tests with Karma
-image::images/ch4-EX37.png[]
+image::images/ch4-ex37.png[]
 
 ==== Automating Polyfill Development with Grunt Tasks
 
