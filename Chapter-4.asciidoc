@@ -688,6 +688,8 @@ Once everything is set up, any time I push a commit to my repo from GitHub to Tr
 .Developing iteratively with +grunt watch+
 image::images/ch4-ex44.png[]
 
+Since there are so many moving pieces involved in getting cross-browser testing set-up, I've purposely kept our fixtures file small, covering only three tests. However, the full +kendo-ui-forms+ polyfill contains a much larger test suite, and I suggest you https://github.com/kendo-labs/kendo-ui-forms/blob/master/spec/js/fixtures.js[check it out for yourself] when venturing into testing for your own polyfills.
+
 === The Bottom Line: Use What Works for you!
 
 We've covered a TON of ground in this chapter, and while very little of it has been specific to polyfill development, I felt it was an important one to include because a great polyfill needs tests--and lots of 'em--and a rock-solid development workflow. As you'll see in the next chapter, polyfill development can get hairy at times, especially as you delve into oldIE, so the more rock-solid your tests and your workflow, the better off you'll be as you head down the narrow road.
