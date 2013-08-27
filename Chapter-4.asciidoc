@@ -47,9 +47,9 @@ For my projects, I prefer to use https://travis-ci.org/[Travis], a CI server use
 
 In Chapter 3, I covered initial project setup, including a recommended directory structure and essential files. With your basic project structure in place, your next key workflow steps are to configure +npm+ and +grunt+, which we'll cover in this section.
 
-==== Configuring npm
+==== Configuring +npm+
 
-To configure nom, I'll run +npm init+ inside my project directory and follow the interactive prompts. You can see the result of running the command in my terminal in <<EX4-2>>. Once done, npm will create a +package.json+ file that looks similar to <<EX4-3>>. While this file isn't strictly required unless you plan to publish your polyfill to npm, it will make it easier to work with Grunt, which we'll set up next. 
+To configure npm, I'll run *+npm init+* inside my project directory and follow the interactive prompts. You can see the result of running the command in my terminal in <<EX4-2>>. Once done, npm will create a +package.json+ file that looks similar to <<EX4-3>>. While this file isn't strictly required unless you plan to publish your polyfill to npm, it will make it easier to work with Grunt, which we'll set up next. 
 
 [[EX4-2]]
 .Running +npm init+ to configure your package.json file
@@ -392,7 +392,8 @@ Let's add our third test, and the first to access the DOM. I'll open +fixtures.j
 ====
 [source, js]
 ----
-it('should be able to perform declarative initialization with data attributes', function() {
+it('should be able to perform declarative initialization with data attributes',
+  function() {
   kendo.init(document.body);
 
   expect($('#declarative-form').data('kendoForm')).not.toBe(null);
@@ -528,9 +529,12 @@ module.exports = function(config) {
     files: [
       'lib/js/*.js',
       'dist/js/kendo.forms.min.js',
-      {pattern: 'lib/js/jquery.min.js', watched: false, served: true, included: true},
-      {pattern: 'spec/lib/jasmine-jquery.js', watched: false, served: true, included: true},
-      {pattern: 'src/js/*.js', watched: true, served: true, included: false},
+      {pattern: 'lib/js/jquery.min.js', watched: false, served: true, 
+        included: true},
+      {pattern: 'spec/lib/jasmine-jquery.js', watched: false, served: true, 
+        included: true},
+      {pattern: 'src/js/*.js', watched: true, served: true, 
+        included: false},
       {pattern: 'spec/**/*.html', included: false},
       'spec/javascripts/*.js',
     ],
@@ -545,9 +549,9 @@ module.exports = function(config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-		
-		browsers: ['ChromeCanary'],
-		captureTimeout: 50000,
+
+    browsers: ['ChromeCanary'],
+    captureTimeout: 50000,
     singleRun: true,
     reportSlowerThan: 500,
     preprocessors: {},
@@ -588,7 +592,7 @@ if (document.location.pathname === '/context.html') {
   // Karma is running the test, so change the base
   fixtures.fixturesPath = 'base/spec/javascripts/fixtures';
 } else if (document.location.pathname.indexOf('runner.html') > 0) {
-	// We're running jasmine in the browser
+  // We're running jasmine in the browser
   fixtures.fixturesPath = '../spec/javascripts/fixtures';
 }
 ----
@@ -598,7 +602,7 @@ With this additional condition, I'm looking for +context.html+ in my path, which
 
 [[EX4-36]]
 .Running cross-browser tests with Karma
-image::images/ch4-EX47.png[]
+image::images/ch4-EX37.png[]
 
 ==== Automating Polyfill Development with Grunt Tasks
 
