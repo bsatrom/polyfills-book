@@ -1,7 +1,7 @@
 [[polyfills_chapter_3]]
 == Building Your First Polyfill, Part 1 - Getting Started
 
-Over the last two chapters, we've covered why polyfilling is still important, as well as some principles for responsible polyfill development. Now, let's get practical and start building a polyfill of our own. In this chapter, I'm going to walk through some practical steps for building cross-browser polyfills via an actual, real-world project that I've been working on for the last few months. We won't go through every line of code, or every excruciating detail, but I will introduce you to some practical examples and considerations that you'll want to keep in mind for your own polyfill development, no matter the technology being targeted. We'll start with a discussion on project setup and structure before diving into setting up your API and deciding what you plan to build and not to build. Then we'll explore adding basic features and refactoring your polyfill as you expand scope over time. We'll then wrap up the chapter with a look at manual cross-browser testing, and some tips for streamlining your cross-browser testing workflow. 
+Over the last two chapters, we've covered why polyfilling is still important, as well as some principles for responsible polyfill development. In this chapter, I'm going to walk through some practical steps for building cross-browser polyfills via an actual, real-world project that I've been working on for the last few months. We won't go through every line of code, or every excruciating detail, but I will introduce you to some practical examples and considerations that you'll want to keep in mind for your own polyfill development, no matter the technology being targeted. We'll start with a discussion on project setup and structure before diving into setting up your API and deciding what you plan to build and not to build. Then we'll explore adding basic features and refactoring your polyfill as you expand scope over time. We'll then wrap up the chapter with a look at manual cross-browser testing, and some tips for streamlining your cross-browser testing workflow. 
 
 === The HTML5 Forms Polyfill
 
@@ -19,7 +19,7 @@ In addition to targeting HTML5 Forms with my polyfill, I've chosen to leverage h
 
 Regardless of the technology you choose to target with your polyfill, the two most important choices that you can make early on are: 1) which source control solution you plan to use and 2) what your initial project structure should look like. Sure, you can start with "Source Control by Dropbox" at the beginning and name your polyfill +mylib.js+ if you're just itching to get started, but a little bit of foresight and planning is, in my opinion, just as important to polyfill development as the code you write. As such, I'll use the next few sections to talk about these early considerations.
 
-==== Choosing Source Control Solution
+==== Choosing a Source Control Solution
 
 The first step is to think about how and where you’ll want to host your code so that: a) you’ve got a backup and full project history in case things go wrong; and, b) other developers can find, leverage and contribute to your project. For the first part, you’ll want to choose a source control solution that’s open-source and widely-used. Two examples are http://git-scm.com/[Git] and http://mercurial.selenic.com/[Mercurial]. These two systems have a similar command-line syntax for working with files and code repositories, so some developers will be comfortable working with either. That said, Git is far and away the most popular source control system in use today, so you’ll reach a larger body of potential collaborators by choosing that system.
 
@@ -27,7 +27,7 @@ When paired with a solid code-sharing site, your source control solution also gi
 
 ==== Setting up the Initial Project Structure
 
-Once I've chosen a source control solution, I'm ready to set up my project. I do all of my development in a folder called +Development+ on my Mac, so that's where I'l create a new folder for my polyfill, called +kendo-ui-forms+. Then, I'll open a terminal windows in that directory and initialize a new GitHub repo by running the +git init+ command. Once you’ve initialized your own local git repository, you’ll want to connect it to the remote repository that will be hosting your project online, which you can do by running the following command: +git remote add git@github.com:_yourusername_/_your-project-name_.git+.
+Once I've chosen a source control solution, I'm ready to set up my project. I do all of my development in a folder called +Development+ on my Mac, so that's where I'l create a new folder for my polyfill, called +kendo-ui-forms+. Then, I'll open a terminal window in that directory and initialize a new GitHub repo by running the +git init+ command. Once you’ve initialized your own local git repository, you’ll want to connect it to the remote repository that will be hosting your project online, which you can do by running the following command: +git remote add git@github.com:_yourusername_/_your-project-name_.git+.
 
 With that done, your local and remote repositories will be all set-up and it will be time to add some essential project files. Here's the basic project structure I recommend for most open-source polyfills (assuming a view from the folder root):
 
@@ -157,8 +157,8 @@ To that end, let's create a new HTML page in the +samples/+ folder and call it +
   <fieldset>
     <legend>Essentials</legend>
     <div>
-	    <label for="name">Name</label>
-	    <input type="text" required placeholder="ex. Hugo Reyes" />
+      <label for="name">Name</label>
+      <input type="text" required placeholder="ex. Hugo Reyes" />
     </div>
     <div>
       <label for="email">Email</label>
@@ -178,25 +178,25 @@ To that end, let's create a new HTML page in the +samples/+ folder and call it +
   <fieldset>
     <legend>Dates and Times</legend>
     <div>
-		  <label for="birthday">Birthday</label>
+      <label for="birthday">Birthday</label>
       <input type="date" />
-		</div>
-		<div>
-		  <label for="doctor">Next Doctor's Appointment</label>
+    </div>
+    <div>
+      <label for="doctor">Next Doctor's Appointment</label>
       <input type="datetime-local" value="2012-12-14T19:00"/>
-		</div>
-		<div>
-		  <label for="favMonth">What month is it?</label>
+    </div>
+    <div>
+      <label for="favMonth">What month is it?</label>
       <input type="month" />
-		</div>
-		<div>
-			<label for="favMonth">When is Shark Week?</label>
-    	<input type="week" />
-		</div>
-		<div>
-			<label for="favMonth">What time is Beer O'Clock?</label>
-    	<input type="time" />
-		</div>
+    </div>
+    <div>
+      <label for="favMonth">When is Shark Week?</label>
+      <input type="week" />
+    </div>
+    <div>
+      <label for="favMonth">What time is Beer O'Clock?</label>
+      <input type="time" />
+    </div>
   </fieldset>
   <fieldset>
     <legend>Other Stuff</legend>
@@ -204,16 +204,16 @@ To that end, let's create a new HTML page in the +samples/+ folder and call it +
       <label for="age">Age</label>
       <input type="number" min=13 max=128 required placeholder="13 - 128" />
     </div>
-		<div>
+    <div>
       <label for="color">Favorite Color</label>
       <input type="color" value="#fd49eb" />
     </div>
-		<div>
-		  <label for="GPA">College GPA</label>
+    <div>
+      <label for="GPA">College GPA</label>
       <input type="range" min=0.0 max=4.0 value=3.0 step=0.25 /><span id="rangeValue"></span>
-		</div>
-		<div>
-		  <label for="browser">Favorite Browser</label>
+    </div>
+    <div>
+      <label for="browser">Favorite Browser</label>
       <input type="text" list="browsers" />
       <datalist id="browsers">
         <option value="Chrome">
@@ -223,10 +223,10 @@ To that end, let's create a new HTML page in the +samples/+ folder and call it +
         <option value="Safari">
       </datalist>
     </div>
-		<div>
-		  <label for="picture">Recent Photo</label>
-			<input type="file" />
-	  </div>
+    <div>
+      <label for="picture">Recent Photo</label>
+      <input type="file" />
+    </div>
   </fieldset>
   <hr />
   <div>
@@ -235,7 +235,7 @@ To that end, let's create a new HTML page in the +samples/+ folder and call it +
     </div>
     <br />
     <input type="submit" value="Submit this mess!" />
-		<input type="submit" formnovalidate value="Save for later" />
+    <input type="submit" formnovalidate value="Save for later" />
   </div>
 </form>
 ----
@@ -294,7 +294,7 @@ Of course, there's a catch. As it happens, if you view the sample page in a brow
 
 [NOTE]
 ====
-_Feature detection_ is the practice of executing code against the browser for the purpose of determining whether that browser supports a given feature or not. Feature detection is most often performed by executing JavaScript that checks for the existence of a property in a global browser object (for instance +geolocation in navigator+ tests for the presence of the +gelocation+ object, and thus, Geolocation support, on the global +navigator+ object) or via various other tests and checks in more complex cases. Feature detection is considered superior to the classical practice of _Browser or User-Agent Sniffing_ because, rather than making wholesale decisions about which features to provide to a user based on the browser they're using, you can enable or disable functionality at the feature level, based on support, regardless of the browser in use.
+_Feature detection_ is the practice of executing code against the browser for the purpose of determining whether that browser supports a given feature or not. The practice is considered superior to the classical practice of _Browser or User-Agent Sniffing_ because, rather than making wholesale decisions about which features to provide to a user based on the browser they're using, you can enable or disable functionality at the feature level, based on support, regardless of the browser in use.
 ====
 
 When building a cross-browser polyfill, you'll need to consider how you wish to approach feature detection for your library. You essentially have two choices:
@@ -677,7 +677,7 @@ In addition to testing with your own browsers, and testing oldIE with VMs, there
 
 Another great option for cross-browser testing is http://ci.testling.com/[Testling], a CI server that tests your code across browsers each time you push to your remote repo. Testling requires some form of automated unit test suite, but I consider this to be a plus because automated testing across the 18 versions Testling supports is far more ideal than manual tests, in my opinion. We'll discuss setting up unit and cross-browser tests in the next chapter.
 
-=== Conclusion
+=== We're Just Getting Started!
 
 In this chapter, we covered the basics of getting your polyfill project setup, and we also added basic features, did a simple refactor to improve polyfill maintenance, and we even added support for the +placeholder+ forms attribute in oldIE. Congratulations, you've come a long way already, and I hope you've learned a thing or two about putting those principles of responsible polyfill development into practice.
 
