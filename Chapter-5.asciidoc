@@ -1,9 +1,55 @@
 [[polyfills_chapter_5]]
-== Building Your First Polyfill, Part 3 - Edge Cases, Performance and Publication
-
-=== Detecting the Undetectables
-- and dealing with extreme edge-case features
+== Building Your First Polyfill, Part 3 - Edge Cases and Performance
 
 === Building for Performance
 
-=== Publishing your Polyfill
+- Reiterate why performance matters for polyfills
+
+==== Setting up a Performance Baseline
+
+- setting up jsPerf Tests
+- baselineing to native
+- Running JSPerf Tests across browsers
+- Automating jSPerf testing?
+
+==== The First Perf Tweak: Caching Objects
+
+- make the change
+- add a scenario to jsPerf
+- show the performance gain
+
+==== The Third Perf Tweak: Running Feature Detects only once
+
+- make the change
+- add a scenario to jsPerf
+- show the performance gain
+
+==== The Second Perf Tweak: Critical Ordering of Arguments
+
+- make the change
+- add a scenario to jsPerf
+- show the performance gain
+
+==== The Final Result
+
+- show how our improvements compare to native performance
+
+=== Detecting the Undetectables
+- Modernizr's canonical https://github.com/Modernizr/Modernizr/wiki/Undetectables[Undetectables list].
+- Strategies for dealing with undetectable cases
+
+==== Undetectable Cases for HTML5 Forms
+
+- For Forms, we can't detect the webforms UI, only constraint validation.
+- Date/time input types contain some quirks (http://caniuse.com/#search=datetime)
+	- Safari contains date-formatted text fields, but no calendar widget (still reports as text)
+
+==== Dealing with Forms in Mobile Browsers
+
+- Maybe talk mobile here, how I don't want to upgrade fields in iOS or Android 4 and how to deal with that?
+- UA sniffing of mobile browsers
+
+==== Dealing with Edge Cases
+
+- Talk about things that pop up when we start doing lots of cross-browser testing (esp in IE)
+- IE-specific errors for testing input types (cannot set IE)
