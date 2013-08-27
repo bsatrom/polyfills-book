@@ -49,7 +49,7 @@
 - Maybe talk mobile here, how I don't want to upgrade fields in iOS or Android 4 and how to deal with that?
 - UA sniffing of mobile browsers
 
-==== Dealing with Edge Cases
+=== Dealing with Browser-Specific Edge-Cases
 
 - Talk about things that pop up when we start doing lots of cross-browser testing (esp in IE)
 - IE-specific errors for testing input types (cannot set IE)
