@@ -1,8 +1,6 @@
 [[polyfills_chapter_1]]
 == The Current State of Web Polyfills
 
-If you play a game of word association with a room full of front-end developers, _polyfill_ will no-doubt receive mention from more than a few participants. This word, traditionally a synonym for _fallback_, _spackle_ or _patch_--unfamiliar to many developers until just a few years ago--has become a staple of conversations about modern and open web technologies. And while polyfilling has traditionally functioned as a practice for delivering modern features to non-modern browsers (_oldIE_, meaning IE 6-8, is increasingly a synonym for this term), the concept has expanded over the last few years to include the addition of new and experimental platform features to _all browsers_, including the newest and most cutting-edge.
-
 Like many things in the world of technology, the practice of polyfilling is far older than its name. And even though the term itself is a recent addition to the web platform cannon, as long as we've had multiple browsers with varying and inconsistent implementations of web platform features--which is to say, always--we've had the practice of polyfilling in one form or another. Every developer who mucks with the string prototype to add a +trim()+ function for oldIE is creating a polyfill, as is the developer who lovingly adds a home-grown +window.addEventListner()+ function to IE 8 in the hopes of simplifying her event management code. As a practice, polyfilling has been around the block a few times, but its naming coincides with a time in which its use on the web exploded: the advent of HTML5.
 
 === Polyfilling: Past, Present and Future
