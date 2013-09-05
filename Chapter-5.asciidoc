@@ -204,19 +204,332 @@ So far, in this section, we've avoided executing unnecessary code by ensuring th
 
 ==== Iterate Until You're Happy, Then Iterate Some More
 
+The final strategy to keep your library performing well under the watchful eyes of consuming devs is to iterate, test and iterate again. In essence, this is a bit of a hunt and peck exercise, where I'll look for micro- and macro-optimizations in my library, make changes and then test those against the last version, using JSPerf, of course. Some changes will make no difference in the performance of my library, while others will make a noticeable difference. Some might even harm performance, innocent as they may seem.
+
+There's no science to this process, unfortunately, so I can't give you a bunch of tried and true tweaks that can be made to every library under the sun. I can, however, show you a couple of tweaks I made to my HTML5 Forms Polyfill to give you an idea of what minor and major improvements might look like. Beyond these, your best bet is to pay attention to JavaScript "best practices," as well as proven practices of any libraries or frameworks you're utilizing. "Best practices" are often named as such because they promote maintenance, readability of code and good performance, so you'll benefit from these even if they don't show big jumps in your performance tests.
+
+Before we proceed with the next few performance tweaks, I want to share code samples for the "complete" HTML5 Forms polyfill. Thus far, I've only included snippets for three new input types. However, to properly show the impact of the next couple of refactors, we need to look at the complete source. In the production version of my polyfill, the source is broken into three modules, or files, that I concatenate during my build process. Those files are:
+
+. +kendo.forms.types.js+ - Contains all of the input types supported by my polyfill, and the logic used to "upgrade" each to use a Kendo UI widget. The full source of this file can be viewed in <<EX5-5>>.
+. +kendo.forms.features.js+ - Feature detection tests for my polyfill. The full source of this file can be viewed in <<EX5-6>>.
+. +kendo.forms.js+ - The main source file for my polyfill. Contains widget initialization code and depends on +kendo.forms.types.js+ and +kendo.forms.features.js+. The full source of this file can be viewed in <<EX5-7>>.
+
+[[EX5-5]]
+.Contents of +kendo.forms.types.js+
+====
+[source, js]
+----
+(function (kendo) {
+	kendo.forms = kendo.forms || {};
+
+	var typeUpgrades = [
+		{
+			type: 'color',
+			upgrade: function(index, val) {
+				$(val).kendoColorPicker({ palette: 'basic' });
+			}
+		},
+		{
+			type: 'number',
+			upgrade: function(index, val) {
+				$(val).kendoNumericTextBox();
+			}
+		},
+		{
+			type: 'range',
+			upgrade: function(index, val) {
+				$(val).kendoSlider({
+					showButtons: false,
+					tickPlacement: 'none'
+				});
+			}
+		},
+		{
+			type: 'file',
+			upgrade: function(index, val) {
+				$(val).kendoUpload();
+			}
+		},
+		{
+			type: 'datetime',
+			upgrade: dateTimeUpgrade
+		},
+		{
+			type: 'datetime-local',
+			upgrade: dateTimeUpgrade
+		},
+		{
+			type: 'time',
+			upgrade: function(index, val) {
+				var input = $(val),
+					dummyDate = '2013-10-04T';
+
+				input.kendoTimePicker({
+					value: input.val().length > 0 ? new Date(dummyDate + input.val())
+						: null,
+					min: input.attr('min') ? new Date(dummyDate + input.attr('min'))
+						: new Date(2049, 0, 1, 0, 0, 0),
+					max: input.attr('max') ? new Date(dummyDate + input.attr('max'))
+						: new Date(2099, 11, 31, 0, 0, 0),
+					// Step attribute is seconds, interval in minute
+					interval: input.attr('step') ?
+						Math.round(parseInt(input.attr('step'), 10)/60) : 30
+				});
+			}
+		},
+		{
+			type: 'month',
+			upgrade: function(index, val) {
+				var input = $(val),
+					value = convertMonthPartToDate(input.val()),
+					min = convertMonthPartToDate(input.attr('min')),
+					max = convertMonthPartToDate(input.attr('max'));
+					
+				input.kendoDatePicker({
+					// Set the start and depth properties to year, which means 
+					// that only month values are displayed.
+					start: 'year',
+					depth: 'year',
+					// If the conversion returned a NaN, use the default values
+					value: isNaN(value) ? null : new Date(value),
+					min: isNaN(min) ? new Date(1900, 0, 1) : new Date(min),
+					max: isNaN(max) ? new Date(2099, 11, 31) : new Date(max)
+				});
+			}
+		},
+		{
+			type: 'week',
+			upgrade: function(index, val) {
+				var input = $(val),
+					value = getDateFromWeekString(input.val()),
+					min = getDateFromWeekString(input.attr('min')),
+					max = getDateFromWeekString(input.attr('max'));
+
+				input.kendoDatePicker({
+					// Set the start and depth properties to month, which means 
+					// that only day/week values are displayed.
+					depth: 'month',
+					// If the conversion returned a null date, use the default values
+					value: value,
+					min: min === null ? new Date(1900, 0, 1) : min,
+					max: max === null ? new Date(2099, 11, 31) : max
+				});
+			}
+		},
+		{
+			type: 'date',
+			upgrade: function(index, val) {
+				var input = $(val);
+				var defaults = getDateTimeDefaults(input);
+				input.kendoDatePicker(defaults);
+			}
+		}
+	];
+
+	function convertMonthPartToDate(val) {
+		// Add dummy day of month for valid date parsing
+		val = val + '-' + new Date().getDate();
+		return Date.parse(val);
+	}
+
+	function getDateFromWeekString(weekString) {
+		var week, year,
+			dateParts = weekString.split('-');
+
+		if (dateParts.length < 2) {
+			return null;
+		}
+
+		year = dateParts[0];
+		week = dateParts[1].replace(/w/gi, '');
+
+		if (isNaN(parseInt(week, 10)) || isNaN(parseInt(year, 10))) {
+			return null;
+		}
+
+		// Jan 1 + 7 days per week
+    var day = (1 + (week - 1) * 7);
+    return new Date(year, 0, day);
+	}
+
+	function dateTimeUpgrade(index, val) {
+		var input = $(val);
+
+		// Step attribute is seconds, interval in minute
+		var defaults = getDateTimeDefaults(input);
+		defaults.interval = input.attr('step') ?
+			Math.round(parseInt(input.attr('step'), 10)/60) : 30;
+		input.kendoDateTimePicker(defaults);
+	}
+
+	function getDateTimeDefaults(input) {
+		return {
+			value: input.val().length > 0 ? new Date(input.val()) : null,
+			min: input.attr('min') ? new Date(input.attr('min'))
+				: new Date(1900, 0, 1),
+			max: input.attr('max') ? new Date(input.attr('max'))
+				: new Date(2099, 11, 31)
+		};
+	}
+
+	kendo.forms.types = typeUpgrades;
+} (kendo));
+----
+====
+
+[[EX5-6]]
+.Contents of +kendo.forms.features.js+
+====
+[source, js]
+----
+(function (kendo) {
+	kendo.forms = kendo.forms || {};
+
+	function detectFormTypeSupport(type) {
+		var input = document.createElement('input');
+		input.setAttribute('type', type);
+		return input.type !== 'text';
+	}
+
+	function detectDateTimeFields(type) {
+		var dummyVal = ':(';
+
+		var i = document.createElement('input');
+		i.setAttribute('type', type);
+		// Credit to Mike Taylor //gist.github.com/miketaylr/310734
+		i.value = dummyVal;
+		return (i.value !== dummyVal);
+	}
+
+	var featureDetects = {
+		color: detectFormTypeSupport('color'),
+		number: detectFormTypeSupport('number'),
+		range: detectFormTypeSupport('range'),
+		file: detectFormTypeSupport('file'),
+		datetime: detectDateTimeFields('datetime'),
+		datetime_local: detectFormTypeSupport('datetime-local'),
+		time: detectFormTypeSupport('time'),
+		month: detectFormTypeSupport('month'),
+		week: detectFormTypeSupport('week'),
+		date: detectFormTypeSupport('date'),
+		placeholder: (function() {
+			return 'placeholder' in document.createElement('input') &&
+				'placeholder' in document.createElement('textarea');
+		}())
+	};
+
+	kendo.forms.features = featureDetects;
+} (kendo));
+----
+====
+
+[[EX5-7]]
+.Contents of +kendo.forms.js+
+====
+[source, js]
+----
+(function($, kendo) {
+	var ui = kendo.ui,
+		Widget = ui.Widget,
+		typeUpgrades = kendo.forms.types;
+
+	var Form = Widget.extend({
+		init: function(element, options) {
+			var that = this;
+			var form = $(element);
+			var i, len;
+
+			var upgradeFormType = function(type, callback) {
+				var modType = type.replace(/-/g,'_');
+
+				if (!kendo.forms.features[modType] || that.options.alwaysUseWidgets) {
+					form.find('input[type=' + type + ']').each(callback);
+				}
+			};
+
+			// base call to widget initialization
+			Widget.fn.init.call(this, element, options);
+
+			if (that.options.styleInputs) {
+				form.find('input, button').each(function(index, val) {
+					// Add the k-input class to each form element (or 
+					// k-button for buttons), providing Kendo UI styling 
+					// to all elements, not just those the widget will transform.
+					var el = $(val);
+
+					if (val.type === 'button' ||
+						val.type === 'submit' ||
+						val.type === 'reset') {
+						el.addClass('k-button');
+					} else {
+						el.addClass('k-input');
+					}
+				});
+			}
+
+			// Add basic support for form types defined in the typeUpgrades array
+			for (i = 0, len = typeUpgrades.length; i < len; i++) {
+				var typeObj = typeUpgrades[i];
+				upgradeFormType(typeObj.type, typeObj.upgrade);
+			}
+
+			// Add placeholder support if not provided by the browser
+			if(!kendo.forms.features.placeholder) {
+				form.find('[placeholder]').each(function(index, val) {
+					var el = $(val);
+					// Strip CR and LF from attribute vales, as specified in
+          // www.w3.org/TR/html5/forms.html#the-placeholder-attribute
+          var placeholderText = el.attr('placeholder')
+            .replace(/(\\r\\n|\\n|\\r)/gm,'');
+
+					// When the field loses focus, clear out the placeholder if
+					// the input contains a value.
+					el.on('blur', function() {
+						var $el = $(this);
+						var labelNode = this.previousSibling;
+						if (this.value) {
+							labelNode.nodeValue = '';
+							$el.addClass('relPlaceholder');
+						} else if (labelNode.nodeValue !== placeholderText) {
+							labelNode.nodeValue = placeholderText;
+							$el.removeClass('relPlaceholder');
+						}
+					});
+					el.wrap('<label class="placeholder">' + placeholderText + '</label>');
+					el.addClass('placeholder');
+				});
+			}
+		},
+
+		options: {
+			// the name is what it will appear in the kendo namespace (kendo.ui.Form).
+			// The jQuery plugin would be jQuery.fn.kendoForm.
+			name: 'Form',
+			alwaysUseWidgets: false,
+			styleInputs: true
+		}
+	});
+
+	ui.plugin(Form);
+} (jQuery, kendo));
+----
+====
+
+As we go go through the next three performance tweaks, we'll make minor and major changes to the source above. Let's take a look first at an easy change.
+
 ===== The Second Perf Tweak: Caching DOM Elements
 
 - make the change
 - add a scenario to jsPerf
 - show the performance gain
 
-==== The Third Perf Tweak: Running Feature Detects only once
+==== The Third Perf Tweak: Ordering of Arguments
 
 - make the change
 - add a scenario to jsPerf
 - show the performance gain
 
-==== The Fourth Perf Tweak: Critical Ordering of Arguments
+==== The Fourth Perf Tweak: Minimizing Loops
 
 - make the change
 - add a scenario to jsPerf
