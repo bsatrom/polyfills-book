@@ -540,9 +540,9 @@ Further down the sample, you'll notice that I then access this variable three ad
 
 [[EX5-8]]
 .Forms polyfill refactored to cache form inputs
-----
-[source, js]
 ====
+[source, js]
+----
 (function($, kendo) {
 	var ui = kendo.ui,
 		Widget = ui.Widget,
