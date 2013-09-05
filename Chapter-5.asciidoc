@@ -515,31 +515,425 @@ Before we proceed with the next few performance tweaks, I want to share code sam
 ----
 ====
 
-As we go go through the next three performance tweaks, we'll make minor and major changes to the source above. Let's take a look first at an easy change.
+As we go go through the next three performance tweaks, we'll make minor and major changes to the source above. Once we're done with all three, I'll create another JSPerf test to compare each change so that we can measure the relative impact to performance. Let's take a look first at an easy change.
 
 ===== The Second Perf Tweak: Caching DOM Elements
 
-- make the change
-- add a scenario to jsPerf
-- show the performance gain
+As you probably know, accessing and mutating the DOM is one of the most expensive operations you can make from JavaScript. Whether you're using a library like jQuery or a raw DOM selector method like +getElementById+ or +querySelector+, selecting elements from your page is a memory-hogging thread-blocking process that you want to perform with caution. This is not to say, of course, that you should _avoid_ interacting with the DOM, because that would be silly. Rather, you should keep this reality in mind as you build your polyfills and do your best to minimize DOM interactions, as much as possible. 
+
+While there are many ways to minimize DOM interactions in our JavaScript apps and polyfills, the two most common "best practices" are:
+
+. Minimize DOM "reads" by caching the result of selection operations into local variables.
+. Minimize DOM "writes" by batching mutation operations together.
+
+As, an example of the the batching approach, let's assume that I'm iterating over some collection of values in JavaScript and building up a HTML list (+<ul>+ or +<li>+). Instead of appending each row to my list, one row at a time, a batching approach would lead me to build up the entire list in a string or DOM +DocumentFragment+ and append the entire collection to the list container a single time. With this approach, I'm mutating the DOM--and triggering the browser's expensive layout, paint and render operations--a single time, instead of once for each list item.
+
+Chances are, if you've been doing front-end work for a while, this approach isn't news to you. We know that DOM writes are slow, and we take necessary precautions to avoid them. DOM reads, on the other hand, are a bit less worrisome, but still worth minimizing. As such, we address these by creating local variables for the result of DOM reads and operate on these variables when we need to access page elements. 
+
+An example of this element caching approach with jQuery can be seen in <<EX5-7>>. On line 10, you'll see the following line:
+
++var form = $(element);+  
+
+In this case, +element+ represents the +<form>+ that I'm calling the Kendo UI Widget constructor on (+new kendoForm()+). The jQuery method gives me the +<form>+ element, which I then assign to the +form+ variable. 
+
+Further down the sample, you'll notice that I then access this variable three additional times, each time calling +form.find+ to further refine the list. In this case, even though the form itself is cached, jQuery has to return to the DOM to give me the collection of elements that match my +find+ selector. Since all of my +find+ operations are meant to operate on HTML input elements, I can make my cached variable a bit more targeted, which I've done in <<EX5-8>>:
+
+[[EX5-8]]
+.Forms polyfill refactored to cache form inputs
+====
+(function($, kendo) {
+	var ui = kendo.ui,
+		Widget = ui.Widget,
+		typeUpgrades = kendo.forms.types;
+
+	var Form = Widget.extend({
+		init: function(element, options) {
+			var that = this;
+			var inputs = $(element).find('input, button'); <1>
+			var i, len;
+
+			var upgradeFormType = function(type, callback) {
+				// replace dash with underscore for features object lookup
+				var modType = type.replace(/-/g,'_');
+
+				if (!kendo.forms.features[modType] || that.options.alwaysUseWidgets) {
+          inputs.filter('input[type=' + type + ']').each(callback); <2>
+				}
+			};
+
+			// base call to widget initialization
+			Widget.fn.init.call(this, element, options);
+
+			if (that.options.styleInputs) {
+        inputs.each(function(index, val) { <3>
+					// Add the k-input class to each form element (or 
+					// k-button for buttons), providing Kendo UI styling 
+					// to all elements, not just those the widget will transform.
+					var el = $(val);
+
+					if (val.type === 'button' ||
+						val.type === 'submit' ||
+						val.type === 'reset') {
+						el.addClass('k-button');
+					} else {
+						el.addClass('k-input');
+					}
+				});
+			}
+
+			// Add basic support for form types defined in the typeUpgrades array
+			for (i = 0, len = typeUpgrades.length; i < len; i++) {
+				var typeObj = typeUpgrades[i];
+				upgradeFormType(typeObj.type, typeObj.upgrade);
+			}
+
+			// Add placeholder support if not provided by the browser
+			if(!kendo.forms.features.placeholder) {
+        inputs.filter('[placeholder]').each(function(index, val) {
+					var el = $(val);
+					// Strip CR and LF from attribute vales, as specified in
+          // www.w3.org/TR/html5/forms.html#the-placeholder-attribute
+          var placeholderText = el.attr('placeholder')
+            .replace(/(\\r\\n|\\n|\\r)/gm,'');
+
+					// When the field loses focus, clear out the placeholder if
+					// the input contains a value.
+					el.on('blur', function() {
+						var $el = $(this);
+						var labelNode = this.previousSibling;
+						if (this.value) {
+							labelNode.nodeValue = '';
+							$el.addClass('relPlaceholder');
+						} else if (labelNode.nodeValue !== placeholderText) {
+							labelNode.nodeValue = placeholderText;
+							$el.removeClass('relPlaceholder');
+						}
+					});
+					el.wrap('<label class="placeholder">' + placeholderText + '</label>');
+					el.addClass('placeholder');
+				});
+			}
+		},
+
+		options: {
+			// the name is what it will appear in the kendo namespace (kendo.ui.Form).
+			// The jQuery plugin would be jQuery.fn.kendoForm.
+			name: 'Form',
+			alwaysUseWidgets: false,
+			styleInputs: true
+		}
+	});
+
+	ui.plugin(Form);
+} (jQuery, kendo));
+----
+// code here
+----
+<1> Cache the collection of +<input>+ and +<button>+ elements in my form
+<2> Use jQuery's +filter+ method to get only the inputs that match the current type
+<3> No need to filter here since the full collection is already cached.
+====
+
+Instead of caching the entire form in a local variable, I cache all of the +<input>+ and +<button>+ elements, since those are the only parts of the form I'm interested in, at this point. With that new collection in hand, I'll use the collection itself to upgrade each element, and use jQuery's +filter+ method to refine the collection when I'm operating on a smaller subset. It's a small change, but it cleans up the DOM reads for my polyfill and makes things a bit more readable, to boot. Before we test the performance impact of this change, let's make a few more changes.
 
 ==== The Third Perf Tweak: Ordering of Arguments
 
-- make the change
-- add a scenario to jsPerf
-- show the performance gain
+The next change I'm going to make is a very small one, but it harkens back to the idea of avoiding unnecessary code paths as a way to get micro-optimizations in our code. Many times, these unneeded paths can be found in if statements that asses one or more values before taking action. For example, in <<EX5-7>>, you'll notice the following +if+ statement on line 17:
+
++if (!kendo.forms.features[modType] || that.options.alwaysUseWidgets)+
+
+This statement determines is the current input type (i.e. 'number') is supported by the user's browser _or_ if the developer passed the +alwaysUseWidgets+ option into the widget constructor. If either is true, we upgrade all instances of that input type on the form.
+
+When dealing with multi-conditioned +if+ statements, it's always a good idea to consider how the order of arguments affects code execution. For instance, since the feature tests appear first, these will always be evaluated. If, however, I re-order these arguments, I can ensure that my feature test object will only be accessed if +alwaysUseWidgets+ is +false+:
+
++if (that.options.alwaysUseWidgets || !kendo.forms.features[modType])+
+
+Had I not already refactored my feature tests to run once during script evaluation, this would likely be a noticeable performance gain. As it stands now, each feature is returning a simple boolean so I don't expect to see any difference. Even still, I'm making this change to "future proof" my polyfill a bit. The +alwaysUseWidgets+ option will always be a simple boolean, but my feature tests could grow and become more complex as my library matures. Making this changes will keep me from introducing unintended performance costs down the road.
+
+While the example above is a simple case for ordering arguments, It's always a good idea to order your simple boolean first in your if statements. When performing an or (+||+) evaluation, this will ensure that the right-hand arguments aren't assessed unless the simple boolean is false. On the other hand, when performing an and (+&&+) evaluation, right-hand arguments aren't assessed unless the simple boolean is true. In both cases, your more complex method-call booleans won't be evaluated unless their values are needed to fulfill or reject the condition in question.
 
 ==== The Fourth Perf Tweak: Minimizing Loops
 
-- make the change
-- add a scenario to jsPerf
-- show the performance gain
+The final performance change I plan to make to my polyfill is a larger one, and is also a change that I expect to impact performance quite a bit. If you take a look at <<EX5-7>> a final time, you'll notice that I'm looping (+for+ or jQuery's +each+) no less than four times during widget initialization. This can't be the best approach, so I'm going to refactor my polyfill to loop as little as possible. 
+
+In <<EX5-7>> I'm looping over the +typeUpgrades+ collection defined in +kendo.forms.types+, and then separately looping over each input that matches that type. What's more, I'm looping over each input to determine if it needs separate widget styling (provided via CSS classes that Kendo UI uses to style "vanilla" elements) and finally, looping over each element that contains a +placeholder+ attribute and upgrading those as well, if not supported by the browser.
+
+As we built up our polyfill in Chapter 3, each of these additions made sense, and they do fulfill the functional requirements of my library. And yet, it all seems so inefficient. This inefficiency was likely introduced as a result of my initial decision to loop first over input types and second over elements. At the time, this made sense because it allowed me to simultaneously upgrade all of the "color," "number" or "datetime" inputs on the form. But as I add other features, it becomes clear that my library will need to operate on each input individually, upgrading its type, dealing with placeholder support and even adding validation once I expand my library with that functionality.
+
+To shift from several loops to a single loop, I needed to move a few things around. For starers, my +kendo.forms.types+ object needed to change. As illustrated in <<EX5-9>>, I've changed the object from an array of type objects, to a single object of key-value pairs. This will make it much easier for me to work with each type. You'll also notice that I moved some of the "upgrade" logic for vanilla inputs and buttons out of my main file and into this object, as well.
+
+[[EX5-9]]
+.Refactored +kendo.forms.types+ source
+====
+[source, js]
+----
+(function (kendo) {
+	kendo.forms = kendo.forms || {};
+
+	var typeUpgrades = {
+    text: function(val) {
+      $(val).addClass('k-input');
+    },
+    button: upgradeButton,
+    submit: upgradeButton,
+    reset: upgradeButton,
+    color: function(val) {
+      $(val).kendoColorPicker({ palette: 'basic' });
+    },
+    number: function(val) {
+      $(val).kendoNumericTextBox();
+    },
+    range: function(val) {
+      $(val).kendoSlider({
+        showButtons: false,
+        tickPlacement: 'none'
+      });
+    },
+    file: function(val) {
+      $(val).kendoUpload();
+    },
+    datetime: dateTimeUpgrade,
+    'datetime-local': dateTimeUpgrade,
+    time: function(val) {
+      var input = $(val),
+        dummyDate = '2013-10-04T';
+
+      input.kendoTimePicker({
+        value: input.val().length > 0 ? new Date(dummyDate + input.val())
+          : null,
+        min: input.attr('min') ? new Date(dummyDate + input.attr('min'))
+          : new Date(2049, 0, 1, 0, 0, 0),
+        max: input.attr('max') ? new Date(dummyDate + input.attr('max'))
+          : new Date(2099, 11, 31, 0, 0, 0),
+        // Step attribute is seconds, interval in minute
+        interval: input.attr('step') ?
+          Math.round(parseInt(input.attr('step'), 10)/60) : 30
+      });
+    },
+    month: function(val) {
+      var input = $(val),
+        value = convertMonthPartToDate(input.val()),
+        min = convertMonthPartToDate(input.attr('min')),
+        max = convertMonthPartToDate(input.attr('max'));
+
+      input.kendoDatePicker({
+        // Set the start and depth properties to year, which means
+        // that only month values are displayed.
+        start: 'year',
+        depth: 'year',
+        // If the conversion returned a NaN, use the default values
+        value: isNaN(value) ? null : new Date(value),
+        min: isNaN(min) ? new Date(1900, 0, 1) : new Date(min),
+        max: isNaN(max) ? new Date(2099, 11, 31) : new Date(max)
+      });
+    },
+    week: function(val) {
+      var input = $(val),
+        value = getDateFromWeekString(input.val()),
+        min = getDateFromWeekString(input.attr('min')),
+        max = getDateFromWeekString(input.attr('max'));
+
+      input.kendoDatePicker({
+        // Set the start and depth properties to month, which means
+        // that only day/week values are displayed.
+        depth: 'month',
+        // If the conversion returned a null date, use the default values
+        value: value,
+        min: min === null ? new Date(1900, 0, 1) : min,
+        max: max === null ? new Date(2099, 11, 31) : max
+      });
+    },
+    date: function(val) {
+      var input = $(val);
+      var defaults = getDateTimeDefaults(input);
+      input.kendoDatePicker(defaults);
+    }
+  };
+
+	function convertMonthPartToDate(val) {
+		// Add dummy day of month for valid date parsing
+		val = val + '-' + new Date().getDate();
+		return Date.parse(val);
+	}
+
+	function getDateFromWeekString(weekString) {
+    var week, year, dateParts;
+
+    if (!weekString) {
+      return null;
+    }
+
+    dateParts = weekString.split('-');
+
+		if (dateParts.length < 2) {
+			return null;
+		}
+
+		year = dateParts[0];
+		week = dateParts[1].replace(/w/gi, '');
+
+		if (isNaN(parseInt(week, 10)) || isNaN(parseInt(year, 10))) {
+			return null;
+		}
+
+		// Jan 1 + 7 days per week
+    var day = (1 + (week - 1) * 7);
+    return new Date(year, 0, day);
+	}
+
+	function dateTimeUpgrade(val) {
+		var input = $(val);
+
+		// Step attribute is seconds, interval in minute
+		var defaults = getDateTimeDefaults(input);
+		defaults.interval = input.attr('step') ?
+			Math.round(parseInt(input.attr('step'), 10)/60) : 30;
+		input.kendoDateTimePicker(defaults);
+	}
+
+	function getDateTimeDefaults(input) {
+		return {
+			value: input.val().length > 0 ? new Date(input.val()) : null,
+			min: input.attr('min') ? new Date(input.attr('min'))
+				: new Date(1900, 0, 1),
+			max: input.attr('max') ? new Date(input.attr('max'))
+				: new Date(2099, 11, 31)
+		};
+	}
+
+  function upgradeButton(val) {
+    $(val).addClass('k-button');
+  }
+
+	kendo.forms.types = typeUpgrades;
+} (kendo));
+----
+====
+
+Next up, I'll make some changes to the core widget logic for my polyfill, as illustrated in <<EX5-10>>. Not only have I collapsed things down into a single loop (+inputs.each()+), but I've also cleaned up my +init+ method and moved some of the core logic into helper methods (+shouldUpgradeType+, +upgradeInputType+, +upgradePlaceholder+). 
+
+[[EX5-10]]
+.+kendo.forms.js+ refactored to use a single loop
+====
+[source, js]
+----
+(function($, kendo) {
+	var ui = kendo.ui,
+		Widget = ui.Widget,
+		typeUpgrades = kendo.forms.types,
+    features = kendo.forms.features,
+    vanillaInputRegEx = /text|button|submit|reset/i;
+
+	var Form = Widget.extend({
+		init: function(element, options) {
+			var that = this;
+			var inputs = $(element).find('input, button');
+
+			Widget.fn.init.call(this, element, options);
+
+			inputs.each(function(index, el) {
+        that.upgradeInputType(that, el);
+
+        if (el.getAttribute('placeholder') &&
+            !kendo.forms.features.placeholder) {
+          that.upgradePlaceholder(el);
+        }
+      });
+		},
+    shouldUpgradeType: function(type) {
+      var that = this;
+      return (that.options.alwaysUseWidgets ||
+             !features[type]) &&
+             type in typeUpgrades &&
+             !vanillaInputRegEx.test(type);
+    },
+    upgradeInputType: function(that, el) {
+      var type = el.getAttribute('type');
+
+      if (!type && el.nodeName === 'BUTTON') {
+        type = 'button';
+      }
+
+      if(vanillaInputRegEx.test(type) && that.options.styleInputs) {
+        typeUpgrades[type](el);
+      }
+
+      if (that.shouldUpgradeType(type)) {
+        typeUpgrades[type](el);
+      }
+
+    },
+    upgradePlaceholder: function(el) {
+      el = $(el);
+      // Strip CR and LF from attribute vales, as specified in
+      // www.w3.org/TR/html5/forms.html#the-placeholder-attribute
+      var placeholderText = el.attr('placeholder')
+        .replace(/(\\r\\n|\\n|\\r)/gm,'');
+
+      // When the field loses focus, clear out the placeholder if
+      // the input contains a value.
+      el.on('blur', function() {
+        var $el = $(this);
+        var labelNode = this.previousSibling;
+        if (this.value) {
+          labelNode.nodeValue = '';
+          $el.addClass('relPlaceholder');
+        } else if (labelNode.nodeValue !== placeholderText) {
+          labelNode.nodeValue = placeholderText;
+          $el.removeClass('relPlaceholder');
+        }
+      });
+      el.wrap('<label class="placeholder">' + placeholderText + '</label>');
+      el.addClass('placeholder');
+    },
+		options: {
+			// the name is what it will appear in the kendo namespace (kendo.ui.Form).
+			// The jQuery plugin would be jQuery.fn.kendoForm.
+			name: 'Form',
+			alwaysUseWidgets: false,
+			styleInputs: true
+		}
+	});
+
+	ui.plugin(Form);
+} (jQuery, kendo));
+----
+====
+
+I think you'll agree that this is much cleaner, but is it any faster? For that matter, have any of these changes made a difference? We'll take a look in the next section.
 
 ==== The Final Result
 
-- show how our improvements compare to native performance
+One of the nice things about JSPerf is that, with a little bit of setup, it's easy to do side-by-side testing of revisions. In the case of our last three tweaks, I created a new JSPerf test, which you can http://jsperf.com/kendo-ui-forms-performance/5[view online], if you so desire. You can also append +/edit+ to the end of the url if you want to see how the test was set-up, or make edits of your own. 
+
+For this test, I included the same sample Form that we created in Chapter 3, and used JSPerf's set-up capability to load a different version of my polyfill source, depending on the test. All-in-all, I created four tests:
+
+. Baseline Test, before any changes were made
+. A test for the Element Caching refactor
+. A test of the argument ordering refactor
+. A test for the single loop refactor.
+
+The results can be seen in <<EX5-11>>. The results for an individual run can be seen in the top part of the image, with summary results for all browsers at the bottom. 
+
+[[EX5-11]]
+.JSPerf test for tweaks 2-4
+image::images/ch5-ex11.png[]
+
+There are a couple of things to take away from the image above:
+
+. Individual test runs can give different results, so be sure to run your tests several times, and in as many browsers as possible. In the image above, my element cache refactor looks like the slowest test, though it's still well within the standard deviation (+/-) of 4.96% indicated by JSPerf. If you look at the bar charts at the bottom of the image, you'll note that, over a larger sample size, the element cache refactor (in yellow) is faster than my baseline test (in red) in most browsers.
+. For most browsers, the argument reordering change isn't much faster than the element cache refactor. I expected this, so as long as it's not noticeably _slower_, it's a worthwhile change. It does seem to be faster visibly faster in the current version (at the time of writing) of Chrome, however, so I'll take it.
+. As expected, the single loop refactor yielded the largest gains across most browsers, especially Chrome. It's faster in Opera and Safari, as well and, even though you can't see it due to scale, was faster in my IE 8 tests. Surprisingly, these changes are all about even on Firefox but, again, since performance isn't markedly worse, I'm okay with an outlier or two.
+
+==== Performance Tuning Is Unique to Your Polyfill
+
+As I mentioned above, there's not really much science involved in making performance tweaks to your polyfill. It's more an exercise of trial and error with the goal of finding micro- and macro-optimizations that make your library faster. In the examples above, I made some small and large changes best on my knowledge of good JavaScript practices, and it turned out that those changes yielded some gains in most browsers.
+
+Before I close this section, a word of caution: performance tuning is important, and it's something you should spend time on, but I suggest being careful with it. It's easy to make common-sense changes that you might have missed in initial development, but once you've made a handful of obvious or even non-obvious tweaks, diminishing returns will start to set in, and you'll be spending far too much time making changes to eke out an extra tenth of a percent speed improvement. When it starts to feel like each change ins't moving the performance needle enough, or even moving it in the wrong direction, it's time feel confident that you've done your best, and move on.
 
 === Detecting the Undetectables
+
+Now that
 - Modernizr's canonical https://github.com/Modernizr/Modernizr/wiki/Undetectables[Undetectables list].
 - Strategies for dealing with undetectable cases
 
