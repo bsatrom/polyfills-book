@@ -978,9 +978,9 @@ describe('DateTime and datetime-local type Support', function() {
 <1> This test fails here in IE 7 and 8
 ====
 
-This test, which I've clipped for readability, is designed to make sure that the Kendo UI DateTime widget is properly initialized with the date input's +value+ attribute. ON IE 7 and 8, this test fails at the second +expect+. Upon further investigation, it appears that the +dateTimeObject+ variable is null because my DateTime widget wasn't properly initialized. That means that the problem is in my "upgrade" function, which I've included in <<EX3-14>>, below.
+This test, which I've clipped for readability, is designed to make sure that the Kendo UI DateTime widget is properly initialized with the date input's +value+ attribute. ON IE 7 and 8, this test fails at the second +expect+. Upon further investigation, it appears that the +dateTimeObject+ variable is null because my DateTime widget wasn't properly initialized. That means that the problem is in my "upgrade" function, which I've included in <<EX5-14>>, below.
 
-[[EX3-14]]
+[[EX5-14]]
 .DateTime upgrade logic
 ====
 [source, js]
@@ -1016,7 +1016,7 @@ The issue, it would seem, is with the +getDateTimeDefaults+ helper function, whi
 
 The answer is deceptively simple: IE 7 and 8 don't support the ISO Date standard when parsing date strings. Welcome to the world of cross-browser polyfill development, my friends! Thankfully, it's a relatively simple fix. If I wanted to take an external dependency, I could include a library like http://moment.js[Moment.js] to handle the hassle of date parsing. I can also leverage built-in features of Kendo UI or jQuery to help. For the sake of completeness, however, in this case, I'm going to add my own fix. First, I'll add a new +creteDateFromInput+ method to the +kendo.forms.types.js+ file, as shown in <<EX5-15>>:
 
-[[EX3-15]]
+[[EX5-15]]
 .Handling ISO and non-ISO date formats for oldIE
 ====
 [source, js]
