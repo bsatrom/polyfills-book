@@ -543,89 +543,89 @@ Further down the sample, you'll notice that I then access this variable three ad
 [source, js]
 ----
 (function($, kendo) {
-	var ui = kendo.ui,
-		Widget = ui.Widget,
-		typeUpgrades = kendo.forms.types;
+  var ui = kendo.ui,
+    Widget = ui.Widget,
+    typeUpgrades = kendo.forms.types;
 
-	var Form = Widget.extend({
-		init: function(element, options) {
-			var that = this;
-			var inputs = $(element).find('input, button'); <1>
-			var i, len;
+  var Form = Widget.extend({
+    init: function(element, options) {
+      var that = this;
+      var inputs = $(element).find('input, button'); <1>
+      var i, len;
 
-			var upgradeFormType = function(type, callback) {
-				// replace dash with underscore for features object lookup
-				var modType = type.replace(/-/g,'_');
+      var upgradeFormType = function(type, callback) {
+        // replace dash with underscore for features object lookup
+        var modType = type.replace(/-/g,'_');
 
-				if (!kendo.forms.features[modType] || that.options.alwaysUseWidgets) {
+        if (!kendo.forms.features[modType] || that.options.alwaysUseWidgets) {
           inputs.filter('input[type=' + type + ']').each(callback); <2>
-				}
-			};
+        }
+      };
 
-			// base call to widget initialization
-			Widget.fn.init.call(this, element, options);
+      // base call to widget initialization
+      Widget.fn.init.call(this, element, options);
 
-			if (that.options.styleInputs) {
+      if (that.options.styleInputs) {
         inputs.each(function(index, val) { <3>
-					// Add the k-input class to each form element (or 
-					// k-button for buttons), providing Kendo UI styling 
-					// to all elements, not just those the widget will transform.
-					var el = $(val);
+          // Add the k-input class to each form element (or 
+          // k-button for buttons), providing Kendo UI styling 
+          // to all elements, not just those the widget will transform.
+          var el = $(val);
 
-					if (val.type === 'button' ||
-						val.type === 'submit' ||
-						val.type === 'reset') {
-						el.addClass('k-button');
-					} else {
-						el.addClass('k-input');
-					}
-				});
-			}
+          if (val.type === 'button' ||
+            val.type === 'submit' ||
+            val.type === 'reset') {
+             el.addClass('k-button');
+          } else {
+            el.addClass('k-input');
+          }
+        });
+      }
 
-			// Add basic support for form types defined in the typeUpgrades array
-			for (i = 0, len = typeUpgrades.length; i < len; i++) {
-				var typeObj = typeUpgrades[i];
-				upgradeFormType(typeObj.type, typeObj.upgrade);
-			}
+      // Add basic support for form types defined in the typeUpgrades array
+      for (i = 0, len = typeUpgrades.length; i < len; i++) {
+        var typeObj = typeUpgrades[i];
+        upgradeFormType(typeObj.type, typeObj.upgrade);
+      }
 
-			// Add placeholder support if not provided by the browser
-			if(!kendo.forms.features.placeholder) {
+      // Add placeholder support if not provided by the browser
+      if(!kendo.forms.features.placeholder) {
         inputs.filter('[placeholder]').each(function(index, val) {
-					var el = $(val);
-					// Strip CR and LF from attribute vales, as specified in
+          var el = $(val);
+          // Strip CR and LF from attribute vales, as specified in
           // www.w3.org/TR/html5/forms.html#the-placeholder-attribute
           var placeholderText = el.attr('placeholder')
             .replace(/(\\r\\n|\\n|\\r)/gm,'');
 
-					// When the field loses focus, clear out the placeholder if
-					// the input contains a value.
-					el.on('blur', function() {
-						var $el = $(this);
-						var labelNode = this.previousSibling;
-						if (this.value) {
-							labelNode.nodeValue = '';
-							$el.addClass('relPlaceholder');
-						} else if (labelNode.nodeValue !== placeholderText) {
-							labelNode.nodeValue = placeholderText;
-							$el.removeClass('relPlaceholder');
-						}
-					});
-					el.wrap('<label class="placeholder">' + placeholderText + '</label>');
-					el.addClass('placeholder');
-				});
-			}
-		},
+          // When the field loses focus, clear out the placeholder if
+          // the input contains a value.
+          el.on('blur', function() {
+            var $el = $(this);
+            var labelNode = this.previousSibling;
+            if (this.value) {
+              labelNode.nodeValue = '';
+              $el.addClass('relPlaceholder');
+            } else if (labelNode.nodeValue !== placeholderText) {
+              labelNode.nodeValue = placeholderText;
+              $el.removeClass('relPlaceholder');
+            }
+          });
+          el.wrap('<label class="placeholder">' + placeholderText + '</label>');
+          el.addClass('placeholder');
+        });
+      }
+    },
 
-		options: {
-			// the name is what it will appear in the kendo namespace (kendo.ui.Form).
-			// The jQuery plugin would be jQuery.fn.kendoForm.
-			name: 'Form',
-			alwaysUseWidgets: false,
-			styleInputs: true
-		}
-	});
+    options: {
+      // the name is what it will appear in the kendo namespace (kendo.ui.Form).
+      // The jQuery plugin would be jQuery.fn.kendoForm.
+      name: 'Form',
+      alwaysUseWidgets: false,
+      styleInputs: true
+    }
+  });
 
-	ui.plugin(Form);
+  ui.plugin(Form);
 } (jQuery, kendo));
 ----
 <1> Cache the collection of +<input>+ and +<button>+ elements in my form
@@ -635,7 +635,7 @@ Further down the sample, you'll notice that I then access this variable three ad
 
 Instead of caching the entire form in a local variable, I cache all of the +<input>+ and +<button>+ elements, since those are the only parts of the form I'm interested in, at this point. With that new collection in hand, I'll use jQuery's +filter+ method to refine the collection when I'm operating on a smaller subset. It's a small change, but it cleans up the DOM reads for my polyfill and makes things a bit more readable, to boot. Now, before we test the performance impact of this change, let's make a few more tweaks so that we can view everything side-by-side at once.
 
-==== The Third Perf Tweak: Ordering of Arguments
+===== The Third Perf Tweak: Ordering of Arguments
 
 The next change I'm going to make is a very small one, but it harkens back to the idea of avoiding unnecessary code paths as a way to get micro-optimizations in our code. Many times, these unneeded paths can be found in if statements that asses one or more values before taking action. For example, in <<EX5-7>>, you'll notice the following +if+ statement on line 17:
 
@@ -651,7 +651,7 @@ Had I not already refactored my feature tests to run once during script evaluati
 
 While the example above is a simple case for ordering arguments, It's always a good idea to order your simple booleans first in your +if+ statements. When performing an or (+||+) evaluation, this will ensure that the right-hand arguments aren't assessed unless the simple boolean is false. When performing an and (+&&+) evaluation, right-hand arguments aren't assessed unless the simple boolean is true. In both cases, your more complex method-call booleans won't be evaluated unless their values are needed to fulfill or reject the condition in question.
 
-==== The Fourth Perf Tweak: Minimizing Loops
+===== The Fourth Perf Tweak: Minimizing Loops
 
 The final performance change I plan to make to my polyfill is a larger one, and is also a change that I expect to impact performance quite a bit. If you take a look at <<EX5-7>> a final time, you'll notice that I'm looping (+for+ or jQuery's +each+) no less than four times during widget initialization. This can't be the best approach, so I'm going to refactor my polyfill to loop as as infrequently as possible. 
 
@@ -667,9 +667,9 @@ So, to shift from several loops to a single loop, I need to move a few things ar
 [source, js]
 ----
 (function (kendo) {
-	kendo.forms = kendo.forms || {};
+  kendo.forms = kendo.forms || {};
 
-	var typeUpgrades = {
+  var typeUpgrades = {
     text: function(val) {
       $(val).addClass('k-input');
     },
@@ -749,13 +749,13 @@ So, to shift from several loops to a single loop, I need to move a few things ar
     }
   };
 
-	function convertMonthPartToDate(val) {
-		// Add dummy day of month for valid date parsing
-		val = val + '-' + new Date().getDate();
-		return Date.parse(val);
-	}
+  function convertMonthPartToDate(val) {
+    // Add dummy day of month for valid date parsing
+    val = val + '-' + new Date().getDate();
+    return Date.parse(val);
+  }
 
-	function getDateFromWeekString(weekString) {
+  function getDateFromWeekString(weekString) {
     var week, year, dateParts;
 
     if (!weekString) {
@@ -764,47 +764,47 @@ So, to shift from several loops to a single loop, I need to move a few things ar
 
     dateParts = weekString.split('-');
 
-		if (dateParts.length < 2) {
-			return null;
-		}
+    if (dateParts.length < 2) {
+      return null;
+    }
 
-		year = dateParts[0];
-		week = dateParts[1].replace(/w/gi, '');
+    year = dateParts[0];
+    week = dateParts[1].replace(/w/gi, '');
 
-		if (isNaN(parseInt(week, 10)) || isNaN(parseInt(year, 10))) {
-			return null;
-		}
+    if (isNaN(parseInt(week, 10)) || isNaN(parseInt(year, 10))) {
+      return null;
+    }
 
-		// Jan 1 + 7 days per week
+    // Jan 1 + 7 days per week
     var day = (1 + (week - 1) * 7);
     return new Date(year, 0, day);
-	}
+  }
 
-	function dateTimeUpgrade(val) {
-		var input = $(val);
+  function dateTimeUpgrade(val) {
+    var input = $(val);
 
-		// Step attribute is seconds, interval in minute
-		var defaults = getDateTimeDefaults(input);
-		defaults.interval = input.attr('step') ?
-			Math.round(parseInt(input.attr('step'), 10)/60) : 30;
-		input.kendoDateTimePicker(defaults);
-	}
+    // Step attribute is seconds, interval in minute
+    var defaults = getDateTimeDefaults(input);
+    defaults.interval = input.attr('step') ?
+      Math.round(parseInt(input.attr('step'), 10)/60) : 30;
+    input.kendoDateTimePicker(defaults);
+  }
 
-	function getDateTimeDefaults(input) {
-		return {
-			value: input.val().length > 0 ? new Date(input.val()) : null,
-			min: input.attr('min') ? new Date(input.attr('min'))
-				: new Date(1900, 0, 1),
-			max: input.attr('max') ? new Date(input.attr('max'))
-				: new Date(2099, 11, 31)
-		};
-	}
+  function getDateTimeDefaults(input) {
+    return {
+      value: input.val().length > 0 ? new Date(input.val()) : null,
+      min: input.attr('min') ? new Date(input.attr('min'))
+        : new Date(1900, 0, 1),
+      max: input.attr('max') ? new Date(input.attr('max'))
+        : new Date(2099, 11, 31)
+    };
+  }
 
   function upgradeButton(val) {
     $(val).addClass('k-button');
   }
 
-	kendo.forms.types = typeUpgrades;
+  kendo.forms.types = typeUpgrades;
 } (kendo));
 ----
 ====
@@ -817,34 +817,34 @@ Next up, I'll make some changes to the core widget logic for my polyfill, as ill
 [source, js]
 ----
 (function($, kendo) {
-	var ui = kendo.ui,
-		Widget = ui.Widget,
-		typeUpgrades = kendo.forms.types,
+  var ui = kendo.ui,
+    Widget = ui.Widget,
+    typeUpgrades = kendo.forms.types,
     features = kendo.forms.features,
     vanillaInputRegEx = /text|button|submit|reset/i;
 
-	var Form = Widget.extend({
-		init: function(element, options) {
-			var that = this;
-			var inputs = $(element).find('input, button');
+  var Form = Widget.extend({
+    init: function(element, options) {
+      var that = this;
+      var inputs = $(element).find('input, button');
 
-			Widget.fn.init.call(this, element, options);
+      Widget.fn.init.call(this, element, options);
 
-			inputs.each(function(index, el) {
+      inputs.each(function(index, el) {
         that.upgradeInputType(that, el);
 
         if (el.getAttribute('placeholder') &&
-            !kendo.forms.features.placeholder) {
+          !kendo.forms.features.placeholder) {
           that.upgradePlaceholder(el);
         }
       });
-		},
+    },
     shouldUpgradeType: function(type) {
       var that = this;
       return (that.options.alwaysUseWidgets ||
-             !features[type]) &&
-             type in typeUpgrades &&
-             !vanillaInputRegEx.test(type);
+        !features[type]) &&
+        type in typeUpgrades &&
+        !vanillaInputRegEx.test(type);
     },
     upgradeInputType: function(that, el) {
       var type = el.getAttribute('type');
@@ -885,23 +885,23 @@ Next up, I'll make some changes to the core widget logic for my polyfill, as ill
       el.wrap('<label class="placeholder">' + placeholderText + '</label>');
       el.addClass('placeholder');
     },
-		options: {
-			// the name is what it will appear in the kendo namespace (kendo.ui.Form).
-			// The jQuery plugin would be jQuery.fn.kendoForm.
-			name: 'Form',
-			alwaysUseWidgets: false,
-			styleInputs: true
-		}
-	});
+    options: {
+      // the name is what it will appear in the kendo namespace (kendo.ui.Form).
+      // The jQuery plugin would be jQuery.fn.kendoForm.
+      name: 'Form',
+      alwaysUseWidgets: false,
+      styleInputs: true
+    }
+  });
 
-	ui.plugin(Form);
+  ui.plugin(Form);
 } (jQuery, kendo));
 ----
 ====
 
 I think you'll agree that this is much cleaner, but is it any faster? For that matter, have any of these changes made a difference? Let's take a look in the next section.
 
-==== The Final Result
+==== Running Performance Benchmarks
 
 One of the nice things about JSPerf is that, with a little bit of setup, it's easy to do side-by-side testing of revisions. In the case of our last three tweaks, I created a new JSPerf test, which you can http://jsperf.com/kendo-ui-forms-performance/5[view online], if you so desire. You can also append +/edit+ to the end of the url if you want to see how the test was set-up, or make edits of your own. 
 
@@ -951,28 +951,28 @@ describe('DateTime and datetime-local type Support', function() {
   it('should apply the datetime attributes (val, min, max, step) to the widget', function() {
     fixtures.load('datetime-type.html');
 
-	  $('#datetime-form').kendoForm();
+    $('#datetime-form').kendoForm();
 
-		var datetimeInput = $('#datetime');
-		var datetimeObject = datetimeInput.data('kendoDateTimePicker');
+    var datetimeInput = $('#datetime');
+    var datetimeObject = datetimeInput.data('kendoDateTimePicker');
 
-		var dateRegex = /\/|-| /g;
-		var valParts = datetimeInput.val().split(dateRegex);
-		var minParts = datetimeInput.attr('min').split(dateRegex);
-		var maxParts = datetimeInput.attr('max').split(dateRegex);
+    var dateRegex = /\/|-| /g;
+    var valParts = datetimeInput.val().split(dateRegex);
+    var minParts = datetimeInput.attr('min').split(dateRegex);
+    var maxParts = datetimeInput.attr('max').split(dateRegex);
 
-		expect(datetimeObject.value()).not.toBeNull();
-		expect(datetimeObject.value().getMonth()+1).toEqual(
-			parseInt(valParts[0], 10)); <1>
-		expect(datetimeObject.value().getDate()).toEqual(
-			parseInt(valParts[1], 10));
+    expect(datetimeObject.value()).not.toBeNull();
+    expect(datetimeObject.value().getMonth()+1).toEqual(
+      parseInt(valParts[0], 10)); <1>
+    expect(datetimeObject.value().getDate()).toEqual(
+      parseInt(valParts[1], 10));
 					
-		expect(datetimeObject.value().getFullYear()).toEqual(
-		  parseInt(valParts[2], 10));
+    expect(datetimeObject.value().getFullYear()).toEqual(
+      parseInt(valParts[2], 10));
 
-		// Run Same tests for min and max date values
-		// ...
-	});
+    // Run Same tests for min and max date values
+    // ...
+  });
 }
 ----
 <1> This test fails here in IE 7 and 8
@@ -986,26 +986,26 @@ This test, which I've clipped for readability, is designed to make sure that the
 [source, js]
 ----
 var typeUpgrades = {
-	datetime: function (val) {
-		var input = $(val);
+  datetime: function (val) {
+    var input = $(val);
 
-		// Step attribute is seconds, interval in minute
-		var defaults = getDateTimeDefaults(input);
-		defaults.interval = input.attr('step') ?
-			Math.round(parseInt(input.attr('step'), 10)/60) : 30;
-		input.kendoDateTimePicker(defaults);
-	}
+    // Step attribute is seconds, interval in minute
+    var defaults = getDateTimeDefaults(input);
+    defaults.interval = input.attr('step') ?
+      Math.round(parseInt(input.attr('step'), 10)/60) : 30;
+    input.kendoDateTimePicker(defaults);
+  }
   /* Other upgrades */
 };
 
 function getDateTimeDefaults(input) {
   return {
-	  value: input.val().length > 0 ? new Date(input.val()) : null,
-		min: input.attr('min') ? new Date(input.attr('min'))
-			: new Date(1900, 0, 1),
-		max: input.attr('max') ? new Date(input.attr('max'))
-			: new Date(2099, 11, 31)
-	};
+    value: input.val().length > 0 ? new Date(input.val()) : null,
+    min: input.attr('min') ? new Date(input.attr('min'))
+      : new Date(1900, 0, 1),
+    max: input.attr('max') ? new Date(input.attr('max'))
+      : new Date(2099, 11, 31)
+  };
 }
 
 kendo.forms.types = typeUpgrades;
@@ -1056,10 +1056,10 @@ Next, I can modify my +getDateTimeDefaults+ function to use this  new function:
 ----
 function getDateTimeDefaults(input) {
   return {
-	  value: createDateFromInput(input.val(), null),
-		min: createDateFromInput(input.attr('min'), new Date(1900, 0, 1)),
-		max: createDateFromInput(input.attr('max'), new Date(2099, 11, 31))
-	};
+    value: createDateFromInput(input.val(), null),
+    min: createDateFromInput(input.attr('min'), new Date(1900, 0, 1)),
+    max: createDateFromInput(input.attr('max'), new Date(2099, 11, 31))
+  };
 }
 ----
 
