@@ -15,11 +15,11 @@ In Chapter 3, we got right to work building our polyfill without considering muc
 
 ==== Package and Dependency Management
 
-Once you've chosen a source control solution, you'll want to think about how to manage dependencies. By dependencies, I'm not referring to "this polyfill depends on jQuery," but, rather, the 3rd party libraries that your polyfill depends on for things like static analysis, minification, testing and more. We'll talk about those specific tools in a bit, but before you start using these, you need to think about how you plan to include them in your project, and how to declare those dependencies for others who download your work. In the world of JavaScript development, there's no better general-purpose package manager than http://npmjs.org[npm], the Node.js Package Manager. If you have http://nodejs.org[Node.js] installed, you already have npm. If not, head over to http://nodejs.org and grab the appropriate installer for your OS. You'll be using Node and npm heavily throughout your polyfill project and these tools are also a prerequisite for the next few items on our list.
+Once you've chosen a source control solution, you'll want to think about how to manage dependencies. By dependencies, I'm not referring to "this polyfill depends on jQuery," but, rather, the 3rd party libraries that your polyfill depends on for things like static analysis, minification, testing and more. We'll talk about those specific tools in a bit, but before you start using these, you need to think about how you plan to include them in your project, and how to declare those dependencies for others who download your work. In the world of JavaScript development, there's no better general-purpose package manager than http://npmjs.org[npm], or Node Packaged Modules. If you have http://nodejs.org[Node.js] installed, you already have npm. If not, head over to http://nodejs.org and grab the appropriate installer for your OS. You'll be using Node and npm heavily throughout your polyfill project and these tools are also a prerequisite for the next few items on our list.
 
 ==== Build and Workflow Management
 
-Developing open-source software, including polyfills, is about more than just throwing together a quick sample, some basic tests and a source file. Sure, it's possible to put something online that consists of only these things, I've even done it myself before. Five years ago, it was even a common practice among the front-end community. But as our community has matured, our tools and our processes have evolved, as well. One could make the argument that our tools have matured us, but that's neither here nor there. 
+Developing open-source software, including polyfills, is about more than just throwing together a quick sample, some basic tests and a source file. Sure, it's possible to put something online that consists of only these things, I've even done it myself before. Five years ago, it was even a common practice among the front-end community. But as our community has matured, our tools and our processes have evolved, as well.
 
 As a front-end developer, I have a workflow that's shared by many others. I write tests. I write code until those tests pass. I repeat. I test across browsers. I write some more code. During development, I keep my source files small and separate, but I want the code I distribute to be in a single file, minified and ready to use in production environments.
 
@@ -496,7 +496,14 @@ var browsers;
 ----
 ====
 
-In this snippet, I'm using Nodejs to interrogate with which OS I'm testing. If I'm using OSX ("Darwin"), I'll add Chrome Canary and Safari. If, on the other hand, I'm on Windows, I'll add IE to my browsers array. Next, I'll add a task for Karma to the +grunt.initConfig+ method:
+In this snippet, I'm using Node to interrogate with which OS I'm testing. If I'm using OSX (which reports as _Darwin_), I'll add Chrome Canary and Safari. If, on the other hand, I'm on Windows, I'll add IE to my browsers array. 
+
+[Note]
+====
+Both Internet Explorer and, recently Safari are single-OS browsers, meaning that they only run on Windows and Mac OSX, respectively. This means that it's not possible to run a complete set of cross-browser tests for your polyfills on a single OS. You'll either need a few Windows VMs on hand for various versions of IE, or a cheap Mac OSX box for Safari testing if either of these is not your primary operating system.
+====
+
+Next, I'll add a task for Karma to the +grunt.initConfig+ method:
 
 [[EX4-22]]
 ====
