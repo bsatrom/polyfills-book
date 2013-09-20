@@ -1,4 +1,4 @@
-= Polyfilling the Web Platform
+= Building Polyfills
 
 include::preface.asciidoc[]
 
