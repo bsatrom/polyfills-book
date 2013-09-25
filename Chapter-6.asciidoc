@@ -1,0 +1,23 @@
+[[polyfills_chapter_6]]
+== The Future of Polyfilling
+  
+=== Polyfilling: Not just for older browsers
+
+=== Prollyfilling: Extending the Web Forward
+
+=== Prollyfills in Action: Prollyfilling CSS
+
+==== Using HitchJS to experiment with CSS
+
+====Building your own "hitches"
+
+=== Prollyfills in Action: ServiceWorker
+
+=== Prollyfills in Action: Web Components
+
+
+==== Creating Custom Elements with Angular JS
+
+==== Creating Custom Elements with Polymer
+
+=== Strategies for polyfilling experimental APIs
