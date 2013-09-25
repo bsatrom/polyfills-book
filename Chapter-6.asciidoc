@@ -9,12 +9,11 @@
 
 ==== Using HitchJS to experiment with CSS
 
-====Building your own "hitches"
+==== Building your own "hitches"
 
 === Prollyfills in Action: ServiceWorker
 
 === Prollyfills in Action: Web Components
-
 
 ==== Creating Custom Elements with Angular JS
 
