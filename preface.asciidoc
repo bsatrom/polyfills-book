@@ -17,6 +17,18 @@ My sincere hope is that this book will "close the gap" by serving as a fieldbook
 
 Once I’ve covered the ins-and outs of building polyfills, the last few chapters will shift to focus on that emerging trend on the web platform: the "forward polyfill," or _prollyfill_. This pattern, as I've mentioned already, enables developers to test and work with emerging concepts, sometimes ahead of the browser vendors themselves. By the time we're done, you'll have all the tools you need to build reliable polyfills for the present, and the future, of the web.
 
+=== How This Book is Organized
+
+[TBD]
+
+1. The Current State of Web Polyfills 
+2. Principles and Practices of Polyfill Development 
+3. Building Your First Polyfill, Part 1 - Getting Started 
+4. Building Your First Polyfill, Part 2 - Build Workflows and Cross-Browser Testing 
+5. Building Your First Polyfill, Part 3 - Performance and Edge-Case Testing 
+6. The Future of Polyfilling 
+7. Building Your First Prollyfill 
+
 === Conventions Used in This Book
 
 The following typographical conventions are used in this book:
