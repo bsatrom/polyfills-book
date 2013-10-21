@@ -1065,7 +1065,7 @@ function getDateTimeDefaults(input) {
 
 With this in place, my datetime and datetime-local tests should pass. The remaining failing tests relate to similar problems with the time and month input types, and as soon as I modify those upgrade functions to use my new helper method, I should see all green in IE 7 and 8, as shown in <<EX5-16>>.
 
-[[EX5-16]]
+[[EX5-16]]	
 .All tests passing in IE 8
 image::images/ch5-ex16.png[] 
 
