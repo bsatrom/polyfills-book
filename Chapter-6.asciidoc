@@ -236,7 +236,79 @@ HitchJS is a versatile library, and now that you've seen how easy it is to creat
 
 === Prollyfills in Action: ServiceWorker
 
-In the last section, we explored how prollyfills can be useful for experimenting with new or unstable CSS selectors. Next, we'll shift focus to JavaScript prollyfilling. Specifically, we'll look at one of those low-level APIs 
+In the last section, we explored how prollyfills can be useful for experimenting with new or unstable CSS selectors. Next, we'll shift focus to JavaScript prollyfilling. Specifically, we'll look at a proposal for one of those low-level APIs that could open up a wealth of new opportunities for front-end developers: [ServiceWorker]https://github.com/slightlyoff/ServiceWorker.
+
+ServiceWorker is a proposal, spearheaded by Alex Russell of Google, designed to make the browser's networking stack more programmable via JavaScript. Specifically, a ServiceWorker enables developers to use script to cache and handle every inbound request for resources in an app, even when the user is offline. 
+
+If you're thinking that this is starting to sound a lot like a JavaScript-based version of the oft-maligned Application Cache, you'd be right, and also wrong at the same time. Because ServiceWorker is meant to be a low-level API, it's far broader than an imperative AppCache. It can certainly be used to handle application asset and resource caching, but it's also far broader than that. In a very general sense a ServiceWorker is a script that, when installed in your app, listens for network events. When those events occur, a ServiceWorker can intercept the network request and serve cached resources before the browser ever attempts to connect to a remote server.
+
+The first step in using a ServiceWorker is to install a worker on a page after a user visits for the first time. This means that the page, and all of its resources, will be served from the network at least once before the worker takes over. <<EX06-07>> shows and example of what the API for creating a new worker could look like:
+
+[[EX06-07]]
+.Creating a new ServiceWorker object
+====
+[source, html]
+----
+<!DOCTYPE html>
+<!-- http://www.gifsemporium.com/index.html -->
+<html>
+  <head>
+    <link rel="stylesheet" href="/css/base.css">
+    <script src="/js/app.js"></script>
+		<script>
+      navigator.registerServiceWorker("/*", "sWorker.js").then(
+        function(serviceWorker) {
+          // Use the worker right away
+          window.location.reload();
+        },
+        function(err) {
+          console.error("Worker install failed:", err);
+        });
+    </script>
+  </head>
+  <body>
+    <img src="/images/logo.gif" alt="Gif Emporium Logo">
+		<h1>Animated Gifs Galore!</h1>
+  </body>
+</html>
+----
+====
+
+The key snippet here is the call to +navigator.registerServiceWorker+ which takes two parameters, a route or set of routes to handle with our service worker, and the path to a JavaScript file that contains the worker logic. The API is also promise-based, so I can call +then()+ on the API with success and error handlers and notify the system of a successful or failed worker registration. 	A sample +sWorker.js+ file can be found in <<EX06-08>>.
+
+[[EX06-08]]
+.A sample ServiceWorker controller
+====
+[source, js]
+----
+// hosted at: js/sWorker.js
+
+var base = "http://www.gifsemporium.com";
+var inventory = new URL("/services/gifs.json", base);
+
+this.addEventListener("install", function(e) {
+  // this worker can handle fetch events
+  e.services = ["fetch"];
+});
+
+this.addEventListener("fetch", function(e) {
+  var url = e.request.url;
+  // If we already have the data, load from cache
+	if (url.toString() == inventory.toString()) {
+    e.respondWith(new SameOriginResponse({
+      statusCode: 200,
+      body: JSON.stringify({
+        gifs: { /* ... */ }
+      })
+    }));
+  }
+});
+----
+====
+
+The ServiceWorker exposes several events that workers can respond to if they wish. If a worker is installed and has registered a +fetch+ listener, as we have above, the worker is allowed to handle the network request on behalf of the browser. In this case, we're checking to see if the URL being requested matches an existing resource and, if so, we'll use the new +respondWith+ method on the +fetch+ event to construct a cached response containing the data requested by the browser, and the network never even needs to be consulted!
+
+The public API for the ServiceWorker proposal can be found in a [TypeScript file in the project's GitHub repository]https://github.com/slightlyoff/ServiceWorker/blob/master/service_worker.ts, and I also recommend checking out the [explainer document]https://github.com/slightlyoff/ServiceWorker/blob/master/explainer.md put together by the works working on the proposal. It's early days for ServiceWorker, which doesn't yet enjoy browser support, but the proposal is exactly the kind of API described in the Extensible Web Manifesto: a set of low-level browser capabilities that provide developers with ground-floor access to building robust, JavaScript-based prollyfills and APIs that push the web forward faster than ever.
 
 === Prollyfills in Action: Web Components
 
