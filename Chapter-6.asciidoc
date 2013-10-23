@@ -1,23 +1,23 @@
 [[polyfills_chapter_6]]
 == The Future of Polyfilling
 
-So far in this book, we've discussed polyfilling in its original context: a strategy for "filling in the gaps" of older browsers with modern web APIs and technologies. In the last two chapters, I'd like to shift focus from the past and present and look instead at the future. Specifically, we'll talk about a variation of polyfilling that enables developers to experiment with not-yet-standardized APIs and developer-driven ideas that could potentially make their way into the browsers, in the future. In this chapter, I'll introduce that variation, prollyfilling, and will provides several examples of popular and notable prollyfilling libraries that push the boundaries of the Web Platform. Then, in Chapter 7, we'll wrap up this book with a  hands-on exploration of prollyfill construction, and how it compares to the exercise in Chapters 3-5.
+So far in this book, we've discussed polyfilling in its original context: a strategy for "filling in the gaps" of older browsers with modern web APIs and technologies. In the last two chapters, I'd like to shift our focus from the past and present and look towards the future. Specifically, we'll talk about a variation of polyfilling that enables developers to experiment with not-yet-standardized APIs and developer-driven ideas that could potentially make their way into the browsers, in the future. In this chapter, I'll introduce that variation, prollyfilling, and will provides several examples of popular and notable prollyfilling libraries that push the boundaries of the Web Platform. Then, in Chapter 7, I'll close this book with a  hands-on exploration of prollyfill construction, and how it compares to our polyfill construction exercise in Chapters 3-5.
   
 === Polyfilling: Not just for older browsers
 
 As our browsers release updates at a faster and faster clip, and  legacy browsers like IE 6-8 decline in global use, it's easy to fall into the trap of thinking that polyfilling, as an idea, is becoming increasingly irrelevant. And while it's true that "classical" polyfills for popular HTML5 and CSS3 features are being used less and less, for every mainstream feature in the Web Platform, like CSS3 Animations, we're seeing 3-4 new ideas and technologies introduced via the W3C or WHATWG and landing in one or more browsers. HTML5 and friends may have modernized the web and our browsers in key ways, but don't think for a moment that they also brought feature parity along for the ride.
 
-The bottom line: each new feature that's supported in Firefox but has yet to be implemented in Chrome, IE or Safari needs a polyfill just as much as that localStorage polyfill you're using for IE7 users. If newer technologies are to take off and become accepted by developers, we need to use them on actual sites. In some cases, we might take a "forked experience" approach and support the feature only where native to the browser. In many cases, however, new features bring capabilities that we wish to share with as many of our users as possible. In this case, pollyfilling is a must.
+The bottom line is this: each new feature that's supported in Firefox but has yet to be implemented in Chrome, IE or Safari needs a polyfill just as much as that localStorage feature you'd like to offer to IE7 users. If newer technologies are to take off and become accepted by developers, we need to use them on actual sites. In some cases, we might take a "forked experience" approach and support the feature only where native to the browser. In many cases, however, new features bring capabilities that we wish to share with as many of our users as possible. In this case, pollyfilling is a must.
 
 === Prollyfilling: Extending the Web Forward
 
 Of course, sometimes pollyfilling specified features isn't always enough for us, as web developers. We're a smart, ambitious bunch, and this is our platform too. Most of the time, we think we're just as qualified as browser vendors when it comes to determining what capabilities the web platform, and our  browsers, really need.
 
-In Chapter 1, I mentioned something called the "Extensible Web Manifesto," a rallying cry of sorts, for front-end developers. It's one that calls us to "extend" the web forward by working on speculative and cutting edge ideas in our browsers. It also calls upon browser vendors to "unlock" low-level capabilities in the browsers (for instance, the browser's networking stack or HTML parser) and allow developers to write their own JavaScript libraries and APIs on top of those capabilities. The core idea that the manifesto argues for is that, with access to these low-level APIs, developers can experiment with real-world ideas their solve real-world problems. I use the phrase "real-world" here, because, on occasion, the W3C will pursue ideas that, while academically sound, are rejected by developers when subjected to actual use.
+In Chapter 1, I mentioned something called the "[Extensible Web Manifesto]http://extensiblewebmanifesto.org/;" a rallying cry of sorts, for front-end developers. It's one that calls us to "extend the web forward" by working on speculative and cutting edge ideas in our browsers. It also calls upon browser vendors to "unlock" low-level capabilities in the browser (for instance, the browser's networking stack or HTML parser) and allow developers to write their own JavaScript libraries and APIs on top of those capabilities. The core idea that the manifesto argues for is that, with access to these low-level APIs, developers can experiment with real-world ideas their solve real-world problems. I use the phrase "real-world" here, because, on occasion, the W3C will pursue ideas that, while academically sound, are rejected by developers when subjected to actual use.
 
-Take the oft-maligned Application Cache, for instance. This specification, which enjoys wide support across all modern desktop and mobile browsers, was introduced as a declarative API  intended to solve the very real problem of caching web sites an applications for offline use. It's a fantastic idea, and developers everywhere applauded the introduction of the technology when it was first introduced several years ago.
+Take the oft-maligned Application Cache, for instance. This specification, which enjoys wide support across all modern desktop and mobile browsers, was introduced as a declarative API  intended to solve the very real problem of caching web sites and applications for offline use. It's a fantastic idea, and developers everywhere applauded the introduction of the technology when it was first introduced several years ago.
 
-But the honeymoon didn't last long. After being subjected to real-world use on sites and applications of all sizes, developers discovered that AppCache (as it's called) was plagued  by a series of bugs and "bug-like features" that made the technology difficult or sometimes impossible to rely on. Ironically, while the Application Cache seemed well-suited for content-driven and static sites, it proved weakest when used for dynamic web-based applications.
+But the honeymoon didn't last. After being subjected to real-world use on sites and applications of all sizes, developers discovered that AppCache was plagued  by a series of bugs and "bug-like features" that made the technology difficult or sometimes impossible to rely on. Ironically, while the Application Cache seemed well-suited for content-driven and static sites, it proved weakest when used for dynamic web-based applications.
 
 If the authors and advocates of the Extensible Web Manifesto have their way, new technologies like Application Cache would not be introduced for full-blown standardization without first spending some time in the hands of developers. And by unlocking certain low-level browser APIs, like those mentioned above, developers can not only vet new ideas while in their infancy, but can also be a source of new ideas and feature proposals.
 
@@ -25,7 +25,7 @@ At it's core, this idea is referred to as "future polyfilling," or *prollyfillin
 
 === Prollyfills in Action: Prollyfilling CSS
 
-So what does a prollyfill look like, anyway? Well, it varies, and sometimes pretty widely. There are prollyfills in use today that not only provide experimental JavaScript APIs to developers, but which also allow developers to author custom HTML or CSS. We'll look at examples of all three types of prollyfills in this chapter, starting with a library that allows developers to try out experimental CSS features, and even create some of your own.
+So what does a prollyfill look like? It varies, and sometimes pretty widely. There are prollyfills in use today that not only provide experimental JavaScript APIs to developers, but which also allow developers to author custom HTML or CSS. We'll look at examples of all three types of prollyfills in this chapter, starting with a library that allows developers to try out experimental CSS features, and even create some of our own.
 
 If you're a CSS aficionado, you know that there are some great new features on the horizon, like filter effects, grid layout, regions, exclusions, and more. Another exciting set of enhancements are being proposed in the [CSS Selectors Level 4]http://dev.w3.org/csswg/selectors4 specification, through which the CSS Working Group hopes to add a bevy of new, powerful selectors, while also upgrading some selectors introduced with CSS3.
 
@@ -70,7 +70,7 @@ First things first, you'll need to download Hitch, which is distributed as a scr
 ----
 ====
 
-Next, you can "activate" Hitch by decorating +<style>+ and +<link>+ tags with the +data-hitch-interpret+ attribute, which tells hitch to scan the CSS at the location for Hitch-specific selectors.
+Next, you "activate" Hitch by decorating +<style>+ and +<link>+ tags with the +data-hitch-interpret+ attribute, which tells hitch to scan the CSS at the location for Hitch-specific selectors.
 
 ====
 [source, html]
@@ -100,7 +100,7 @@ In this example, I'm telling Hitch to look for rules in the +styles.css+ file. <
 ----
 ====
 
-Notice the pseudo-class selectors that start with +-hitch-+. All three of these +-hitch-anyof+, +-hitch-noneof+ and +-hitch-allof+ are selectors that Hitch provides out of the box. +Anyof+ will  match any element in the comma-delimited list, +nonof+ is a negation selector that will only apply the rule if the +li+ has none of the classes in the list, and +allof+ is inclusive, only +li+ elements with both classes will match and apply the rule.
+Notice the pseudo-class selectors that start with +-hitch-+. All three of these, +-hitch-anyof+, +-hitch-noneof+ and +-hitch-allof+ are selectors that Hitch provides out of the box. +Anyof+ will  match any element in the comma-delimited list, +noneof+ is a negation selector that will only apply the rule if the +li+ has none of the classes in the list, and +allof+ is inclusive, only +li+ elements with both classes will match and apply the rule.
 
 Now let's take a look at the source HTML, which is a list of todos decorated with classes where the todo is urgent, overdue or both:
 
@@ -150,11 +150,11 @@ With everything in place, I should be able to load my todo list up and see the a
 .Todo list with HitchJS-based styling
 image::images/ch6-ex03.png[]
 
-As you can see, HitchJS is easy to get started with and use in your own apps. By default, Hitch provides support for four logical selectors (+:-hitch-anyof+, +:-hitch-allof+, +:-hitch-oneof+, +-hitch-noneof+) and one structural selector (+:-hitch-has+), but the library also provides a great extensibility story so that you can create your own selector support in the form of "hitches" that are imported and processed by Hitch.js. In the next section, we'll create our own hitch to mimic a CSS Selectors Level 4 pseudo-element selector.
+As you can see, HitchJS is easy to get started with and use in your own apps. By default, Hitch provides support for four logical selectors (+:-hitch-anyof+, +:-hitch-allof+, +:-hitch-oneof+, +-hitch-noneof+) and one structural selector (+:-hitch-has+), but the library also provides a great extensibility story so that you can create your own selector support in the form of "hitches" that are imported and processed by HitchJS. In the next section, we'll create our own hitch to mimic a new CSS Selector.
 
 ==== Building your own "hitches"
 
-Earlier in this chapter, I introduced the new +:matches+ pseudo-class selector being considered for inclusion in the Selectors Level 4 spec. Rather than waiting for one or more browsers to implement support for this new selector, I'd like to try it on for size in my own apps--and possibly even share my experiences with other developers and members of the CSS Working Group. With Hitch, I can do that by creating a "hitch," or a JavaScript module that defines the logic for my selector. I then import my custom hitch into my app and when HitchJS is activated, it calls my module to determine if the element in question matches my custom selector.
+Earlier in this chapter, I introduced the new +:matches+ pseudo-class selector being considered for inclusion in the Selectors Level 4 spec. Rather than waiting for one or more browsers to implement support for this new selector, I'd like to try it on for size in my own apps--and possibly even share my experiences with other developers and members of the CSS Working Group. With HitchJS, I can do that by creating a "hitch," or a JavaScript module that defines the logic for my selector. I then import my custom hitch into my app and when HitchJS is activated, it calls my module to determine if the element in question matches my custom selector.
 
 So, to define my custom "hitch" for the CSS +:matches+ selector, I'll first need to create a new file called +selector-matches.js+ in my project. Then, I'll add the initial module definition that Hitch requires, as illustrated in <<EX06-04>>.
 
@@ -203,7 +203,7 @@ filter: function(el, selectorArgs){
 ----
 ===
 
-After setting up some helper variables, I split my +selectorArgs+ variable, which contains the comma-delimited list of classes and Ids into an array. Then, I loop over that array and attempt to match each selector argument against the current element. If the element has all of the values defined in the +selectorArgs+ array, I'll return true.
+After setting up some helper variables, I split my +selectorArgs+ variable, which contains the comma-delimited list of classes and Ids into an array. Then, I loop over that array and attempt to match each selector argument against the current element. If the element has all of the values defined in the +selectorArgs+ array, I'll return true, and the styles inside of the +:matches+-dependent rule will be applied.
 
 Now that we have our custom hitch, let's try out our new rule in CSS. First, I'll need to "import" my hitch by using Hitch's +@-hitch-requires+ directive at the top of my +styles.css+ file:
 
@@ -238,7 +238,7 @@ HitchJS is a versatile library, and now that you've seen how easy it is to creat
 
 In the last section, we explored how prollyfills can be useful for experimenting with new or unstable CSS selectors. Next, we'll shift focus to JavaScript prollyfilling. Specifically, we'll look at a proposal for one of those low-level APIs that could open up a wealth of new opportunities for front-end developers: [ServiceWorker]https://github.com/slightlyoff/ServiceWorker.
 
-ServiceWorker is a proposal, spearheaded by Alex Russell of Google, designed to make the browser's networking stack more programmable via JavaScript. Specifically, a ServiceWorker enables developers to use script to cache and handle every inbound request for resources in an app, even when the user is offline. 
+ServiceWorker is a proposal, spearheaded by Alex Russell of Google and others, designed to make the browser's networking stack more programmable via JavaScript. Specifically, a ServiceWorker enables developers to use JavaScript to cache and handle every inbound request for resources in an app, even when the user is offline. 
 
 If you're thinking that this is starting to sound a lot like a JavaScript-based version of the oft-maligned Application Cache, you'd be right, and also wrong at the same time. Because ServiceWorker is meant to be a low-level API, it's far broader than an imperative AppCache. It can certainly be used to handle application asset and resource caching, but it's also far broader than that. In a very general sense a ServiceWorker is a script that, when installed in your app, listens for network events. When those events occur, a ServiceWorker can intercept the network request and serve cached resources before the browser ever attempts to connect to a remote server.
 
@@ -306,7 +306,7 @@ this.addEventListener("fetch", function(e) {
 ----
 ====
 
-The ServiceWorker exposes several events that workers can respond to if they wish. If a worker is installed and has registered a +fetch+ listener, as we have above, the worker is allowed to handle the network request on behalf of the browser. In this case, we're checking to see if the URL being requested matches an existing resource and, if so, we'll use the new +respondWith+ method on the +fetch+ event to construct a cached response containing the data requested by the browser, and the network never even needs to be consulted!
+The ServiceWorker exposes several events that workers can respond to, if they wish. If a worker is installed and has registered a +fetch+ listener, as we have above, the worker is allowed to handle the network request on behalf of the browser. In this case, we're checking to see if the URL being requested matches an existing resource and, if so, we'll use the new +respondWith+ method on the +fetch+ event to construct a cached response containing the data requested by the browser, and the network never even needs to be consulted!
 
 The public API for the ServiceWorker proposal can be found in a [TypeScript file in the project's GitHub repository]https://github.com/slightlyoff/ServiceWorker/blob/master/service_worker.ts, and I also recommend checking out the [explainer document]https://github.com/slightlyoff/ServiceWorker/blob/master/explainer.md put together by the works working on the proposal. It's early days for ServiceWorker, which doesn't yet enjoy browser support, but the proposal is exactly the kind of API described in the Extensible Web Manifesto: a set of low-level browser capabilities that provide developers with ground-floor access to building robust, JavaScript-based prollyfills and APIs that push the web forward faster than ever.
 
