@@ -1,7 +1,77 @@
 [[polyfills_chapter_7]]
 == Building Your First Prollyfill
 
-=== The Resource Loader Prollyfill
+In Chapters 3-5, I walked you through the exercise of building a polyfill for the HTML5 Forms spec. Over the course of those three chapters, we talked about how to make a plan for building a polyfill, how to go about initial development, how to configure your library for automated and cross-browser testing and, finally, how to build your polyfill for performance. 
+
+In Chapter 6, I introduced the concept of the prollyfill, and walked through several examples of popular prollyfilling libraries. In this chapter, we're going to build on that knowledge, along with what we learned earlier in the book, and build our own prollyfill to "test out" an experimental Web Platform feature. Along the way, you'll learn both the ways that building polyfills and prollyfills are similar, and the ways they differ.
+
+=== Prollyfills vs. Polyfills: What's the Difference?
+
+Prollyfills, as we discussed in Chapter 6, are quite similar to polyfills in many ways, the biggest exception being that they often target proposals or specifications with in-flux APIs. Sometimes they even target untested or unspecified ideas, altogether. In both cases, much of the ideas that surround the polyfill, including the API, are expected to change greatly as the idea is debated, tested and possibly accepted for standardization.
+
+The purpose of building a prolyfill differs from that of a polyfill. Polyfills are typically built to allow developers to rely on new features and APIs across all browsers. They are meant, for the most part, to be used in production apps by everyday developers. Prollyfills, on the other hand, are different. In many ways, these libraries are experiments. They are built to test out unproven concepts, or ideas for standardization that need developer feedback or real-world application. Prollyfills are, for the most part, meant to be used in development and test settings, and not in production apps.
+
+That key difference between prollyfills and polyfills--their purpose for being--can tell us a great deal about how these libraries can and should be built by developers. As you'll see in this chapter, much of the construction process remains the same. You'll still want to set up unit tests, cross-browser tests and plan out the scope of your library, but you'll also need to build flexibility into the API of your library, which you should expect to change. You'll want to pay attention to performance, of course, but it's less critical with a prollyfill since these libraries are meant to test ideas. Often, prollyfills will lead you down a path of non-performant implementations in order to test out ideas, as you'll see in this chapter, and that's perfectly ok.
+
+=== The Resource Priorities Prollyfill
+
+For the rest of this chapter, we're going to go through a brief exercise and build our own prollyfill for a brand-new W3C proposal. The name of the specification we'll be targeting is [Resource Priorities]https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html. Resource Priorities are meant to provide developers with new HTML attributes and a CSS property that can be used to specify the download priority of a resource like an image, script or media element. The two attributes and property are:
+
+- [lazyload]https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-lazyload - A boolean HTML attribute that tells the browser to delay loading the element in question until all elements that do not have this attribute have started downloading.
+- [postpone]https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone - A boolean HTML attribute that tells the browser to delay loading the element in question until the element or it's container are visible in the viewport.
+- [resource-priorities]https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone - A CSS property that can be used to set the resource priority (lazyload or postpone) of a resource associated with an element or another CSS property.
+
+[WHAT'S THE VALUE OF THIS?]
+
+<<EX07-01>> shows an example of these features, in action.
+
+[[EX07-01]]
+.An example HTML page with prioritized resources
+====
+[source, html]
+----
+<!DOCTYPE html>
+<html>
+ <head>
+     <link rel="stylesheet" type="text/css" src="styles.css" />
+     <link rel="stylesheet" type="text/css" src="animations.css" lazyload />
+		<style>
+			video.promo source {
+				resource-priorities: postpone;
+			}
+		</style>
+ </head>
+ <body>
+    <img id="siteLogo" src="/images/site.png"/>
+    <img id="Header" src="/images/Header.png"/>
+		<ul class="gallery">
+    	<li>
+				<img id="img1" src=".../images/img1.png" lazyload />
+			</li>
+    	<li>
+				<img id="img3" src=".../images/img2.png" postpone />
+			</li>
+			<li>
+				<img id="img3" src=".../images/img3.png" postpone />
+			</li>
+		</ul>
+		<video class="promo">
+			<source src="/videos/promo.mp4">
+			<source src="/videos/promo.ogv">
+			<source src="/videos/promo.webm">
+		</video>
+    <script src="app.js" ></script>
+    <script src="GoogleAnalytics.js" lazyload></script>
+ </body>
+</html>
+----
+====
+
+In the sample above, which will also serve as our base demo page for the prollyfill, you can see both attributes and the property in action. First, in the style tag, we have a single CSS selector for the source values of any video tags containing the class "promo." Inside of the selector is our +resource-priorities+ property, which tells the browser to set the +postpone+ value on the video source elements. As you'll recall,   postpone indicates to the browser that resources are not to be loaded until visible on the screen, so this CSS rule will ensure that the video on my page doesn't begin loading until the user scrolls to that location on the screen.
+
+Throughout the rest of the sample above, I've applied the +lazyload+ attribute to those resources that I want to have downloaded as soon as core page resources are loaded, and the +postpone+ attribute to those resources that need to only be loaded when in the user's visible viewport. The end result is a page with clear instructions to the browser as to the loading priority of all resources in the document. 
+
+Resource Priorities are a great idea, but since they are so new, there aren't any native browser implementations. Instead, we can build our own prollyfill, which will allow us, and other developers to put this spec through its paces and offer feedback to spec authors and the W3C. So let's start building our prollyfill, which I've decided to call slacker.js.
 
 === Setting Up Your Prollyfill Project
 
