@@ -21,11 +21,57 @@ For the rest of this chapter, we're going to go through a brief exercise and bui
 - [postpone]https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone - A boolean HTML attribute that tells the browser to delay loading the element in question until the element or it's container are visible in the viewport.
 - [resource-priorities]https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone - A CSS property that can be used to set the resource priority (lazyload or postpone) of a resource associated with an element or another CSS property.
 
-[WHAT'S THE VALUE OF THIS?]
+Of course, you're probably wondering what the point of this spec is, especially in light of HTML5's +defer+ and +async+ attributes. For starters, +defer+ and +async+ are available only to +script+ elements, whereas +lazyload+ and +postpone+ are available to all HTML elements that can download resources, including +script+, +link+, +img+, +audio+, +video+, +iframe+, and more. 
 
-<<EX07-01>> shows an example of these features, in action.
+More importantly, though, resource priorities provide developers with a way to programmatically give the browser hints as to the importance of resources. At the present, download priority for the browser is based solely on document order--scripts, stylesheets and images are loaded in the order that they appear--but document order, especially for visual resources, is often more a function of document location and not resource importance. As a result, it's difficult for developers to control the real and perceived performance of their pages without script-based hacks.
+
+Let's take a look at an example. The page in <<EX07-01>> contains several resources: two stylesheets, a video, several images and a few scripts. The way this document is structured, all media will be downloaded in document order, and our script at +app.js+, which presumably is important to the function of the page, won't start executing until those downloads have at least initiated. What's more, if our +app.js+ script is relying on a +document.load+ event or jQuery's +load+ event, our application script won't load until those resources have been loaded.
 
 [[EX07-01]]
+.An example HTML page with document-order prioritized resources
+====
+[source, html]
+----
+<!DOCTYPE html>
+<html>
+ <head>
+     <link rel="stylesheet" type="text/css" src="styles.css" />
+     <link rel="stylesheet" type="text/css" src="animations.css" />
+		<style>
+			video.promo source {
+				resource-priorities: postpone;
+			}
+		</style>
+ </head>
+ <body>
+    <img id="siteLogo" src="/images/site.png"/>
+    <img id="Header" src="/images/Header.png"/>
+		<ul class="gallery">
+    	<li>
+				<img id="img1" src=".../images/img1.png" />
+			</li>
+    	<li>
+				<img id="img3" src=".../images/img2.png" />
+			</li>
+			<li>
+				<img id="img3" src=".../images/img3.png" />
+			</li>
+		</ul>
+		<video class="promo">
+			<source src="/videos/promo.mp4">
+			<source src="/videos/promo.ogv">
+			<source src="/videos/promo.webm">
+		</video>
+    <script src="app.js" ></script>
+    <script src="GoogleAnalytics.js"></script>
+ </body>
+</html>
+----
+====
+
+The +lazyload+ and +postpone+ properties provide us an alternative that allow us to preserve our page structure, while also providing programmatic hints as to the importance of page resources. Elements with +lazyload+ and +postpone+ will be loaded either when all other resources have been loaded or when the viewport enters the bounding box of the element in question, respectively. Elements without either of these properties, on the other hand, will continue to load in document order, as before. <<EX07-02>> shows an example of these features, in action.
+
+[[EX07-02]]
 .An example HTML page with prioritized resources
 ====
 [source, html]
@@ -73,11 +119,48 @@ Throughout the rest of the sample above, I've applied the +lazyload+ attribute t
 
 Resource Priorities are a great idea, but since they are so new, there aren't any native browser implementations. Instead, we can build our own prollyfill, which will allow us, and other developers to put this spec through its paces and offer feedback to spec authors and the W3C. So let's start building our prollyfill, which I've decided to call slacker.js.
 
+=== Specifying the API & Deciding What to Build
+
+Before beginning construction of our prollyfill, it's important to take a moment and consider the purpose and goals of the project, what you will and won't take on, as well as the API of the library. As I did in Chapter 2 with the Kendo UI Forms polyfill, the first thing I did with +https://github.com/bsatrom/slacker.js[slacker.js]+ was to define the purpose and goals of the project, as illustrated in <<EX07-03>>.
+
+[[EX07-03]]
+.Purpose and Goals of the Resource Priorities prollyfill, slacker.js
+____
+== Purpose & Goals
+
+The purpose of this project is to serve as a complete prolyfill for the draft https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone[Resource Priorities spec], including support for new HTML attributes (+lazyload+ and +postpone+), a new CSS property (+resource-priorities+) and a DOM event (+lazyloaded+). This project includes built-in feature detection and, by-default, will only polyfill those forms features not present in the user's browser. 
+
+As a prollyfill, this library's primary purpose is to serve as a proof-of-concept and testbed for conversations around the Resource Priorities specification, and *not* to serve as a cross-browser polyfill ready for production use.
+
+This library will function as both a drop-in and opt-in prollyfill, depending on the features being used. For the +lazyload+ and +postpone+ properties, this library will automatically detect and manage these resources when included in a document. When using the +resource-priorities+ CSS property, +link+ and +style+ elements should be decorated with an attribute (+data-slacker-interpret+) that will indicate use of this property to the prollyfill.
+
+*Goals*
+
+- **Provide a complete Resource Priorities solution that allows developers to experiment with new attributes, CSS properties and DOM events, as defined in the spec**.
+- **Provide a test bed for specified and experimental features**. As a prollyfill, the API surface of this library is not limited to those features already contained in the spec. Where it makes sense to propose new or changed features, this library can be used as a POC for those proposed changes.
+- **Adapt quickly to specification changes, including those to the spec's API**. We expect this spec to change, and this library should be built in such a way that API changes are easy to absorb.
+
+*Non-Goals*
+
+- This library is intended to serve as a proof-of-contept for a cutting-edge web platform feature and, as such is not meant for production use. 
+- As a proof-of-concept, this library will not be performance-tuned
+- This library may diverge from the https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone[Resource Priorities spec] in order to add convenience features, non-standard behaviors, or to add experimental APIs for consideration by spec authors.
+____
+
+As you can see, this section has a lot of similarities to and differences from our Forms polyfill. Like the Forms library, this section contains a summary of the purpose of the project, as well as a few bullets covering the goals and non-goals of the project. The differences are clear in the content, however. Our prollyfill is an experiment intended to drive discussion, and you can see that reflected in the text above.
+
+Once I've clearly defined the purpose and goals of my library, I'll turn my attention next to it's API. For this, I like to sit down with the spec and draft a features matrix so that I can outline the major features my library should provide, as well as any feature-specific caveats or quirks that the library should account for. <<EX07-04>> illustrates my initial features matrix for +slacker.js+.
+
+[[EX0704]]
+.Features Matrix for +slacker.js+
+[TABLE HERE]
+
 === Setting Up Your Prollyfill Project
 
-=== Specifying the API
 
-=== Deciding what to build
+=== Adding the first test & Feature
+
+
 
 === Adding Features
 
