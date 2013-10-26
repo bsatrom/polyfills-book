@@ -149,11 +149,33 @@ ____
 
 As you can see, this section has a lot of similarities to and differences from our Forms polyfill. Like the Forms library, this section contains a summary of the purpose of the project, as well as a few bullets covering the goals and non-goals of the project. The differences are clear in the content, however. Our prollyfill is an experiment intended to drive discussion, and you can see that reflected in the text above.
 
-Once I've clearly defined the purpose and goals of my library, I'll turn my attention next to it's API. For this, I like to sit down with the spec and draft a features matrix so that I can outline the major features my library should provide, as well as any feature-specific caveats or quirks that the library should account for. <<EX07-04>> illustrates my initial features matrix for +slacker.js+.
+Once I've clearly defined the purpose and goals of my library, I'll turn my attention next to its API. For this, I like to sit down with the spec and draft a features matrix so that I can outline the major features my library should provide, as well as any feature-specific caveats or quirks that the library should account for. <<EX07-04>> illustrates my initial features matrix for +slacker.js+.
 
-[[EX0704]]
+[[EX07-04]]
 .Features Matrix for +slacker.js+
-[TABLE HERE]
+[options="header"]
+|==============================================
+|Feature|Opt-In|Workflow|Exceptions|Supported Elements
+|Support for +lazyload+ attribute|No|Remove +src+ of elements with +lazyload+ and place in an array; When +document.load+ is fired, re-set the +src+ for each element.|for +script+, if +defer+ is used with +lazyload+, it has no effect; for +script+, if +async+ is set to false, +lazyload+ has no effect; for +svg reImage+, if +externalResourcesRequired+ is set to "true," +lazyload+ has no effect|+img+, +audio+, +video+, +script+, +link+, +embed+, +iframe+, +object+, +svg feImage+, +svg use+, +svg script+, +svg tref+  
+|Support for +postpone+ attrbute|No|Remove +src+ of elements with +postpone+ and place in an array; On scroll or when an element with the +display:none+ property becomes visible, determine if any elements are within the bounding box of the page and, if so, re-set the +src+ for each visible element.|for +audio+, +postpone+ only works if the +controls+ attribute has been set; for +svg reImage+, if +externalResourcesRequired+ is set to "true," +postpone+ has no effect|+img+, +audio+, +video+, +script+, +link+, +embed+, +iframe+, +object+, +svg feImage+, +svg use+, +svg script+, +svg tref+  
+|Support for +resource-priorities+ CSS property|Yes (+data-slacker-interpret+)|Parse all +link+ and +style+ elements that use the +data-slacker-interpret+ attribute and find all instances of the +resource-priorities+ property; Remove +src+ values for related elements, and any CSS properties that specify a source (like +background-image+)|None|+img+, +audio+, +video+, +script+, +link+, +embed+, +iframe+, +object+, +svg feImage+, +svg use+, +svg script+, +svg tref+, '+background-image+', '+border-image-source+', '+content+', '+cursor+', '+list-style-image+', '+@font-face src+'  
+|Support for +lazyloaded+ event|No|Once the +src+ has been re-set for resources with the +lazyload+ attribute, fire the +lazyloaded+ event. If no such elements exist, fire immediately after +document.load+|None| N/A
+|==============================================
+
+As you can see from the table above, even though there are really only four major features to the Resource Priorities spec, there's quite a lot going on for what seems like a relatively straightforward prollyfill. In addition to needing to support new attributes, a CSS proper and a DOM event, we have to consider how to support these new features across a dozen HTML elements and a handful of resource-loading CSS properties. We also have to take into account the interaction between +lazyload+/+postpone+ and +defer+ and +async+ when used on script elements. Since there's a lot to consider when building my prollyfill, I'm going to create a roadmap for major features, just as I did for my HTML5 Forms polyfill. The roadmap for +slacker.js+ can be seen in <<EX07-05>>.
+
+[[EX07-05]]
+.Roadmap for slacker.js
+____
+== Prollyfill Roadmap
+
+- v0.1 - Support for the +lazyload+ attribute and +lazyloaded+ event
+- v0.2 - Support fot the +postpone+ attribute
+- v0.5 - Support for the +resource-priorities+ CSS property
+- v1.0 - Full spec support (v0.5 + bug-fixes needed)
+____
+
+With a clearly defined set of goals, features and a roadmap for my library, I'm not ready to get started. In the next section, we'll set up the project for +slacker.js+.
 
 === Setting Up Your Prollyfill Project
 
