@@ -175,15 +175,25 @@ ____
 - v1.0 - Full spec support (v0.5 + bug-fixes needed)
 ____
 
-With a clearly defined set of goals, features and a roadmap for my library, I'm not ready to get started. In the next section, we'll set up the initial project for +slacker.js+ and start building out our polyfill.
+With a clearly defined set of goals, features and a roadmap for my library, I'm now ready to get started. In the next section, we'll set up the initial project for +slacker.js+ and start building out our polyfill.
 
 === Setting Up Your Prollyfill Project
 
+In Chapter 3, I provided some tips on how to set up the initial project structure for your polyfill, including essential documentation files (README, LICENSE, CHANGELOG, CONTRIBUTING) and essential directories for your source, 3rd party dependencies, tests and distribution files. In Chapter 4, we expanded on this list with a discussion on configuring project builds with Grunt and setting-up unit and cross-browser testing via Jasmine, Karma and Travis.ci. For a probablyfill, much of these process remains the same, so I won't repeat it here. Instead, I encourage you to check out Chapter 3 and 4 if you haven't already to get an overview of how I've chosen to configure both my HTML5 Forms polyfill and my Resource Priorities prollyfill.
 
+=== Adding the First Test & Feature
 
-=== Adding the first test & Feature
+For +slacker.js+, I'm going to use http://pivotal.github.io/jasmine/[Jasmine] for my unit tests, just as I did for the HTML5 Forms polyfill earlier in the book. Once I've configured Jasmine, including the Grunt- and Karma-dependent steps outlined in Chapter 4, I'm ready to add my first test.
 
+In the roadmap for my prollyfill, which I shared above, I decided to first focus on supporting the +lazyload+ attribute. Along those lines, my first test will make sure that my prollyfill detects the presence of this attribute and removes whatever value is specified in the src. <<EX07-06>> contains the source for my first test:
 
+[[EX07-06]]
+.First test for the slacker.js prollyfill
+====
+[source, js]
+----
+----
+====
 
 === Adding Features
 
@@ -194,3 +204,11 @@ With a clearly defined set of goals, features and a roadmap for my library, I'm 
 ==== Testing Across Browsers
 
 === Building for Performance
+
+As I mentioned earlier in this chapter, when building a prollyfill, your goal is to build something that tests out a experimental API, not to build something meant for cross-browser adoption by developers. As such, performance won't and shouldn't be your primary concern. What's more, sometimes creating prollyfills for experimental APIs require us to do bad things to HTML, JavaScript and CSS in order to create something halfway functional, and these bad things often cause performance go fly right out the window. Chalk this up to another reason why access to those "low-level APIs" described in the Extensible Web Manifesto are so critical, as these would allow developers to build prollyfills that also perform reasonably well. Until then, we do the best we can.
+
+Of course, just because performance isn't your primary concern when building a prollyfill doesn't mean it shouldn't be a concern, at all. While I don't recommend spending time building comparative JSPerf tests and mining your browser's developer tools in an effort to squeeze out that extra few dozen milliseconds of speed, it is important to pay at least some attention to how your library performs, and apply common-sense practices to it's construction. In this section, we'll take a look at a couple of simple refactoring steps I can perform to quickly improve the overall performance of my prolyfill.
+
+[PERF SECTION]
+
+[CLOSING]
