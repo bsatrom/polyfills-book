@@ -170,14 +170,15 @@ ____
 == Prollyfill Roadmap
 
 - v0.1 - Support for the +lazyload+ attribute and +lazyloaded+ event
-- v0.2 - Support fot the +postpone+ attribute
+- v0.2 - Support for the +postpone+ attribute
 - v0.5 - Support for the +resource-priorities+ CSS property
 - v1.0 - Full spec support (v0.5 + bug-fixes needed)
 ____
 
-With a clearly defined set of goals, features and a roadmap for my library, I'm not ready to get started. In the next section, we'll set up the project for +slacker.js+.
+With a clearly defined set of goals, features and a roadmap for my library, I'm not ready to get started. In the next section, we'll set up the initial project for +slacker.js+ and start building out our polyfill.
 
 === Setting Up Your Prollyfill Project
+
 
 
 === Adding the first test & Feature
