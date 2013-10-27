@@ -181,19 +181,109 @@ With a clearly defined set of goals, features and a roadmap for my library, I'm 
 
 In Chapter 3, I provided some tips on how to set up the initial project structure for your polyfill, including essential documentation files (README, LICENSE, CHANGELOG, CONTRIBUTING) and essential directories for your source, 3rd party dependencies, tests and distribution files. In Chapter 4, we expanded on this list with a discussion on configuring project builds with Grunt and setting-up unit and cross-browser testing via Jasmine, Karma and Travis.ci. For a probablyfill, much of these process remains the same, so I won't repeat it here. Instead, I encourage you to check out Chapter 3 and 4 if you haven't already to get an overview of how I've chosen to configure both my HTML5 Forms polyfill and my Resource Priorities prollyfill.
 
-=== Adding the First Test & Feature
+=== Adding Prollyfill Features
 
 For +slacker.js+, I'm going to use http://pivotal.github.io/jasmine/[Jasmine] for my unit tests, just as I did for the HTML5 Forms polyfill earlier in the book. Once I've configured Jasmine, including the Grunt- and Karma-dependent steps outlined in Chapter 4, I'm ready to add my first test.
 
-In the roadmap for my prollyfill, which I shared above, I decided to first focus on supporting the +lazyload+ attribute. Along those lines, my first test will make sure that my prollyfill detects the presence of this attribute and removes whatever value is specified in the src. <<EX07-06>> contains the source for my first test:
+==== The First Test: Feature Detection
+
+In the roadmap for my prollyfill, which I shared above, I decided to first focus on supporting the +lazyload+ attribute. Along those lines, my first test make sure that my prollyfill is performing feature detection for the +lazyload+ attribute. I know, of course, that now browser currently supports this attribute, but I don't know how long that will be the case, or how long my library will stick around, so the responsible thing to do is to always perform feature detection, if possible, even when building prollyfills. <<EX07-06>> contains the source for my first test:
 
 [[EX07-06]]
 .First test for the slacker.js prollyfill
 ====
 [source, js]
 ----
+describe('lazyload attribute tests', function() {
+  it('should test for the lazyload attribute before acting',
+  function() {
+    var s = document.createElement('script');
+    var lazyloadSupported = 'lazyload' in s;
+
+    expect(lazyloadSupported)
+			.toEqual(window.slacker.features.lazyload);
+  });
+});
 ----
 ====
+
+When I first run this test, it will fail, of course. In order to make it pass, I'll add a test for the +lazyload+ attribute to my source in a new file called +slacker.features.js+, as shown in <<EX07-07>>.
+
+[[EX07-07]]
+.+lazyload+ feature test
+====
+[source, js]
+----
+(function() {
+  window.slacker = window.slacker || {};
+
+  var resourcePrioritiesFeatures = {
+    lazyload: (function () {
+      var s = document.createElement('script');
+      return 'lazyload' in s;
+    })()
+  };
+  
+  window.slacker.features = resourcePrioritiesFeatures;
+}());
+----
+====
+
+This module, which will serve as the core module for all feature tests in my prollyfill, starts with an IIFE before setting the global +window.slacker+ namespace that I'll be using for my prollyfill. Next, I create an object literal to hold my feature tests, and add a test for the +lazyload+. As discussed in Chapter 3, I can test for official support for new HTML attributes by creating an in-memory element and checking to see if the attribute exists. Once I've added my features module and the +lazyload+ test, my first test should pass.
+
+==== The Second Test: Initial +lazyload+ functionality
+
+Now that I have my feature testing in place, I can shift to the +lazyload+ attribute itself. The next test, as illustrated in <<EX07-08>> will make sure that my prollyfill detects the presence of this attribute and removes whatever value is specified in the src.
+
+[[EX07-08]]
+.Testing +src+ attribute removal
+====
+[source, js]
+----
+it('should detect the lazyload attribute and remove the src attribute', function() {
+  fixtures.load('lazyload.html');
+
+  var stylesheet = document.querySelectorAll('[lazyload]');
+
+  expect(stylesheet.length).not.toBe(0);
+  expect(stylesheet[0].getAttribute('src')).toEqual('');
+});
+----
+====
+
+The +lazyload.html+ file referenced at the start of the test is a simple document containing two +link+ elements, one of which has been decorated with the +lazyload+ attribute. For this test, that file is loaded and added to the virtual DOM and then selected from the document, at which point I use a couple of Jasmine +expect+ calls to make sure that a) the element is in the DOM and b) it's +src+ attribute has been modified.
+
+As with our first test, this test will fail on first run because I haven't added any functionality yet. Let's do that, first by creating a +slacker.js+ source file in the +src+ directory for my project, and then by adding the +src+ removal functionality, as illustrated in <<EX07-09>>.
+
+[[EX07-09]]
+.Creating the +lazyload+ src removal feature
+====
+[source, js]
+----
+(function() {
+  window.slacker = window.slacker || {};
+
+  var i, len,
+    lazyLoaded = [],
+    qsa = document.querySelectorAll;
+
+  //Test for the presence of the lazyload attribute.
+  //If it's not supported, let's get to work.
+  if (!window.slacker.features.lazyload){
+    var elements = qsa('[lazyload]');
+
+    for (i = 0, len = elements.length; i < len; i++) {
+      var el = elements[i];
+      lazyLoaded.push(el.getAttribute('src'));
+      el.setAttribute('src','');
+    }
+  }
+
+}());
+----
+====
+
+[HERE]
 
 === Adding Features
 
