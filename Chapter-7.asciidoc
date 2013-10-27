@@ -389,26 +389,295 @@ it('should test for the lazyload attribute before acting', function() {
 ----
 ====
 
-==== The Third Test: Adding a new public API
+==== The Third Test: Modifying the public API
 
-[HERE]
+So far, we've been building our prollyfill to the Resource Priorities spec, and things look pretty good. However, as a prollyfill developer, you might encounter situations where you have an idea for a feature of your library that might actually make sense as a part of the official spec. In this section, we'll explore the addition of one such feature to +slacker.js+.
 
-ADDING +lazyloaded+
+As I worked on the initial functionality for +slacker.js+, I found myself wishing that the collection of de-prioritized elemements--as in, those decorated with the +lazyload+ or +postpone+ attributes were available in some form of collection. that I could inspect from my tests. I also thought that a collection like this would be useful to app developers, so since this is a prollyfill for a draft specification, what better way to test out this idea than to add the feature to my prollyfill and try it out?
 
-=== Adding Features
+To add this functionality, I'll start with a simple test, as illustrated in <<EX07-13>>. Here, I'm specifying that I expect for my +slacker+ object to hold an array called +lazyLoaded+ and that this array should have a length of two, which corresponds to the two elements (one +<link>+ and one +<img>+) in my +lazyload.html+ test file.
 
-=== Testing
+[[EX07-13]]
+.Test for brand-new functionality
+====
+----
+it('should hold the resource source in the lazyLoaded array', function() {
+  loadFrame(function(frame) {
+    expect(frame.contentWindow.slacker.lazyLoaded.length).toEqual(2);
+  });
+});
+----
+====
 
-==== Automated Testing
+Once I've added this test and run my tests in the browser to verify failure, I'll head back over to +slacker.js+ to add the following line just after the +for+ loop:
 
-==== Testing Across Browsers
+====
+[source, js]
+----
+window.slacker.lazyLoaded = lazyLoaded;
+----
+====
 
-=== Building for Performance
+With this line, my tests and apps can now obtain access to an array of lazyLoaded elements. Is this a good idea? Maybe, or maybe not. All that matters in this case is that, as a prollyfill developer, I should feel free to experiment and play with ideas like this, and even pitch them to the spec authors for inclusion. If they say yes, I've contributed to a future web platform standard! And if not, no harm, no foul. I can simply remove the API from my prollyfill, and move on confident that I've still contributed to the standardization process by encouraging a conversation.
+
+If this new API were to be added to the spec, it would no doubt live as an object on +window+ and would probably have a different name. I'm adding it to my +slacker+ object, in this case, to be clear about the API for my prollyfill. If and when I propose this new addition, which we'll discuss below, I can use the API of my library as a reference, while suggesting additions  or changes to the spec.
+
+==== The Fourth Test: Supporting Additional Element Types
+
+Of course, my test in <<EX07-13>> will still fail, at this point, and if you look at the source in <<EX07-10>>, it's easy to see why. My test file contains two +lazyload+ elements, an image and a stylesheet, but my prollyfill only supports the +<link>+ element, so I'll need to modify the library to support the +<img>+ element, as well. <<EX07-14>> contains the new source of my +for+ loop.
+
+[[EX07-14]]
+.Supporting a second element type
+====
+----
+for (i = 0, len = elements.length; i < len; i++) {
+  var el = elements[i];
+  if (el.nodeName === 'LINK') {
+    lazyLoaded.push(el.getAttribute('data-href'));
+    el.setAttribute('data-href','');
+  } else if (el.nodeName === 'IMG') {
+    lazyLoaded.push(el.getAttribute('data-src'));
+    el.setAttribute('data-src','');
+  }
+}
+----
+====
+
+Once I've added the code above, the test in <<EX07-13>> will pass, meaning that I have starter support for two element types and a public object that holds my lazyLoaded urls. This is great, but since there's some code duplication above, and I hate duplication, it's time for another refactor.
+
+==== The Second Refactor: Completing Element Type Support
+
+With only two elements to support, my +if+ statement above isn't too unwieldy. That said, according to the Resource Priorities spec, I need to support *thirteen* different types. What's more, I still have to add support for +postpone+, which also supports thirteen elements. I really don't want to keep adding +if+ statements, so it's time for another refactor.
+
+Since the only real difference between the elements I need to support is the source attribute they use (+href+ or +src+), I can do a lot to abstract away the clearing of attributes into a local helper method, while placing each element I want to support into a local object. The new source for +slacker.js+ once I've made this change can be found in <<EX07-15>>.
+
+[[EX07-15]]
+.Refactoring to add multiple element support
+====
+----
+(function() {
+  window.slacker = window.slacker || {};
+
+  var i, len,
+    lazyLoaded = [];
+
+  function clearSourceAttribute(el, attr) {
+    lazyLoaded.push(el.getAttribute(attr));
+    el.setAttribute(attr,'');
+  }
+
+  var elementReplacements = {
+    LINK: function(el) {
+      clearSourceAttribute(el, 'data-href');
+    },
+    IMG: function(el) {
+      clearSourceAttribute(el, 'data-src');
+    }
+  };
+
+  //Test for the presence of the lazyload attribute.
+  //If it's not supported, let's get to work.
+  if (!window.slacker.features.lazyload){
+    var elements = document.querySelectorAll('[lazyload]');
+
+    for (i = 0, len = elements.length; i < len; i++) {
+      var el = elements[i];
+
+      if (el.nodeName in elementReplacements) {
+        elementReplacements[el.nodeName](el);
+      }
+    }
+    //Make the array of lazyLoaded elements publicly available
+    //for debugging.
+    window.slacker.lazyLoaded = lazyLoaded;
+  }
+
+}());
+----
+====
+
+By moving most of the attribute support and element-specific logic into module-level functions, I get a much cleaner +for+ loop. It's also much easier to add support for the rest of the elements in the spec. Let's add another one of those now, first via a test.
+
+[[EX07-16]]
+.Testing for +<script>+ element support
+====
+----
+it('should support the script element', function() {
+  loadFrame(function(frame) {
+    var stylesheet = frame.contentDocument.querySelectorAll('script[lazyload]');
+
+    expect(stylesheet.length).not.toBe(0);
+    expect(stylesheet[0].getAttribute('data-src')).toEqual('');
+  });
+});
+----
+====
+
+Similar to my initial test for the +link+ attribute, I'm making sure that my +script+ element is in the page, and that my prollyfill removes it's +data-src+ attribute. After verifying that it fails, I can add support to the +slacker.js+ source by adding a new function for the +script+ element, as shown in <<EX07-17>>. Once I've added this function, I can re-run my tests and confirm that they pass.
+
+[[EX07-17]]
+.Adding support for the +<script>+ element
+====
+----
+var elementReplacements = {
+  LINK: function(el) {
+    clearSourceAttribute(el, 'data-href');
+  },
+  IMG: function(el) {
+    clearSourceAttribute(el, 'data-src');
+  },
+  SCRIPT: function(el) {
+    clearSourceAttribute(el, 'data-src');
+  }
+};
+----
+====
+
+==== The Fifth Test: Completing Initial Support
+
+Now that I have some initial functionality to remove resource source attributes, and I have a clean way to add support for all element types, it's time to complete initial support for the +lazyloaded+ attribute by adding functionality to properly set the +href+ attribute on my +link+ tag after the page load is complete.
+
+First, just as we've done every time thus, far, I'll create my failing test, which can be seen in <<EX07-18>>.
+
+[[EX07-18]]
+.Test for full +lazyload+ attribute support
+====
+----
+it('should re-apply the lazyload attribute after the document.load event', function() {
+  loadFrame(function(frame) {
+    var stylesheet = frame.contentDocument.querySelectorAll('link[lazyload]');
+  
+    expect(stylesheet[0].getAttribute('href')).not.toBe(null);
+  });
+});
+----
+====
+
+As per the spec, once the +document.load+ event has fired, I expect my prollyfill to go to work and set the +src+ and +href+ properties for my elements. If things work properly, this test will confirm that my test document's +link+ element has been modified accordingly.
+
+To make this test pass, and round out initial support for the +lazyloaded+ attribute, I'll need to make some pretty extensive changes to my prollyfill source, as shown in <<EX07-19>>.
+
+[[EX07-19]]
+.Adding complete support for the +lazyloaded+ attribute.
+====
+[source, javascript]
+----
+(function() {
+  window.slacker = window.slacker || {};
+
+  var i, len,
+    lazyLoaded = [];
+
+  function clearSourceAttribute(el, attr) {
+    lazyLoaded.push({
+      el: el,
+      source: el.getAttribute('data-' + attr)
+    });
+    el.setAttribute('data-' + attr,'');
+  }
+
+  var elementSource = {
+    LINK: 'href',
+    IMG: 'src',
+    SCRIPT: 'src'
+  };
+
+  //Test for the presence of the lazyload attribute.
+  //If it's not supported, let's get to work.
+  if (!window.slacker.features.lazyload){
+    var elements = document.querySelectorAll('[lazyload]');
+
+    for (i = 0, len = elements.length; i < len; i++) {
+      var el = elements[i];
+
+      if (el.nodeName in elementSource) {
+        clearSourceAttribute(el, elementSource[el.nodeName]);
+      }
+    }
+    //Make the array of lazyLoaded elements publicly available
+    //for debugging.
+    window.slacker.lazyLoaded = lazyLoaded;
+
+    //When the page has finished loading, loop through
+    //the collection of lazyloaded elements and set their
+    //attributes accordingly.
+    window.addEventListener('load', function() {
+      for (i = 0, len = lazyLoaded.length; i < len; i++) {
+        var element = lazyLoaded[i];
+        element.el.setAttribute(elementSource[element.el.nodeName], element.source);
+      }
+    });
+  }
+}());
+----
+====
+
+The key piece of the sample above is towards the end, where I've defined a +load+ event listener on the current +window+. Once that event fires, I know it's time for me to add source properties back on the +lazyloaded+ elements, so I'll loop through my collection of elements and set it's +src+ or +href+ property accordingly. If you look closely, you'll also notice that I refactored the +clearSourceAttribute+ function, as well as the +elementSource+ object to support clearing and setting of attributes, cleanly. With these changes, all my tests will pass, and all I need to do to support the rest of the specified elements it to add them to the +elementSource+ object. I'll leave that as an exercise to the reader, though you can also check the public https://github.com/bsatrom/slacker.js[GitHub repo for slacker.js] if you want to see what the completed prollyfill looks like.
+
+==== The Final Test: Supporting the +lazyloaded+ event
+
+Before we close this chapter and our journey into polyfills and prollyfills, there's one more specified feature I need to add. According to the Resource Priorities spec, the browser should fire a +lazyloaded+ DOM event after downloading all of the lazyload-marked documents has been initiated. It should be easy enough to add this, so I'll start again with a failing test.
+
+[[EX07-20]]
+.Testing for the lazy loaded event
+====
+[source, javascript]
+----
+it('should fire the lazyloaded event after src replacement is complete', function() {
+  loadFrame(function(frame) {
+    var lazyloaded = false;
+
+    frame('lazyloaded', function() {
+      lazyloaded = true;
+    });
+
+    waitsFor(function() {
+      return lazyloaded;
+    }, 'iframe lazyloaded event never fired', 2000);
+
+    runs(function() {
+      expect(lazyloaded).toBe(true);
+    });
+  });
+});
+----
+====
+
+After I load my test document, I'll add a listener for the +lazyloaded+ event, and then add the Jasmine +waitsFor+ and +runs+ functions so that I give the iframe plenty of time to fire the event before I execute the test.
+
+To implement this function, I can add a single line just after the +for+ loop in <<EX07-19>>
+
+====
+[source, js]
+----
+window.dispatchEvent(new Event('lazyloaded'));
+----
+====
+
+And that's it! All my tests should pass, and I've now added experimental support for the +lazyload+ portion of the Resource Priorities specification.
+
+=== What's Next?
+
+We breezed through a lot in this chapter for our +slacker.js+ prollyfill, but the work is just getting started. From here, I still need to add support for the remaining nine element types, deal with some element-specific edge cases, and then add support for the +postpone+ attribute and the +resource-priorities+ CSS property. On the infrastructure side, I'll also need to make some changes to account for automated and cross-browser testing. Just like polyfilling, prollyfilling is hard work and there's still a lot left to do! Of course, you can just check out the https://github.com/bsatrom/slacker.js[+slacker.js+ GitHub repo] to see the remaining prollyfill features that I didn't have space to cover, here.
+
+Hopefully, over the course of this chapter on building a real-world prollyfill, you got a glimpse into both the similarities and differences between polyfills and prollyfills. In short, they are a lot alike, with the key differences being how you handle the public API and performance considerations for each. In this section, I'll briefly recap those differences.
+
+==== Suggesting an API modification
+
+As we've talked about repeatedly in this book, the public API for a stable feature is set, and should be considered gospel by the polyfill developer. Prollyfills, on the other hand, are in-flux, by definition. When building prollyfills, you should respect the API to some extent, while also feeling free to innovate and experiment with new ideas. Adding a +lazyLoaded+ collection to +slacker.js+, is an example of this.
+
+Of course, no experiment is complete with out the reporting of results, so if you like the results of your modifications to an in-flux spec, you should feel free to get in touch with the appropriate Working Group, mailing list or directly with the spec authors to get their feedback. As I said in the last chapter, backing your ideas up with runnable code in a prollyfill is the best way to encourage the right kind of discussion around your ideas.
+
+==== Building for Performance
 
 As I mentioned earlier in this chapter, when building a prollyfill, your goal is to build something that tests out a experimental API, not to build something meant for cross-browser adoption by developers. As such, performance won't and shouldn't be your primary concern. What's more, sometimes creating prollyfills for experimental APIs require us to do bad things to HTML, JavaScript and CSS in order to create something halfway functional, and these bad things often cause performance go fly right out the window. Chalk this up to another reason why access to those "low-level APIs" described in the Extensible Web Manifesto are so critical, as these would allow developers to build prollyfills that also perform reasonably well. Until then, we do the best we can.
 
-Of course, just because performance isn't your primary concern when building a prollyfill doesn't mean it shouldn't be a concern, at all. While I don't recommend spending time building comparative JSPerf tests and mining your browser's developer tools in an effort to squeeze out that extra few dozen milliseconds of speed, it is important to pay at least some attention to how your library performs, and apply common-sense practices to it's construction. In this section, we'll take a look at a couple of simple refactoring steps I can perform to quickly improve the overall performance of my prolyfill.
+Of course, just because performance isn't your primary concern when building a prollyfill doesn't mean it shouldn't be a concern, at all. While I don't recommend spending time building comparative JSPerf tests and mining your browser's developer tools in an effort to squeeze out that extra few dozen milliseconds of speed, it is important to pay at least some attention to how your library performs, and apply common-sense practices to its construction.
 
-[PERF SECTION]
+One of the best ways to pay attention to performance in any project, including a prollyfill, is by taking a Test-Driven Development approach to adding features. I've used this approach throughout this book, but if you're not familiar, the basic idea is to first write a failing test for new functionality, to write just enough code to make that test pass, and finally, to consider any refactoring that needs to take place in order to improve the code.
 
-[CLOSING]
+The last step is critical, and I've shown you examples of it in both this chapter and Chapters 4 and 5. On the surface, refactoring might seem like an ascetic preference, but much of the time, the work I put in to improve the code also improves its performance. By removing duplication and looking for opportunities for reuse in my code, I'm encouraging myself to pay attention to ways to also improve that code's performance. When building a prollyfill, taking a TDD approach will ensure that you're library performs about as well as it can.
+
+Over the course of this short book, we've covered a lot of ground. We spent some time early on talking about why polyfills still matter and I shared some principles for responsible polyfill development. Then, I put those principles in action and walked you through the creation of a polyfill for the HTML5 Forms specification. Finally, we talked about prollyfills and the opportunity that these present for developers to have a tangible impact on the future of the Web Platform.
+
+It's an exciting time for the Web Platform, and it's an exciting time to be a front-end developer. More and more, developers are being given an opportunity to step up to the plate and participate in the standardization and browser evolution processes. Building polyfills is just one of the many ways that developers can participate, but it is unique because it is one backed by actual code and experience. It's a powerful tool that I hope you'll consider wielding as we work to extend the web forward, together.
