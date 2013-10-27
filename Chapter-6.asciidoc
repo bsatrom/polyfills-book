@@ -201,7 +201,7 @@ filter: function(el, selectorArgs){
   return match;
 }
 ----
-===
+====
 
 After setting up some helper variables, I split my +selectorArgs+ variable, which contains the comma-delimited list of classes and Ids into an array. Then, I loop over that array and attempt to match each selector argument against the current element. If the element has all of the values defined in the +selectorArgs+ array, I'll return true, and the styles inside of the +:matches+-dependent rule will be applied.
 
