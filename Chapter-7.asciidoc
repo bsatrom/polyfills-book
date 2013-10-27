@@ -125,7 +125,7 @@ Before beginning construction of our prollyfill, it's important to take a moment
 
 [[EX07-03]]
 .Purpose and Goals of the Resource Priorities prollyfill, slacker.js
-____
+----
 == Purpose & Goals
 
 The purpose of this project is to serve as a complete prolyfill for the draft https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone[Resource Priorities spec], including support for new HTML attributes (+lazyload+ and +postpone+), a new CSS property (+resource-priorities+) and a DOM event (+lazyloaded+). This project includes built-in feature detection and, by-default, will only polyfill those forms features not present in the user's browser. 
@@ -145,7 +145,7 @@ This library will function as both a drop-in and opt-in prollyfill, depending on
 - This library is intended to serve as a proof-of-contept for a cutting-edge web platform feature and, as such is not meant for production use. 
 - As a proof-of-concept, this library will not be performance-tuned
 - This library may diverge from the https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone[Resource Priorities spec] in order to add convenience features, non-standard behaviors, or to add experimental APIs for consideration by spec authors.
-____
+----
 
 As you can see, this section has a lot of similarities to and differences from our Forms polyfill. Like the Forms library, this section contains a summary of the purpose of the project, as well as a few bullets covering the goals and non-goals of the project. The differences are clear in the content, however. Our prollyfill is an experiment intended to drive discussion, and you can see that reflected in the text above.
 
@@ -166,14 +166,14 @@ As you can see from the table above, even though there are really only four majo
 
 [[EX07-05]]
 .Roadmap for slacker.js
-____
+----
 == Prollyfill Roadmap
 
 - v0.1 - Support for the +lazyload+ attribute and +lazyloaded+ event
 - v0.2 - Support for the +postpone+ attribute
 - v0.5 - Support for the +resource-priorities+ CSS property
 - v1.0 - Full spec support (v0.5 + bug-fixes needed)
-____
+----
 
 With a clearly defined set of goals, features and a roadmap for my library, I'm now ready to get started. In the next section, we'll set up the initial project for +slacker.js+ and start building out our polyfill.
 
