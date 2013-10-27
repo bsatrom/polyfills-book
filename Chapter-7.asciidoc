@@ -132,7 +132,7 @@ The purpose of this project is to serve as a complete prolyfill for the draft ht
 
 As a prollyfill, this library's primary purpose is to serve as a proof-of-concept and testbed for conversations around the Resource Priorities specification, and *not* to serve as a cross-browser polyfill ready for production use.
 
-This library will function as both a drop-in and opt-in prollyfill, depending on the features being used. For the +lazyload+ and +postpone+ properties, this library will automatically detect and manage these resources when included in a document. When using the +resource-priorities+ CSS property, +link+ and +style+ elements should be decorated with an attribute (+data-slacker-interpret+) that will indicate use of this property to the prollyfill.
+This library will function as both a drop-in and opt-in prollyfill, depending on the features being used. For the +lazyload+ and +postpone+ properties, this library will manage resources when these attributes are included in a document and the +data-href+ or +data-src+ attribute is used. When using the +resource-priorities+ CSS property, +link+ and +style+ elements should be decorated with an attribute (+data-slacker-interpret+) that will indicate use of this property to the prollyfill.
 
 *Goals*
 
@@ -149,15 +149,15 @@ This library will function as both a drop-in and opt-in prollyfill, depending on
 
 As you can see, this section has a lot of similarities to and differences from our Forms polyfill. Like the Forms library, this section contains a summary of the purpose of the project, as well as a few bullets covering the goals and non-goals of the project. The differences are clear in the content, however. Our prollyfill is an experiment intended to drive discussion, and you can see that reflected in the text above.
 
-Once I've clearly defined the purpose and goals of my library, I'll turn my attention next to its API. For this, I like to sit down with the spec and draft a features matrix so that I can outline the major features my library should provide, as well as any feature-specific caveats or quirks that the library should account for. <<EX07-04>> illustrates my initial features matrix for +slacker.js+.
+Once I've clearly defined the purpose and goals of my library, I'll turn my attention next to its API. For this, I like to sit down with the spec and draft a features matrix so that I can outline the major features my library should provide, as well as any feature-specific caveats, opt-in features, or quirks that the library should account for. <<EX07-04>> illustrates my initial features matrix for +slacker.js+.
 
 [[EX07-04]]
 .Features Matrix for +slacker.js+
 [options="header"]
 |==============================================
 |Feature|Opt-In|Workflow|Exceptions|Supported Elements
-|Support for +lazyload+ attribute|No|Remove +src+ of elements with +lazyload+ and place in an array; When +document.load+ is fired, re-set the +src+ for each element.|for +script+, if +defer+ is used with +lazyload+, it has no effect; for +script+, if +async+ is set to false, +lazyload+ has no effect; for +svg reImage+, if +externalResourcesRequired+ is set to "true," +lazyload+ has no effect|+img+, +audio+, +video+, +script+, +link+, +embed+, +iframe+, +object+, +svg feImage+, +svg use+, +svg script+, +svg tref+  
-|Support for +postpone+ attrbute|No|Remove +src+ of elements with +postpone+ and place in an array; On scroll or when an element with the +display:none+ property becomes visible, determine if any elements are within the bounding box of the page and, if so, re-set the +src+ for each visible element.|for +audio+, +postpone+ only works if the +controls+ attribute has been set; for +svg reImage+, if +externalResourcesRequired+ is set to "true," +postpone+ has no effect|+img+, +audio+, +video+, +script+, +link+, +embed+, +iframe+, +object+, +svg feImage+, +svg use+, +svg script+, +svg tref+  
+|Support for +lazyload+ attribute|Yes (+data-src+/+data-href+)|Remove +src+ of elements with +lazyload+ and place in an array; When +document.load+ is fired, re-set the +src+ for each element.|for +script+, if +defer+ is used with +lazyload+, it has no effect; for +script+, if +async+ is set to false, +lazyload+ has no effect; for +svg reImage+, if +externalResourcesRequired+ is set to "true," +lazyload+ has no effect|+img+, +audio+, +video+, +script+, +link+, +embed+, +iframe+, +object+, +svg feImage+, +svg use+, +svg script+, +svg tref+  
+|Support for +postpone+ attrbute|Yes (+data-src+/+data-href+)|Remove +src+ of elements with +postpone+ and place in an array; On scroll or when an element with the +display:none+ property becomes visible, determine if any elements are within the bounding box of the page and, if so, re-set the +src+ for each visible element.|for +audio+, +postpone+ only works if the +controls+ attribute has been set; for +svg reImage+, if +externalResourcesRequired+ is set to "true," +postpone+ has no effect|+img+, +audio+, +video+, +script+, +link+, +embed+, +iframe+, +object+, +svg feImage+, +svg use+, +svg script+, +svg tref+  
 |Support for +resource-priorities+ CSS property|Yes (+data-slacker-interpret+)|Parse all +link+ and +style+ elements that use the +data-slacker-interpret+ attribute and find all instances of the +resource-priorities+ property; Remove +src+ values for related elements, and any CSS properties that specify a source (like +background-image+)|None|+img+, +audio+, +video+, +script+, +link+, +embed+, +iframe+, +object+, +svg feImage+, +svg use+, +svg script+, +svg tref+, '+background-image+', '+border-image-source+', '+content+', '+cursor+', '+list-style-image+', '+@font-face src+'  
 |Support for +lazyloaded+ event|No|Once the +src+ has been re-set for resources with the +lazyload+ attribute, fire the +lazyloaded+ event. If no such elements exist, fire immediately after +document.load+|None| N/A
 |==============================================
@@ -198,18 +198,56 @@ describe('lazyload attribute tests', function() {
   it('should test for the lazyload attribute before acting',
   function() {
     var s = document.createElement('script');
-    var lazyloadSupported = 'lazyload' in s;
+      var lazyloadSupported = 'lazyload' in s;
+      var slackerFrame = document.querySelector('iframe#slackerFrame'),
+        loaded = false;
+      slackerFrame.src = path + 'lazyload.html';
 
-    expect(lazyloadSupported)
-			.toEqual(window.slacker.features.lazyload);
-  });
+      slackerFrame.addEventListener('load', function() {
+        loaded = true;
+      });
+
+      waitsFor(function() {
+        return loaded;
+      }, 'iframe load event never fired', 2000);
+
+      runs(function() {
+        expect(lazyloadSupported)
+          .toEqual(slackerFrame.contentWindow.slacker.features.lazyload);
+
+        slackerFrame.src = '';
+      });  });
 });
 ----
 ====
 
-When I first run this test, it will fail, of course. In order to make it pass, I'll add a test for the +lazyload+ attribute to my source in a new file called +slacker.features.js+, as shown in <<EX07-07>>.
+There's quite a bit going on here, so let's unpack things a bit.  The first thing you'll notice is that I'm getting a reference to an iFrame in my main document. This is key. Because my prollyfill is meant to operate on entire documents, I feel that I should simulate these conditions as much as possible in my tests. In order to do that, I load an external HTML file, the source of which is shown in <<EX07-07>> and inject it as the source of my iframe, which causes my prollyfill to run. Once I've loaded the iframe and set it's new source, I need to wait for the page to fully load before running my tests, so I add an event listener for the frame and use the jasmine +waitsFor+ and +runs+ methods to make sure that the tests don't run until I'm good and ready.
 
 [[EX07-07]]
+.+lazyload.html+ source
+====
+[source, html]
+----
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <link rel="stylesheet" type="text/css" data-href="animations.css" lazyload />
+
+</head>
+<body>
+    <img data-src="foo.png" lazyload/>
+
+    <script src="../../../../src/slacker.features.js"></script>
+    <script src="../../../../src/slacker.js"></script>
+</body>
+</html>
+----
+====
+
+When I first run this test, it will fail, of course. In order to make it pass, I'll add a test for the +lazyload+ attribute to my source in a new file called +slacker.features.js+, as shown in <<EX07-08>>.
+
+[[EX07-08]]
 .+lazyload+ feature test
 ====
 [source, js]
@@ -233,29 +271,42 @@ This module, which will serve as the core module for all feature tests in my pro
 
 ==== The Second Test: Initial +lazyload+ functionality
 
-Now that I have my feature testing in place, I can shift to the +lazyload+ attribute itself. The next test, as illustrated in <<EX07-08>> will make sure that my prollyfill detects the presence of this attribute and removes whatever value is specified in the src.
+Now that I have my feature testing in place, I can shift to the +lazyload+ attribute itself. The next test, as illustrated in <<EX07-09>> will make sure that my prollyfill detects the presence of this attribute and removes whatever value is specified in the data=href attribute of my +<link>+ element.
 
-[[EX07-08]]
-.Testing +src+ attribute removal
+[[EX07-09]]
+.Testing +data-href+ attribute removal
 ====
 [source, js]
 ----
-it('should detect the lazyload attribute and remove the src attribute', function() {
-  fixtures.load('lazyload.html');
+it('should detect the lazyload attribute and remove data-href',
+function() {
+  var slackerFrame = document.querySelector('iframe#slackerFrame'),
+    loaded = false;
+  slackerFrame.src = path + '/lazyload.html';
 
-  var stylesheet = document.querySelectorAll('[lazyload]');
+  slackerFrame.addEventListener('load', function() {
+    loaded = true;
+  });
 
-  expect(stylesheet.length).not.toBe(0);
-  expect(stylesheet[0].getAttribute('src')).toEqual('');
+  waitsFor(function() {
+    return loaded;
+  }, 'iframe load event never fired', 2000);
+
+  runs(function() {
+    var stylesheet =          slackerFrame.contentDocument.querySelectorAll('link[lazyload]');
+
+    expect(stylesheet.length).not.toBe(0);
+    expect(stylesheet[0].getAttribute('data-href')).toEqual('');
+
+    slackerFrame.src = '';
+  });
 });
 ----
 ====
 
-The +lazyload.html+ file referenced at the start of the test is a simple document containing two +link+ elements, one of which has been decorated with the +lazyload+ attribute. For this test, that file is loaded and added to the virtual DOM and then selected from the document, at which point I use a couple of Jasmine +expect+ calls to make sure that a) the element is in the DOM and b) it's +src+ attribute has been modified.
+This test is similar to our first in that it does some async work to work with an iframe--and we'll clean up this duplication in a bit--before running the actual test. The test pulls the +<lnk>+ element from the DOM and checks to see that it's +data-href+ attribute is null. As with our first test, this test will fail on first run because I haven't added any functionality yet. Let's do that, first by creating a +slacker.js+ source file in the +src+ directory for my project, and then by adding the +src+ removal functionality, as illustrated in <<EX07-10>>.
 
-As with our first test, this test will fail on first run because I haven't added any functionality yet. Let's do that, first by creating a +slacker.js+ source file in the +src+ directory for my project, and then by adding the +src+ removal functionality, as illustrated in <<EX07-09>>.
-
-[[EX07-09]]
+[[EX07-10]]
 .Creating the +lazyload+ src removal feature
 ====
 [source, js]
@@ -264,18 +315,19 @@ As with our first test, this test will fail on first run because I haven't added
   window.slacker = window.slacker || {};
 
   var i, len,
-    lazyLoaded = [],
-    qsa = document.querySelectorAll;
+    lazyLoaded = [];
 
   //Test for the presence of the lazyload attribute.
   //If it's not supported, let's get to work.
   if (!window.slacker.features.lazyload){
-    var elements = qsa('[lazyload]');
+    var elements = document.querySelectorAll('[lazyload]');
 
     for (i = 0, len = elements.length; i < len; i++) {
       var el = elements[i];
-      lazyLoaded.push(el.getAttribute('src'));
-      el.setAttribute('src','');
+      if (el.nodeName === 'LINK') {
+        lazyLoaded.push(el.getAttribute('data-href'));
+        el.setAttribute('data-href','');
+      }
     }
   }
 
@@ -283,7 +335,65 @@ As with our first test, this test will fail on first run because I haven't added
 ----
 ====
 
+At this point, our prollyfill is pretty simple, but it's enough to make our second test pass. I'm simply looking for every element with the +lazyloaded+ attribute and then looping over each. If the +nodeName+ of the current element is "LINK," I remove that element's +data-href+ attribute and place it into an array. If I run my tests again, they should now pass.
+
+==== The First Refactor: Cleaning Up the Tests
+
+At this point, our prollyfill is nowhere near functional, but we're off to the right start. A logical next step would be to round out basic +lazyload+ support by setting my +link+ element's +href+ after the page load. We'll get to that, of course, but first I need to clean up some duplication of code in my tests in order to simplify things.
+
+If you take a look at <<EX07-06>> and <<EX07-09>>, you'll notice a lot of boilerplate test code that I have to duplicate each time through. I'd like to clean this up to make my subsequent tests cleaner, so I'll create a local function in my +fixtures.js+ file to manage all of the frame loading. The source of this helper method can be found in <<EX07-11>>.
+
+[[EX07-11]]
+.Test runner helper method
+====
+----
+function loadFrame(test) {
+  var slackerFrame = document.querySelector('iframe#slackerFrame'),
+    loaded = false;
+  slackerFrame.src = path + 'lazyload.html';
+
+  slackerFrame.addEventListener('load', function() {
+    loaded = true;
+  });
+
+  waitsFor(function() {
+    return loaded;
+  }, 'iframe load event never fired', 2000);
+
+  runs(function() {
+    if (test && typeof test === 'function') {
+      test(slackerFrame);
+    }
+
+    slackerFrame.src = '';
+  });
+}
+----
+====
+
+With this method, I'm able to abstract away much of the iframe logic and keep my test methods clean so that they only have to pass in the spec-specific setup and +expect+ statements. As an example, my refactored version of <<EX07-06>> can be seen below, in <<EX07-12>>. It's much cleaner, and will made adding subsequent tests much simpler.
+
+[[EX07-12]]
+====
+.A refactored iframe test
+----
+it('should test for the lazyload attribute before acting', function() {
+  var s = document.createElement('script');
+  var lazyloadSupported = 'lazyload' in s;
+
+  loadFrame(function(frame) {
+    expect(lazyloadSupported)
+      .toEqual(frame.contentWindow.slacker.features.lazyload);
+  });
+});
+----
+====
+
+==== The Third Test: Adding a new public API
+
 [HERE]
+
+ADDING +lazyloaded+
 
 === Adding Features
 
