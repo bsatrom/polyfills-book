@@ -7,23 +7,23 @@ In Chapter 6, I introduced the concept of the prollyfill, and walked through sev
 
 === Prollyfills vs. Polyfills: What's the Difference?
 
-Prollyfills, as we discussed in Chapter 6, are quite similar to polyfills in many ways, the biggest exception being that they often target proposals or specifications with in-flux APIs. Sometimes they even target untested or unspecified ideas, altogether. In both cases, much of the ideas that surround the polyfill, including the API, are expected to change greatly as the idea is debated, tested and possibly accepted for standardization.
+Prollyfills, as we discussed in Chapter 6, are quite similar to polyfills in many ways, the biggest difference being that they often target proposals or specifications with in-flux APIs. Sometimes they even target untested or unspecified ideas, altogether. In both cases, much of the ideas that surround the prollyfill, including the API, are expected to change greatly as the idea is debated, tested and possibly accepted for standardization.
 
-The purpose of building a prolyfill differs from that of a polyfill. Polyfills are typically built to allow developers to rely on new features and APIs across all browsers. They are meant, for the most part, to be used in production apps by everyday developers. Prollyfills, on the other hand, are different. In many ways, these libraries are experiments. They are built to test out unproven concepts, or ideas for standardization that need developer feedback or real-world application. Prollyfills are, for the most part, meant to be used in development and test settings, and not in production apps.
+IN addition, the purpose for building a prollyfill differs from that of a polyfill. Polyfills are typically built to allow developers to rely on new features and APIs across all browsers. They are meant, for the most part, to be used in production apps by everyday developers. Prollyfills, on the other hand, are different. In many ways, these libraries are experiments. They are built to test out unproven concepts, or ideas for standardization that need developer feedback or real-world application. Prollyfills are, for the most part, meant to be used in development and test settings, and not in production apps.
 
-That key difference between prollyfills and polyfills--their purpose for being--can tell us a great deal about how these libraries can and should be built by developers. As you'll see in this chapter, much of the construction process remains the same. You'll still want to set up unit tests, cross-browser tests and plan out the scope of your library, but you'll also need to build flexibility into the API of your library, which you should expect to change. You'll want to pay attention to performance, of course, but it's less critical with a prollyfill since these libraries are meant to test ideas. Often, prollyfills will lead you down a path of non-performant implementations in order to test out ideas, as you'll see in this chapter, and that's perfectly ok.
+That key difference between prollyfills and polyfills--their purpose for being--tells us a great deal about how these libraries can and should be built by developers. As you'll see in this chapter, much of the construction process remains the same. You'll still want to set up unit tests, cross-browser tests and plan out the scope of your library, but you'll also need to build flexibility into the API of the library, which you should expect to change. You'll want to pay attention to performance, of course, but it's less critical with a prollyfill since these libraries are meant to test ideas. Often, prollyfills will lead you down a path of non-performant implementations, as you'll see in this chapter, and that's perfectly ok.
 
 === The Resource Priorities Prollyfill
 
 For the rest of this chapter, we're going to go through a brief exercise and build our own prollyfill for a brand-new W3C proposal. The name of the specification we'll be targeting is [Resource Priorities]https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html. Resource Priorities are meant to provide developers with new HTML attributes and a CSS property that can be used to specify the download priority of a resource like an image, script or media element. The two attributes and property are:
 
-- [lazyload]https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-lazyload - A boolean HTML attribute that tells the browser to delay loading the element in question until all elements that do not have this attribute have started downloading.
-- [postpone]https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone - A boolean HTML attribute that tells the browser to delay loading the element in question until the element or it's container are visible in the viewport.
-- [resource-priorities]https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone - A CSS property that can be used to set the resource priority (lazyload or postpone) of a resource associated with an element or another CSS property.
+- [lazyload]https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-lazyload - A boolean HTML attribute that tells the browser to delay loading resources specified by the element in question until all elements that do not have this attribute have started downloading.
+- [postpone]https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone - A boolean HTML attribute that tells the browser to delay loading resources specified by the element in question until the element or it's container are visible in the viewport.
+- [resource-priorities]https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone - A CSS property that can be used to set the download priority (lazyload or postpone) of a resource associated with an element or another CSS property.
 
-Of course, you're probably wondering what the point of this spec is, especially in light of HTML5's +defer+ and +async+ attributes. For starters, +defer+ and +async+ are available only to +script+ elements, whereas +lazyload+ and +postpone+ are available to all HTML elements that can download resources, including +script+, +link+, +img+, +audio+, +video+, +iframe+, and more. 
+You're probably wondering what the point of this spec is, especially in light of HTML5's +defer+ and +async+ attributes. For starters, +defer+ and +async+ are available only to +script+ elements, whereas +lazyload+ and +postpone+ are available to all HTML elements that can download resources, including +script+, +link+, +img+, +audio+, +video+, +iframe+, and more. 
 
-More importantly, though, resource priorities provide developers with a way to programmatically give the browser hints as to the importance of resources. At the present, download priority for the browser is based solely on document order--scripts, stylesheets and images are loaded in the order that they appear--but document order, especially for visual resources, is often more a function of document location and not resource importance. As a result, it's difficult for developers to control the real and perceived performance of their pages without script-based hacks.
+More importantly, though, resource priorities provide developers with a way to programmatically give the browser hints as to the importance of external resources. At the present, download priority for the browser is based solely on document order--scripts, stylesheets and images are loaded in the order that they appear. But document order, especially for visual resources, is often more a function of document location and not resource importance. As a result, it's difficult for developers to control the real and perceived performance of their pages without script-based hacks.
 
 Let's take a look at an example. The page in <<EX07-01>> contains several resources: two stylesheets, a video, several images and a few scripts. The way this document is structured, all media will be downloaded in document order, and our script at +app.js+, which presumably is important to the function of the page, won't start executing until those downloads have at least initiated. What's more, if our +app.js+ script is relying on a +document.load+ event or jQuery's +load+ event, our application script won't load until those resources have been loaded.
 
@@ -113,22 +113,22 @@ The +lazyload+ and +postpone+ properties provide us an alternative that allow us
 ----
 ====
 
-In the sample above, which will also serve as our base demo page for the prollyfill, you can see both attributes and the property in action. First, in the style tag, we have a single CSS selector for the source values of any video tags containing the class "promo." Inside of the selector is our +resource-priorities+ property, which tells the browser to set the +postpone+ value on the video source elements. As you'll recall,   postpone indicates to the browser that resources are not to be loaded until visible on the screen, so this CSS rule will ensure that the video on my page doesn't begin loading until the user scrolls to that location on the screen.
+In the sample above, which will also serve as our base demo page for the prollyfill, you can see both attributes and the property in action. First, in the style tag, we have a single CSS selector for the source values of any video tags containing the class "promo." Inside of the selector is our +resource-priorities+ property, which tells the browser to set the +postpone+ value on the video source elements, which will ensure that the video on my page doesn't begin loading until the user scrolls to that location on the screen.
 
 Throughout the rest of the sample above, I've applied the +lazyload+ attribute to those resources that I want to have downloaded as soon as core page resources are loaded, and the +postpone+ attribute to those resources that need to only be loaded when in the user's visible viewport. The end result is a page with clear instructions to the browser as to the loading priority of all resources in the document. 
 
-Resource Priorities are a great idea, but since they are so new, there aren't any native browser implementations. Instead, we can build our own prollyfill, which will allow us, and other developers to put this spec through its paces and offer feedback to spec authors and the W3C. So let's start building our prollyfill, which I've decided to call slacker.js.
+Resource Priorities are a great idea, but since they are so new, there aren't any native browser implementations. So we'll build our own prollyfill, which will allow us, and other developers to put this spec through its paces and offer feedback to spec authors and the W3C. Let's get started building that prollyfill, which I've decided to call slacker.js in what is probably a misguided attempt to be clever.
 
 === Specifying the API & Deciding What to Build
 
-Before beginning construction of our prollyfill, it's important to take a moment and consider the purpose and goals of the project, what you will and won't take on, as well as the API of the library. As I did in Chapter 2 with the Kendo UI Forms polyfill, the first thing I did with +https://github.com/bsatrom/slacker.js[slacker.js]+ was to define the purpose and goals of the project, as illustrated in <<EX07-03>>.
+Before beginning construction of our prollyfill, it's important to take a moment and consider the purpose and goals of the project, what you will and won't take on, as well as the API of the library. As I did in Chapter 2 with the HTML5 Forms polyfill, the first thing I did with +https://github.com/bsatrom/slacker.js[slacker.js]+ was to define the purpose and goals of the project, as illustrated in <<EX07-03>>.
 
 [[EX07-03]]
 .Purpose and Goals of the Resource Priorities prollyfill, slacker.js
 ----
 == Purpose & Goals
 
-The purpose of this project is to serve as a complete prolyfill for the draft https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone[Resource Priorities spec], including support for new HTML attributes (+lazyload+ and +postpone+), a new CSS property (+resource-priorities+) and a DOM event (+lazyloaded+). This project includes built-in feature detection and, by-default, will only polyfill those forms features not present in the user's browser. 
+The purpose of this project is to serve as a complete prollyfill for the draft https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone[Resource Priorities spec], including support for new HTML attributes (+lazyload+ and +postpone+), a new CSS property (+resource-priorities+) and a DOM event (+lazyloaded+). This project includes built-in feature detection and, by-default, will only polyfill those forms features not present in the user's browser. 
 
 As a prollyfill, this library's primary purpose is to serve as a proof-of-concept and testbed for conversations around the Resource Priorities specification, and *not* to serve as a cross-browser polyfill ready for production use.
 
@@ -142,7 +142,7 @@ This library will function as both a drop-in and opt-in prollyfill, depending on
 
 *Non-Goals*
 
-- This library is intended to serve as a proof-of-contept for a cutting-edge web platform feature and, as such is not meant for production use. 
+- This library is intended to serve as a proof-of-concept for a cutting-edge web platform feature and, as such is not meant for production use. 
 - As a proof-of-concept, this library will not be performance-tuned
 - This library may diverge from the https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone[Resource Priorities spec] in order to add convenience features, non-standard behaviors, or to add experimental APIs for consideration by spec authors.
 ----
@@ -157,12 +157,12 @@ Once I've clearly defined the purpose and goals of my library, I'll turn my atte
 |==============================================
 |Feature|Opt-In|Workflow|Exceptions|Supported Elements
 |Support for +lazyload+ attribute|Yes (+data-src+/+data-href+)|Remove +src+ of elements with +lazyload+ and place in an array; When +document.load+ is fired, re-set the +src+ for each element.|for +script+, if +defer+ is used with +lazyload+, it has no effect; for +script+, if +async+ is set to false, +lazyload+ has no effect; for +svg reImage+, if +externalResourcesRequired+ is set to "true," +lazyload+ has no effect|+img+, +audio+, +video+, +script+, +link+, +embed+, +iframe+, +object+, +svg feImage+, +svg use+, +svg script+, +svg tref+  
-|Support for +postpone+ attrbute|Yes (+data-src+/+data-href+)|Remove +src+ of elements with +postpone+ and place in an array; On scroll or when an element with the +display:none+ property becomes visible, determine if any elements are within the bounding box of the page and, if so, re-set the +src+ for each visible element.|for +audio+, +postpone+ only works if the +controls+ attribute has been set; for +svg reImage+, if +externalResourcesRequired+ is set to "true," +postpone+ has no effect|+img+, +audio+, +video+, +script+, +link+, +embed+, +iframe+, +object+, +svg feImage+, +svg use+, +svg script+, +svg tref+  
+|Support for +postpone+ attribute|Yes (+data-src+/+data-href+)|Remove +src+ of elements with +postpone+ and place in an array; On scroll or when an element with the +display:none+ property becomes visible, determine if any elements are within the bounding box of the page and, if so, re-set the +src+ for each visible element.|for +audio+, +postpone+ only works if the +controls+ attribute has been set; for +svg reImage+, if +externalResourcesRequired+ is set to "true," +postpone+ has no effect|+img+, +audio+, +video+, +script+, +link+, +embed+, +iframe+, +object+, +svg feImage+, +svg use+, +svg script+, +svg tref+  
 |Support for +resource-priorities+ CSS property|Yes (+data-slacker-interpret+)|Parse all +link+ and +style+ elements that use the +data-slacker-interpret+ attribute and find all instances of the +resource-priorities+ property; Remove +src+ values for related elements, and any CSS properties that specify a source (like +background-image+)|None|+img+, +audio+, +video+, +script+, +link+, +embed+, +iframe+, +object+, +svg feImage+, +svg use+, +svg script+, +svg tref+, '+background-image+', '+border-image-source+', '+content+', '+cursor+', '+list-style-image+', '+@font-face src+'  
 |Support for +lazyloaded+ event|No|Once the +src+ has been re-set for resources with the +lazyload+ attribute, fire the +lazyloaded+ event. If no such elements exist, fire immediately after +document.load+|None| N/A
 |==============================================
 
-As you can see from the table above, even though there are really only four major features to the Resource Priorities spec, there's quite a lot going on for what seems like a relatively straightforward prollyfill. In addition to needing to support new attributes, a CSS proper and a DOM event, we have to consider how to support these new features across a dozen HTML elements and a handful of resource-loading CSS properties. We also have to take into account the interaction between +lazyload+/+postpone+ and +defer+ and +async+ when used on script elements. Since there's a lot to consider when building my prollyfill, I'm going to create a roadmap for major features, just as I did for my HTML5 Forms polyfill. The roadmap for +slacker.js+ can be seen in <<EX07-05>>.
+Even though there are really only four major features to the Resource Priorities spec, there's quite a lot going on for what seems like a relatively straightforward prollyfill. In addition to needing to support new attributes, a CSS proper and a DOM event, we have to consider how to support these new features across a dozen HTML elements and a handful of resource-loading CSS properties. We also have to take into account the interaction between +lazyload+/+postpone+ and +defer+ and +async+ when used on script elements. Since there's a lot to consider when building my prollyfill, I'm going to create a roadmap for major features, just as I did for my HTML5 Forms polyfill. The roadmap for +slacker.js+ can be seen in <<EX07-05>>.
 
 [[EX07-05]]
 .Roadmap for slacker.js
@@ -172,14 +172,14 @@ As you can see from the table above, even though there are really only four majo
 - v0.1 - Support for the +lazyload+ attribute and +lazyloaded+ event
 - v0.2 - Support for the +postpone+ attribute
 - v0.5 - Support for the +resource-priorities+ CSS property
-- v1.0 - Full spec support (v0.5 + bug-fixes needed)
+- v1.0 - Full spec support (v0.5 + bug-fixes and enhancements)
 ----
 
 With a clearly defined set of goals, features and a roadmap for my library, I'm now ready to get started. In the next section, we'll set up the initial project for +slacker.js+ and start building out our polyfill.
 
 === Setting Up Your Prollyfill Project
 
-In Chapter 3, I provided some tips on how to set up the initial project structure for your polyfill, including essential documentation files (README, LICENSE, CHANGELOG, CONTRIBUTING) and essential directories for your source, 3rd party dependencies, tests and distribution files. In Chapter 4, we expanded on this list with a discussion on configuring project builds with Grunt and setting-up unit and cross-browser testing via Jasmine, Karma and Travis.ci. For a probablyfill, much of these process remains the same, so I won't repeat it here. Instead, I encourage you to check out Chapter 3 and 4 if you haven't already to get an overview of how I've chosen to configure both my HTML5 Forms polyfill and my Resource Priorities prollyfill.
+In Chapter 3, I provided some tips on how to set up the initial project structure for your polyfill, including essential documentation files (README, LICENSE, CHANGELOG, CONTRIBUTING) and essential directories for your source, 3rd party dependencies, tests and distribution files. In Chapter 4, we expanded on this list with a discussion on configuring project builds with Grunt and setting-up unit and cross-browser testing via Jasmine, Karma and Travis.ci. For a prollyfill, much of these process remains the same, so I won't repeat it here. Instead, I encourage you to check out Chapter 3 and 4 if you haven't already to get an overview of how I've chosen to configure both my HTML5 Forms polyfill and my Resource Priorities prollyfill.
 
 === Adding Prollyfill Features
 
@@ -221,7 +221,7 @@ describe('lazyload attribute tests', function() {
 ----
 ====
 
-There's quite a bit going on here, so let's unpack things a bit.  The first thing you'll notice is that I'm getting a reference to an iFrame in my main document. This is key. Because my prollyfill is meant to operate on entire documents, I feel that I should simulate these conditions as much as possible in my tests. In order to do that, I load an external HTML file, the source of which is shown in <<EX07-07>> and inject it as the source of my iframe, which causes my prollyfill to run. Once I've loaded the iframe and set it's new source, I need to wait for the page to fully load before running my tests, so I add an event listener for the frame and use the jasmine +waitsFor+ and +runs+ methods to make sure that the tests don't run until I'm good and ready.
+There's quite a lot going on here, so let's unpack the sample above. The first thing you'll notice is that I'm getting a reference to an iframe in my main document. This is key. Because my prollyfill is meant to operate on entire documents, I feel that I should simulate these conditions as much as possible in my tests. In order to do that, I load an external HTML file, the source of which is shown in <<EX07-07>> and inject it as the source of my iframe, which causes my prollyfill to run. Once I've loaded the iframe and set it's new source, I need to wait for the page to fully load before running my tests, so I add an event listener for the frame and use the jasmine +waitsFor+ and +runs+ methods to make sure that the tests don't run until I'm good and ready.
 
 [[EX07-07]]
 .+lazyload.html+ source
@@ -267,7 +267,7 @@ When I first run this test, it will fail, of course. In order to make it pass, I
 ----
 ====
 
-This module, which will serve as the core module for all feature tests in my prollyfill, starts with an IIFE before setting the global +window.slacker+ namespace that I'll be using for my prollyfill. Next, I create an object literal to hold my feature tests, and add a test for the +lazyload+. As discussed in Chapter 3, I can test for official support for new HTML attributes by creating an in-memory element and checking to see if the attribute exists. Once I've added my features module and the +lazyload+ test, my first test should pass.
+This module, which will serve as the core module for all feature tests in my prollyfill, starts with an IIFE before setting the global +window.slacker+ namespace that I'll be using for the library. Next, I create an object literal to hold my feature tests, and add a test for the +lazyload+. As discussed in Chapter 3, I can test for official support for new HTML attributes by creating an in-memory element and checking to see if the attribute exists. Once I've added my features module and the +lazyload+ test, my first test should pass.
 
 ==== The Second Test: Initial +lazyload+ functionality
 
@@ -304,7 +304,7 @@ function() {
 ----
 ====
 
-This test is similar to our first in that it does some async work to work with an iframe--and we'll clean up this duplication in a bit--before running the actual test. The test pulls the +<lnk>+ element from the DOM and checks to see that it's +data-href+ attribute is null. As with our first test, this test will fail on first run because I haven't added any functionality yet. Let's do that, first by creating a +slacker.js+ source file in the +src+ directory for my project, and then by adding the +src+ removal functionality, as illustrated in <<EX07-10>>.
+This test is similar to our first in that it does some async work to work with an iframe--and we'll clean up this duplication in a bit--before running the actual test. The test pulls the +<link>+ element from the DOM and checks to see that it's +data-href+ attribute is null. As with our first test, this test will fail on first run because I haven't added any functionality yet. Let's do that, first by creating a +slacker.js+ source file in the +src+ directory for my project, and then by adding the +src+ removal functionality, as illustrated in <<EX07-10>>.
 
 [[EX07-10]]
 .Creating the +lazyload+ src removal feature
@@ -393,7 +393,7 @@ it('should test for the lazyload attribute before acting', function() {
 
 So far, we've been building our prollyfill to the Resource Priorities spec, and things look pretty good. However, as a prollyfill developer, you might encounter situations where you have an idea for a feature of your library that might actually make sense as a part of the official spec. In this section, we'll explore the addition of one such feature to +slacker.js+.
 
-As I worked on the initial functionality for +slacker.js+, I found myself wishing that the collection of de-prioritized elemements--as in, those decorated with the +lazyload+ or +postpone+ attributes were available in some form of collection. that I could inspect from my tests. I also thought that a collection like this would be useful to app developers, so since this is a prollyfill for a draft specification, what better way to test out this idea than to add the feature to my prollyfill and try it out?
+As I worked on the initial functionality for +slacker.js+, I found myself wishing that the collection of de-prioritized elements--as in, those decorated with the +lazyload+ or +postpone+ attributes were available in some form of collection that I could inspect from my tests. I also thought that a collection like this would be useful to app developers, so since this is a prollyfill for a draft specification, what better way to test out this idea than to add the feature to my prollyfill and try it out?
 
 To add this functionality, I'll start with a simple test, as illustrated in <<EX07-13>>. Here, I'm specifying that I expect for my +slacker+ object to hold an array called +lazyLoaded+ and that this array should have a length of two, which corresponds to the two elements (one +<link>+ and one +<img>+) in my +lazyload.html+ test file.
 
@@ -403,13 +403,14 @@ To add this functionality, I'll start with a simple test, as illustrated in <<EX
 ----
 it('should hold the resource source in the lazyLoaded array', function() {
   loadFrame(function(frame) {
-    expect(frame.contentWindow.slacker.lazyLoaded.length).toEqual(2);
+    var win = frame.contentWindow;
+    expect(win.slacker.lazyLoaded.length).toEqual(2);
   });
 });
 ----
 ====
 
-Once I've added this test and run my tests in the browser to verify failure, I'll head back over to +slacker.js+ to add the following line just after the +for+ loop:
+Once I've added this test and run my tests in the browser to verify failure, I'll head back over to +slacker.js+ to add the following line just after the +for+ loop.
 
 ====
 [source, js]
@@ -418,13 +419,13 @@ window.slacker.lazyLoaded = lazyLoaded;
 ----
 ====
 
-With this line, my tests and apps can now obtain access to an array of lazyLoaded elements. Is this a good idea? Maybe, or maybe not. All that matters in this case is that, as a prollyfill developer, I should feel free to experiment and play with ideas like this, and even pitch them to the spec authors for inclusion. If they say yes, I've contributed to a future web platform standard! And if not, no harm, no foul. I can simply remove the API from my prollyfill, and move on confident that I've still contributed to the standardization process by encouraging a conversation.
+With this line, my tests and apps can now obtain access to an array of lazyLoaded elements. Is this a good idea? Maybe, or maybe not. All that matters in this case is that, as a prollyfill developer, I should feel free to experiment and play with ideas like this, and even pitch them to the spec authors for inclusion. If they say yes, I've contributed to a future web platform standard! And if not, no harm, no foul. I can simply remove the API from my prollyfill, and move on confident that I've still contributed to the standardization process by encouraging conversation.
 
-If this new API were to be added to the spec, it would no doubt live as an object on +window+ and would probably have a different name. I'm adding it to my +slacker+ object, in this case, to be clear about the API for my prollyfill. If and when I propose this new addition, which we'll discuss below, I can use the API of my library as a reference, while suggesting additions  or changes to the spec.
+Of course, if this new API were to be added to the spec, it would no doubt live as an object on +window+ and would probably have a different name. I'm adding it to my +slacker+ namespace to be clear about the API for my prollyfill. If and when I propose this new addition, I can use the API of my library as a reference, while suggesting additions  or changes to the spec.
 
 ==== The Fourth Test: Supporting Additional Element Types
 
-Of course, my test in <<EX07-13>> will still fail, at this point, and if you look at the source in <<EX07-10>>, it's easy to see why. My test file contains two +lazyload+ elements, an image and a stylesheet, but my prollyfill only supports the +<link>+ element, so I'll need to modify the library to support the +<img>+ element, as well. <<EX07-14>> contains the new source of my +for+ loop.
+My test in <<EX07-13>> will still fail, at this point, and if you look at the source in <<EX07-10>>, it's easy to see why. My test file contains two +lazyload+ elements, an image and a stylesheet, but my prollyfill only supports the +<link>+ element, so I'll need to modify the library to support the +<img>+ element, as well. <<EX07-14>> contains the new source of my +for+ loop.
 
 [[EX07-14]]
 .Supporting a second element type
@@ -447,7 +448,7 @@ Once I've added the code above, the test in <<EX07-13>> will pass, meaning that 
 
 ==== The Second Refactor: Completing Element Type Support
 
-With only two elements to support, my +if+ statement above isn't too unwieldy. That said, according to the Resource Priorities spec, I need to support *thirteen* different types. What's more, I still have to add support for +postpone+, which also supports thirteen elements. I really don't want to keep adding +if+ statements, so it's time for another refactor.
+With only two elements to support, my +if+ statement above isn't too unwieldy. That said, according to the Resource Priorities spec, I need to support *thirteen* different element types. What's more, I still have to add support for +postpone+, which also supports thirteen elements. I really don't want to keep adding +if+ statements, so it's time for another refactor.
 
 Since the only real difference between the elements I need to support is the source attribute they use (+href+ or +src+), I can do a lot to abstract away the clearing of attributes into a local helper method, while placing each element I want to support into a local object. The new source for +slacker.js+ once I've made this change can be found in <<EX07-15>>.
 
@@ -535,9 +536,7 @@ var elementReplacements = {
 
 ==== The Fifth Test: Completing Initial Support
 
-Now that I have some initial functionality to remove resource source attributes, and I have a clean way to add support for all element types, it's time to complete initial support for the +lazyloaded+ attribute by adding functionality to properly set the +href+ attribute on my +link+ tag after the page load is complete.
-
-First, just as we've done every time thus, far, I'll create my failing test, which can be seen in <<EX07-18>>.
+Now that I have some initial functionality to remove resource source attributes, and I have a clean way to add support for all element types, it's time to complete initial support for the +lazyloaded+ attribute by adding functionality to properly set the +href+ attribute on my +link+ tag after the page load is complete. First, just as we've done every time thus far, I'll create my failing test, which can be seen in <<EX07-18>>.
 
 [[EX07-18]]
 .Test for full +lazyload+ attribute support
@@ -553,7 +552,7 @@ it('should re-apply the lazyload attribute after the document.load event', funct
 ----
 ====
 
-As per the spec, once the +document.load+ event has fired, I expect my prollyfill to go to work and set the +src+ and +href+ properties for my elements. If things work properly, this test will confirm that my test document's +link+ element has been modified accordingly.
+As per the spec, once the +document.load+ event has fired, I expect my prollyfill to go to work and set the +src+ and +href+ properties for my elements. If things work properly, this test will confirm that my test document's +link+ element has been modified, accordingly.
 
 To make this test pass, and round out initial support for the +lazyloaded+ attribute, I'll need to make some pretty extensive changes to my prollyfill source, as shown in <<EX07-19>>.
 
@@ -645,7 +644,7 @@ it('should fire the lazyloaded event after src replacement is complete', functio
 
 After I load my test document, I'll add a listener for the +lazyloaded+ event, and then add the Jasmine +waitsFor+ and +runs+ functions so that I give the iframe plenty of time to fire the event before I execute the test.
 
-To implement this function, I can add a single line just after the +for+ loop in <<EX07-19>>
+To implement this function, I can add a single line just after the +for+ loop in <<EX07-19>>:
 
 ====
 [source, js]
@@ -658,15 +657,15 @@ And that's it! All my tests should pass, and I've now added experimental support
 
 === What's Next?
 
-We breezed through a lot in this chapter for our +slacker.js+ prollyfill, but the work is just getting started. From here, I still need to add support for the remaining nine element types, deal with some element-specific edge cases, and then add support for the +postpone+ attribute and the +resource-priorities+ CSS property. On the infrastructure side, I'll also need to make some changes to account for automated and cross-browser testing. Just like polyfilling, prollyfilling is hard work and there's still a lot left to do! Of course, you can just check out the https://github.com/bsatrom/slacker.js[+slacker.js+ GitHub repo] to see the remaining prollyfill features that I didn't have space to cover, here.
+We breezed through a lot in this chapter for our +slacker.js+ prollyfill, but the work is just beginning. From here, I still need to add support for the remaining nine element types, deal with some element-specific edge cases, and then add support for the +postpone+ attribute and the +resource-priorities+ CSS property. On the infrastructure side, I'll also need to make some changes to account for automated and cross-browser testing. Just like polyfilling, prollyfilling is hard work and there's still a lot left to do! Of course, you can just check out the https://github.com/bsatrom/slacker.js[+slacker.js+ GitHub repo] to see the remaining prollyfill features that I didn't have space to cover, here.
 
-Hopefully, over the course of this chapter on building a real-world prollyfill, you got a glimpse into both the similarities and differences between polyfills and prollyfills. In short, they are a lot alike, with the key differences being how you handle the public API and performance considerations for each. In this section, I'll briefly recap those differences.
+Hopefully, over the course of this chapter on building a real-world prollyfill, you got a glimpse into both the similarities and differences between polyfills and prollyfills. The two library types are a lot alike, with the key differences being how you handle the public API and performance considerations for each. In this section, I'll briefly recap those differences.
 
 ==== Suggesting an API modification
 
 As we've talked about repeatedly in this book, the public API for a stable feature is set, and should be considered gospel by the polyfill developer. Prollyfills, on the other hand, are in-flux, by definition. When building prollyfills, you should respect the API to some extent, while also feeling free to innovate and experiment with new ideas. Adding a +lazyLoaded+ collection to +slacker.js+, is an example of this.
 
-Of course, no experiment is complete with out the reporting of results, so if you like the results of your modifications to an in-flux spec, you should feel free to get in touch with the appropriate Working Group, mailing list or directly with the spec authors to get their feedback. As I said in the last chapter, backing your ideas up with runnable code in a prollyfill is the best way to encourage the right kind of discussion around your ideas.
+Of course, no experiment is complete with out the reporting of results, so if you like the results of your modifications to an in-flux spec, you should feel free to get in touch with the appropriate Working Group, mailing list or directly with the spec authors to get their feedback. As I said in the last chapter, backing your ideas up with runnable code in a prollyfill is the best way to encourage the right kind of discussion around those ideas.
 
 ==== Building for Performance
 
