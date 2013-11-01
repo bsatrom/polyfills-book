@@ -182,7 +182,7 @@ In <<EX5-2>>, I moved the +isFormTypeSupported+ function outside of my widget in
 
 This is nice in theory, and it certainly looks a bit cleaner, but just how fast is it? To answer that question, I can head over to http://jsperf.com[JSPerf] and create a test. 
 
-JSPerf can seem a bit daunting if you've only every viewed others' tests before, but it's actually quite simple to create tests of your own. The basic idea behind JSPerf is to create multiple test cases that execute blocks of JavaScript code--performing operations, mutating the DOM, etc.--which the tool then executes over and over again in order to determine which operations are fastest and slowest. JSPerf takes care of all of the looping and re-runs, so all you need to do is specify the test cases, and any set-up or teardown that should happen before or after each test run.
+JSPerf can seem a bit daunting if you've only ever viewed others' tests before, but it's actually quite simple to create tests of your own. The basic idea behind JSPerf is to create multiple test cases that execute blocks of JavaScript code--performing operations, mutating the DOM, etc.--which the tool then executes over and over again in order to determine which operations are fastest and slowest. JSPerf takes care of all of the looping and re-runs, so all you need to do is specify the test cases, and any set-up or teardown that should happen before or after each test run.
 
 In order to test just how much feature test caching improves the performance of our code, I created the test shown in <<EX5-3>>. You can also http://jsperf.com/feature-test-cache[access the test online], and run it yourself, if you so desire.
 
