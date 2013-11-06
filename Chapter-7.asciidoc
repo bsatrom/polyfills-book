@@ -121,10 +121,9 @@ Resource Priorities are a great idea, but since they are so new, there aren't an
 
 === Specifying the API & Deciding What to Build
 
-Before beginning construction of our prollyfill, it's important to take a moment and consider the purpose and goals of the project, what you will and won't take on, as well as the API of the library. As I did in Chapter 2 with the HTML5 Forms polyfill, the first thing I did with +https://github.com/bsatrom/slacker.js[slacker.js]+ was to define the purpose and goals of the project, as illustrated in <<EX07-03>>.
+Before beginning construction of our prollyfill, it's important to take a moment and consider the purpose and goals of the project, what you will and won't take on, as well as the API of the library. As I did in Chapter 2 with the HTML5 Forms polyfill, the first thing I did with +https://github.com/bsatrom/slacker.js[slacker.js]+ was to define the purpose and goals of the project, as illustrated below.
 
-[[EX07-03]]
-.Purpose and Goals of the Resource Priorities prollyfill, slacker.js
+[quote]
 ____
 == Purpose & Goals
 
@@ -162,10 +161,9 @@ Once I've clearly defined the purpose and goals of my library, I'll turn my atte
 |Support for +lazyloaded+ event|No|Once the +src+ has been re-set for resources with the +lazyload+ attribute, fire the +lazyloaded+ event. If no such elements exist, fire immediately after +document.load+|None| N/A
 |==============================================
 
-Even though there are really only four major features to the Resource Priorities spec, there's quite a lot going on for what seems like a relatively straightforward prollyfill. In addition to needing to support new attributes, a CSS proper and a DOM event, we have to consider how to support these new features across a dozen HTML elements and a handful of resource-loading CSS properties. We also have to take into account the interaction between +lazyload+/+postpone+ and +defer+ and +async+ when used on script elements. Since there's a lot to consider when building my prollyfill, I'm going to create a roadmap for major features, just as I did for my HTML5 Forms polyfill. The roadmap for +slacker.js+ can be seen in <<EX07-05>>.
+Even though there are really only four major features to the Resource Priorities spec, there's quite a lot going on for what seems like a relatively straightforward prollyfill. In addition to needing to support new attributes, a CSS proper and a DOM event, we have to consider how to support these new features across a dozen HTML elements and a handful of resource-loading CSS properties. We also have to take into account the interaction between +lazyload+/+postpone+ and +defer+ and +async+ when used on script elements. Since there's a lot to consider when building my prollyfill, I'm going to create a roadmap for major features, just as I did for my HTML5 Forms polyfill. The roadmap for +slacker.js+ can be seen below.
 
-[[EX07-05]]
-.Roadmap for slacker.js
+[quote]
 ____
 === Prollyfill Roadmap
 
