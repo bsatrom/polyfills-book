@@ -9,17 +9,17 @@ In Chapter 6, I introduced the concept of the prollyfill, and walked through sev
 
 Prollyfills, as we discussed in Chapter 6, are quite similar to polyfills in many ways, the biggest difference being that they often target proposals or specifications with in-flux APIs. Sometimes they even target untested or unspecified ideas, altogether. In both cases, much of the ideas that surround the prollyfill, including the API, are expected to change greatly as the idea is debated, tested and possibly accepted for standardization.
 
-IN addition, the purpose for building a prollyfill differs from that of a polyfill. Polyfills are typically built to allow developers to rely on new features and APIs across all browsers. They are meant, for the most part, to be used in production apps by everyday developers. Prollyfills, on the other hand, are different. In many ways, these libraries are experiments. They are built to test out unproven concepts, or ideas for standardization that need developer feedback or real-world application. Prollyfills are, for the most part, meant to be used in development and test settings, and not in production apps.
+In addition, the purpose for building a prollyfill differs from that of a polyfill. Polyfills are typically built to allow developers to rely on new features and APIs across all browsers. They are meant, for the most part, to be used in production apps by everyday developers. Prollyfills, on the other hand, are different. In many ways, these libraries are experiments. They are built to test out unproven concepts, or ideas for standardization that need developer feedback or real-world application. Prollyfills are, for the most part, meant to be used in development and test settings, and not in production apps.
 
 That key difference between prollyfills and polyfills--their purpose for being--tells us a great deal about how these libraries can and should be built by developers. As you'll see in this chapter, much of the construction process remains the same. You'll still want to set up unit tests, cross-browser tests and plan out the scope of your library, but you'll also need to build flexibility into the API of the library, which you should expect to change. You'll want to pay attention to performance, of course, but it's less critical with a prollyfill since these libraries are meant to test ideas. Often, prollyfills will lead you down a path of non-performant implementations, as you'll see in this chapter, and that's perfectly ok.
 
 === The Resource Priorities Prollyfill
 
-For the rest of this chapter, we're going to go through a brief exercise and build our own prollyfill for a brand-new W3C proposal. The name of the specification we'll be targeting is [Resource Priorities]https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html. Resource Priorities are meant to provide developers with new HTML attributes and a CSS property that can be used to specify the download priority of a resource like an image, script or media element. The two attributes and property are:
+For the rest of this chapter, we're going to go through a brief exercise and build our own prollyfill for a brand-new W3C proposal. The name of the specification we'll be targeting is https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html[Resource Priorities]. Resource Priorities are meant to provide developers with new HTML attributes and a CSS property that can be used to specify the download priority of a resource like an image, script or media element. The two attributes and property are:
 
-- [lazyload]https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-lazyload - A boolean HTML attribute that tells the browser to delay loading resources specified by the element in question until all elements that do not have this attribute have started downloading.
-- [postpone]https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone - A boolean HTML attribute that tells the browser to delay loading resources specified by the element in question until the element or it's container are visible in the viewport.
-- [resource-priorities]https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone - A CSS property that can be used to set the download priority (lazyload or postpone) of a resource associated with an element or another CSS property.
+- https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-lazyload[lazyload] - A boolean HTML attribute that tells the browser to delay loading resources specified by the element in question until all elements that do not have this attribute have started downloading.
+- https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone[postpone] - A boolean HTML attribute that tells the browser to delay loading resources specified by the element in question until the element or it's container are visible in the viewport.
+- https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone[resource-priorities] - A CSS property that can be used to set the download priority (lazyload or postpone) of a resource associated with an element or another CSS property.
 
 You're probably wondering what the point of this spec is, especially in light of HTML5's +defer+ and +async+ attributes. For starters, +defer+ and +async+ are available only to +script+ elements, whereas +lazyload+ and +postpone+ are available to all HTML elements that can download resources, including +script+, +link+, +img+, +audio+, +video+, +iframe+, and more. 
 
@@ -187,7 +187,7 @@ For +slacker.js+, I'm going to use http://pivotal.github.io/jasmine/[Jasmine] fo
 
 ==== The First Test: Feature Detection
 
-In the roadmap for my prollyfill, which I shared above, I decided to first focus on supporting the +lazyload+ attribute. Along those lines, my first test make sure that my prollyfill is performing feature detection for the +lazyload+ attribute. I know, of course, that now browser currently supports this attribute, but I don't know how long that will be the case, or how long my library will stick around, so the responsible thing to do is to always perform feature detection, if possible, even when building prollyfills. <<EX07-06>> contains the source for my first test:
+In the roadmap for my prollyfill, which I shared above, I decided to first focus on supporting the +lazyload+ attribute. Along those lines, my first test makes sure that my prollyfill is performing feature detection for the +lazyload+ attribute. I know, of course, that no browser currently supports this attribute, but I don't know how long that will be the case, or how long my library will stick around, so the responsible thing to do is to always perform feature detection, if possible, even when building prollyfills. <<EX07-06>> contains the source for my first test:
 
 [[EX07-06]]
 .First test for the slacker.js prollyfill
@@ -271,7 +271,7 @@ This module, which will serve as the core module for all feature tests in my pro
 
 ==== The Second Test: Initial +lazyload+ functionality
 
-Now that I have my feature testing in place, I can shift to the +lazyload+ attribute itself. The next test, as illustrated in <<EX07-09>> will make sure that my prollyfill detects the presence of this attribute and removes whatever value is specified in the data=href attribute of my +<link>+ element.
+Now that I have my feature testing in place, I can shift to the +lazyload+ attribute itself. The next test, as illustrated in <<EX07-09>> will make sure that my prollyfill detects the presence of this attribute and removes whatever value is specified in the data-href attribute of my +<link>+ element.
 
 [[EX07-09]]
 .Testing +data-href+ attribute removal
@@ -346,6 +346,7 @@ If you take a look at <<EX07-06>> and <<EX07-09>>, you'll notice a lot of boiler
 [[EX07-11]]
 .Test runner helper method
 ====
+[source, js]
 ----
 function loadFrame(test) {
   var slackerFrame = document.querySelector('iframe#slackerFrame'),
@@ -371,11 +372,12 @@ function loadFrame(test) {
 ----
 ====
 
-With this method, I'm able to abstract away much of the iframe logic and keep my test methods clean so that they only have to pass in the spec-specific setup and +expect+ statements. As an example, my refactored version of <<EX07-06>> can be seen below, in <<EX07-12>>. It's much cleaner, and will made adding subsequent tests much simpler.
+With this method, I'm able to abstract away much of the iframe logic and keep my test methods clean so that they only have to pass in the spec-specific setup and +expect+ statements. As an example, my refactored version of <<EX07-06>> can be seen below, in <<EX07-12>>. It's much cleaner, and will make adding subsequent tests much simpler.
 
 [[EX07-12]]
-====
 .A refactored iframe test
+====
+[source, js]
 ----
 it('should test for the lazyload attribute before acting', function() {
   var s = document.createElement('script');
@@ -400,6 +402,7 @@ To add this functionality, I'll start with a simple test, as illustrated in <<EX
 [[EX07-13]]
 .Test for brand-new functionality
 ====
+[source, js]
 ----
 it('should hold the resource source in the lazyLoaded array', function() {
   loadFrame(function(frame) {
@@ -430,6 +433,7 @@ My test in <<EX07-13>> will still fail, at this point, and if you look at the so
 [[EX07-14]]
 .Supporting a second element type
 ====
+[source, js]
 ----
 for (i = 0, len = elements.length; i < len; i++) {
   var el = elements[i];
@@ -455,6 +459,7 @@ Since the only real difference between the elements I need to support is the sou
 [[EX07-15]]
 .Refactoring to add multiple element support
 ====
+[source, js]
 ----
 (function() {
   window.slacker = window.slacker || {};
@@ -502,6 +507,7 @@ By moving most of the attribute support and element-specific logic into module-l
 [[EX07-16]]
 .Testing for +<script>+ element support
 ====
+[source, js]
 ----
 it('should support the script element', function() {
   loadFrame(function(frame) {
@@ -519,6 +525,7 @@ Similar to my initial test for the +link+ attribute, I'm making sure that my +sc
 [[EX07-17]]
 .Adding support for the +<script>+ element
 ====
+[source, js]
 ----
 var elementReplacements = {
   LINK: function(el) {
@@ -541,6 +548,7 @@ Now that I have some initial functionality to remove resource source attributes,
 [[EX07-18]]
 .Test for full +lazyload+ attribute support
 ====
+[source, js]
 ----
 it('should re-apply the lazyload attribute after the document.load event', function() {
   loadFrame(function(frame) {
@@ -559,7 +567,7 @@ To make this test pass, and round out initial support for the +lazyloaded+ attri
 [[EX07-19]]
 .Adding complete support for the +lazyloaded+ attribute.
 ====
-[source, javascript]
+[source, js]
 ----
 (function() {
   window.slacker = window.slacker || {};

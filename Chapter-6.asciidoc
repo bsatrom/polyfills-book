@@ -59,7 +59,7 @@ It's a simple change, but it greatly cleans up the authoring experience, while a
 
 ==== Using HitchJS to experiment with CSS
 
-This sounds like a sweet spot for prollyfilling and, thankfully, there's a library available that allows you to experiment with CSS selectors, and even define your own. The library is called [HitchJS]http://hitchjs.com. Out of the box, Hitch provides support for a series of experimental selectors like +oneof+, +anyof+ and +allof+, and also provides a mechanism that allows you to define your own "hitches" that activate whatever CSS selectors you define. We'll create our own hitch in the next section, but first, let's take a look at how you can get started with Hitch and use some of the built-in features.
+This sounds like a sweet spot for prollyfilling and, thankfully, there's a library available that allows you to experiment with CSS selectors, and even define your own. The library is called http://hitchjs.com[HitchJS]. Out of the box, Hitch provides support for a series of experimental selectors like +oneof+, +anyof+ and +allof+, and also provides a mechanism that allows you to define your own "hitches" that activate whatever CSS selectors you define. We'll create our own hitch in the next section, but first, let's take a look at how you can get started with Hitch and use some of the built-in features.
 
 First things first, you'll need to download Hitch, which is distributed as a script file, and then include a reference to the file anywhere in your page:
 
@@ -144,11 +144,17 @@ Now let's take a look at the source HTML, which is a list of todos decorated wit
 ----
 ====
 
-With everything in place, I should be able to load my todo list up and see the additional styling that my Hitch-based rules provide, as illustrated in <<EX06-03>>.
+With everything in place, I should be able to load my todo list up and see the additional styling that my Hitch-based rules provide, as illustrated in <<EX06-03>>. 
 
 [[EX06-03]]
 .Todo list with HitchJS-based styling
 image::images/ch6-ex03.png[]
+
+[CAUTION]
+====
+You might notice a flash of unstyled content as you load a page that uses Hitch.js features. Because Hitch processes custom CSS rules after the rest of the CSS in the document has been applied, this is to be expected. What's more, since we're testing out ideas here and not building production apps with out prollyfills, a little FOUC shouldn't be an issue.
+====
+
 
 As you can see, HitchJS is easy to get started with and use in your own apps. By default, Hitch provides support for four logical selectors (+:-hitch-anyof+, +:-hitch-allof+, +:-hitch-oneof+, +-hitch-noneof+) and one structural selector (+:-hitch-has+), but the library also provides a great extensibility story so that you can create your own selector support in the form of "hitches" that are imported and processed by HitchJS. In the next section, we'll create our own hitch to mimic a new CSS Selector.
 
@@ -236,7 +242,7 @@ HitchJS is a versatile library, and now that you've seen how easy it is to creat
 
 === Prollyfills in Action: ServiceWorker
 
-In the last section, we explored how prollyfills can be useful for experimenting with new or unstable CSS selectors. Next, we'll shift focus to JavaScript prollyfilling. Specifically, we'll look at a proposal for one of those low-level APIs that could open up a wealth of new opportunities for front-end developers: [ServiceWorker]https://github.com/slightlyoff/ServiceWorker.
+In the last section, we explored how prollyfills can be useful for experimenting with new or unstable CSS selectors. Next, we'll shift focus to JavaScript prollyfilling. Specifically, we'll look at a proposal for one of those low-level APIs that could open up a wealth of new opportunities for front-end developers: https://github.com/slightlyoff/ServiceWorker[ServiceWorker].
 
 ServiceWorker is a proposal, spearheaded by Alex Russell of Google and others, designed to make the browser's networking stack more programmable via JavaScript. Specifically, a ServiceWorker enables developers to use JavaScript to cache and handle every inbound request for resources in an app, even when the user is offline. 
 
@@ -308,21 +314,21 @@ this.addEventListener("fetch", function(e) {
 
 The ServiceWorker exposes several events that workers can respond to, if they wish. If a worker is installed and has registered a +fetch+ listener, as we have above, the worker is allowed to handle the network request on behalf of the browser. In this case, we're checking to see if the URL being requested matches an existing resource and, if so, we'll use the new +respondWith+ method on the +fetch+ event to construct a cached response containing the data requested by the browser, and the network never even needs to be consulted!
 
-The public API for the ServiceWorker proposal can be found in a [TypeScript file in the project's GitHub repository]https://github.com/slightlyoff/ServiceWorker/blob/master/service_worker.ts, and I also recommend checking out the [explainer document]https://github.com/slightlyoff/ServiceWorker/blob/master/explainer.md put together by the works working on the proposal. It's early days for ServiceWorker, which doesn't yet enjoy browser support, but the proposal is exactly the kind of API described in the Extensible Web Manifesto: a set of low-level browser capabilities that provide developers with ground-floor access to building robust, JavaScript-based prollyfills and APIs that push the web forward faster than ever.
+The public API for the ServiceWorker proposal can be found in a https://github.com/slightlyoff/ServiceWorker/blob/master/service_worker.ts[TypeScript file in the project's GitHub repository], and I also recommend checking out the https://github.com/slightlyoff/ServiceWorker/blob/master/explainer.md[explainer document] put together by the works working on the proposal. It's early days for ServiceWorker, which doesn't yet enjoy browser support, but the proposal is exactly the kind of API described in the Extensible Web Manifesto: a set of low-level browser capabilities that provide developers with ground-floor access to building robust, JavaScript-based prollyfills and APIs that push the web forward faster than ever.
 
 === Prollyfills in Action: Web Components
 
 So far, we've looked at how prollyfills can help us work with experimental CSS and JavaScript, but what about experimenting with HTML itself? Before you laugh me off the reservation and put down the book, bear with me.
 
-As it turns out, there are a handful of W3C specifications that have been in the making for the last few years that do just that: provide an official way for developers and site authors to extend the semantics of HTML for our apps. These specifications are typically referred to using the umbrella term of "Web Components." According to the [W3C explainer document]http://www.w3.org/TR/2013/WD-components-intro-20130606/, "… Web Components enable Web application authors to define widgets with a level of visual richness and interactivity not possible with CSS alone, and ease of composition and reuse not possible with script libraries today."
+As it turns out, there are a handful of W3C specifications that have been in the making for the last few years that do just that: provide an official way for developers and site authors to extend the semantics of HTML for our apps. These specifications are typically referred to using the umbrella term of "Web Components." According to the http://www.w3.org/TR/2013/WD-components-intro-20130606/[W3C explainer document], "… Web Components enable Web application authors to define widgets with a level of visual richness and interactivity not possible with CSS alone, and ease of composition and reuse not possible with script libraries today."
 
 Widgets? Composition? Reuse? If you've been a developer for any length of time, these terms are familiar to you, but did you ever think you'd hear them in the context of HTML? Me either, and yet here we are, talking about ways to bring a first-class widget construction workflow to the web.
 
-Web Components are made up of five key standalone W3C specifications. One of these, [Decorators]http://www.w3.org/TR/2013/WD-components-intro-20130606/#decorator-section is the least relevant to our discussion, and the most raw of the specs, so I'll skip that one. Here's a brief summary of the other four:
+Web Components are made up of five key standalone W3C specifications. One of these, http://www.w3.org/TR/2013/WD-components-intro-20130606/#decorator-section[Decorators] is the least relevant to our discussion, and the most raw of the specs, so I'll skip that one. Here's a brief summary of the other four:
 
 ==== Templates
 
-[Templates]http://www.w3.org/TR/2013/WD-components-intro-20130606/#template-section are defined as "inert chunks of markup" which can be activated for use later. This spec will be the most familiar to developers because it essentially formalizes what we've long accomplished using +<script>+ elements with a non-JavaScript +type+ attribute. <<EX06-09>> shows an example of a simple template element and the JavaScript activation code.
+http://www.w3.org/TR/2013/WD-components-intro-20130606/#template-section[Templates] are defined as "inert chunks of markup" which can be activated for use later. This spec will be the most familiar to developers because it essentially formalizes what we've long accomplished using +<script>+ elements with a non-JavaScript +type+ attribute. <<EX06-09>> shows an example of a simple template element and the JavaScript activation code.
 
 [[EX06-09]]
 .An Example Use of the Template element
@@ -350,11 +356,11 @@ function addComment(imageUrl, text) {
 
 The the example above, I've created a simple +<template>+ element to hold some DOM that represents a comment block on a blog. The block contains a source-less image and an empty div for the text. In the script block below, I have a +addComment+ function that takes an image url and some text. The function then selects my template block, clones it into a new HTMLElement object, sets the image and text values and then appends the DOM fragment to the body of the document. At that final step, the browser parses and renders the template-based content.
 
-Like I said, It should seem familiar because it is. Thankfully, having first-class template support in the browser means we can put all of those templating libraries to rest and use speedy, built-in functionality.p
+Like I said, It should seem familiar because it is. Thankfully, having first-class template support in the browser means we can put all of those templating libraries to rest and use speedy, built-in functionality.
 
 ==== Shadow DOM
 
-The next Web Compoents spec is [Shadow DOM]http://www.w3.org/TR/2013/WD-components-intro-20130606/#shadow-dom-section a feature which allows developers to encapsulate DOM subtrees and hide widget implementation details. It sounds a bit cryptic, I know, so let's take a look at Shadow DOM in the context of an HTML Element already using this capability: the HTML +<video>+ tag.
+The next Web Compoents spec is http://www.w3.org/TR/2013/WD-components-intro-20130606/#shadow-dom-section[Shadow DOM] a feature which allows developers to encapsulate DOM subtrees and hide widget implementation details. It sounds a bit cryptic, I know, so let's take a look at Shadow DOM in the context of an HTML Element already using this capability: the HTML +<video>+ tag.
 
 Take a look at <<EX06-10>> below. What do you see? A rectangle with a video canvas and several controls, right? Right, but have you ever wondered how the browsers actually implement tags like +<video>+ and audio?
 
@@ -374,7 +380,7 @@ By making Shadow DOM developer-accessible and supported in the browsers, we can 
 
 ==== Custom Elements
 
-The next Web Components technology is [Custom Elements]http://www.w3.org/TR/2013/WD-components-intro-20130606/#custom-element-section. Custom Elements provide a formal way for developers to create their own, valid HTML tags and define the API for those elements. You can also extend the semantics and behavior of existing elements, as shown in <<EX06-12>> below.
+The next Web Components technology is http://www.w3.org/TR/2013/WD-components-intro-20130606/#custom-element-section[Custom Elements]. Custom Elements provide a formal way for developers to create their own, valid HTML tags and define the API for those elements. You can also extend the semantics and behavior of existing elements, as shown in <<EX06-12>> below.
 
 [[EX06-12]]
 .Defining a custom element that extends the Button element
@@ -401,7 +407,7 @@ Here, I'm using the new +<element>+ element to define a custom element that exte
 
 ==== HTML Imports
 
-The final piece of the Web Components umbrella is [HTML Imports]http://www.w3.org/TR/2013/WD-components-intro-20130606/#imports-section. This is the most straightforward of the Web Components specs. Simply put, Imports provide a mechanism for importing Templates and Custom Elements into a site or app. For instance, let's say that I define my fancy-button element from <<EX06-12>> in a separate file called +fancy-button.html+. HTML Imports provide the mechanism for, well importing this element into my app, as shown in <<EX06-13>>.
+The final piece of the Web Components umbrella is http://www.w3.org/TR/2013/WD-components-intro-20130606/#imports-section[HTML Imports]. This is the most straightforward of the Web Components specs. Simply put, Imports provide a mechanism for importing Templates and Custom Elements into a site or app. For instance, let's say that I define my fancy-button element from <<EX06-12>> in a separate file called +fancy-button.html+. HTML Imports provide the mechanism for, well importing this element into my app, as shown in <<EX06-13>>.
 
 [[EX06-13]]
 .Using Imports with Custom Elements
@@ -453,7 +459,7 @@ Notice that Angular enables me to go all out and use my directive via a +<calend
 
 ==== Creating Custom Elements with Polymer
 
-The [Polymer]http://polymer-project.org project is a Google-sponsored project designed to speed up the adoption of cutting-edge Web Platform technologies by providing a series of robust prollyfills that work across "evergreen browsers," a term meaning browser that ship via automatic updates to their installed base of users. The Polymer project actually provides a number of prollyfills, but the core of the offering is support for Shadow DOM, Templates, Custom Elements and HTML Imports.
+The http://polymer-project.org[Polymer] project is a Google-sponsored project designed to speed up the adoption of cutting-edge Web Platform technologies by providing a series of robust prollyfills that work across "evergreen browsers," a term meaning browsers that ship via automatic updates to their installed base of users. The Polymer project actually provides a number of prollyfills, but the core of the offering is support for Shadow DOM, Templates, Custom Elements and HTML Imports.
 
 In our discussion on Web Components, I shared some code snippets meant to communicate the "perfect world" approach for building components, as defined by the current draft of each spec. Polymer enables us to create Web Components using much of the same syntax, with only a few small differences.
 
