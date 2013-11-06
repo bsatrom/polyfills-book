@@ -46,9 +46,10 @@ ul.tasks li a:focus {
 With the new +:matches+ pseudo-class selector, the rule above could be shortened, like so:
 
 ====
+[source, css]
 ----
 ul.tasks li a:matches(:link, :hover, :visited, :focus) {
-   color: blue;
+  color: blue;
 }
 ----
 ====
@@ -87,15 +88,15 @@ In this example, I'm telling Hitch to look for rules in the +styles.css+ file. <
 [source, css]
 ----
 #todo-list li:-hitch-anyof(.urgent, .overdue) label {
-    color: red; 
+  color: red;
 }
 
 #todo-list li:-hitch-noneof(.urgent, .overdue) label {
-    color: green; 
+  color: green;
 }
 
 #todo-list li:-hitch-allof(.urgent, .overdue) label {
-    font-weight: bold; 
+  font-weight: bold;
 }
 ----
 ====
@@ -110,33 +111,33 @@ Now let's take a look at the source HTML, which is a list of todos decorated wit
 [source, html]
 ----
 <ul id="todo-list">
-	<li class="">
-  	<div class="view">
-    	<input class="toggle" type="checkbox">
+  <li class="">
+    <div class="view">
+      <input class="toggle" type="checkbox">
       <label>Take out the trash</label>
     </div>
   </li>
   <li class="">
-  	<div class="view">
-    	<input class="toggle" type="checkbox">
+    <div class="view">
+      <input class="toggle" type="checkbox">
       <label>Wash the cars</label>
     </div>
   </li>
   <li class="overdue">
-  	<div class="view">
-    	<input class="toggle" type="checkbox">
+    <div class="view">
+      <input class="toggle" type="checkbox">
       <label>Buy stamps</label>
     </div>
   </li>
   <li class="urgent overdue">
-  	<div class="view">
-    	<input class="toggle" type="checkbox">
+    <div class="view">
+      <input class="toggle" type="checkbox">
       <label>Pay taxes</label>
     </div>
   </li>
   <li class="urgent" id="next-action">
-  	<div class="view">
-    	<input class="toggle" type="checkbox">
+    <div class="view">
+      <input class="toggle" type="checkbox">
       <label>Catch up on Breaking Bad</label>
     </div>
   </li>
@@ -170,12 +171,12 @@ So, to define my custom "hitch" for the CSS +:matches+ selector, I'll first need
 [source, js]
 ----
 var matchesHitch = {
-    name: "matches",
-    base: "*",
-    type: "selector",
-    filter: function(el, arguments){
-        // Hitch logic here
-    }
+  name: "matches",
+  base: "*",
+  type: "selector",
+  filter: function(el, arguments){
+    // Hitch logic here
+  }
 };
 Hitch.add(matchesHitch);
 ----
@@ -191,19 +192,21 @@ To emulate the CSS Selectors Level 4 +:matches+ pesudo-class selector, I'll need
 [source, js]
 ----
 filter: function(el, selectorArgs){
-	var i, len,
-  	match = false,
+  var i, len,
+    match = false,
     args = selectorArgs.split(','),
     list = el.parentElement;
 
-	for (i = 0, len = args.length; i < len; i++) {
-  	var q = list.querySelector(args[i].trim());
+  for (i = 0, len = args.length; i < len; i++) {
+    var q = list.querySelector(args[i].trim());
+
     if (q && q === el) {
-    	match = true;
+      match = true;
     } else {
-    	match = false;
+      match = false;
     }
   }
+
   return match;
 }
 ----
@@ -214,7 +217,7 @@ After setting up some helper variables, I split my +selectorArgs+ variable, whic
 Now that we have our custom hitch, let's try out our new rule in CSS. First, I'll need to "import" my hitch by using Hitch's +@-hitch-requires+ directive at the top of my +styles.css+ file:
 
 ====
-[source, css]
+[source, html]
 ----
 @-hitch-requires ../js/selector-matches.js;
 ----
@@ -226,8 +229,8 @@ Then, I'll add a new rule using my hitch:
 [source, css]
 ----
 #todo-list li:matches(.urgent, #next-action) label {
-    font-weight: bold; 
-    color: blue;
+  font-weight: bold;
+  color: blue;
 }
 ----
 ====
@@ -261,7 +264,7 @@ The first step in using a ServiceWorker is to install a worker on a page after a
   <head>
     <link rel="stylesheet" href="/css/base.css">
     <script src="/js/app.js"></script>
-		<script>
+	<script>
       navigator.registerServiceWorker("/*", "sWorker.js").then(
         function(serviceWorker) {
           // Use the worker right away
@@ -274,7 +277,7 @@ The first step in using a ServiceWorker is to install a worker on a page after a
   </head>
   <body>
     <img src="/images/logo.gif" alt="Gif Emporium Logo">
-		<h1>Animated Gifs Galore!</h1>
+    <h1>Animated Gifs Galore!</h1>
   </body>
 </html>
 ----
@@ -299,8 +302,9 @@ this.addEventListener("install", function(e) {
 
 this.addEventListener("fetch", function(e) {
   var url = e.request.url;
+
   // If we already have the data, load from cache
-	if (url.toString() == inventory.toString()) {
+  if (url.toString() == inventory.toString()) {
     e.respondWith(new SameOriginResponse({
       statusCode: 200,
       body: JSON.stringify({
@@ -336,15 +340,16 @@ http://www.w3.org/TR/2013/WD-components-intro-20130606/#template-section[Templat
 [source, html]
 ----
 <template id="commentTemplate">
-    <div>
-        <img src="">
-        <div class="comment-text"></div>
-    </div>
+  <div>
+    <img src="">
+    <div class="comment-text"></div>
+  </div>
 </template>
 <script>
 function addComment(imageUrl, text) {
   var t = document.querySelector("#commentTemplate");
   var comment = t.content.cloneNode(true);
+
   // Populate content.
   comment.querySelector('img').src = imageUrl;
   comment.querySelector('.comment-text').textContent = text;
@@ -484,12 +489,12 @@ Let's say, for instance, and in keeping with our AngularJS example from above, t
   </template>
   <script>
   Polymer('x-calendar', {
-      selected: new Date(),
-      created: function() {
-        $(this.$.calendar).kendoCalendar({
-          value: this.selected
-        });
-      }
+    selected: new Date(),
+    created: function() {
+      $(this.$.calendar).kendoCalendar({
+        value: this.selected
+      });
+    }
   });
   </script>
 </polymer-element>
@@ -505,15 +510,16 @@ The rest of the process of working with Custom Elements in Polymer is pretty str
 [[EX06-16]]
 .Using Polymer elements
 ====
-[syntax, html]
+[source, html]
 ----
 <!DOCTYPE html>
   <html lang="en">
   <head>
-      <title>Polymer Calendar</title>
-			<script src="lib/js/polymer.min.js"></script>
-      <!-- Import Calendar -->
-      <link rel="import" href="components/x-calendar.html">
+    <title>Polymer Calendar</title>
+	<script src="lib/js/polymer.min.js"></script>
+
+    <!-- Import Calendar -->
+    <link rel="import" href="components/x-calendar.html">
   </head>
   <body>
     <div class="container">

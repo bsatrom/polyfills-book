@@ -34,37 +34,37 @@ Let's take a look at an example. The page in <<EX07-01>> contains several resour
 ----
 <!DOCTYPE html>
 <html>
- <head>
-     <link rel="stylesheet" type="text/css" src="styles.css" />
-     <link rel="stylesheet" type="text/css" src="animations.css" />
-		<style>
-			video.promo source {
-				resource-priorities: postpone;
-			}
-		</style>
- </head>
- <body>
+  <head>
+    <link rel="stylesheet" type="text/css" src="styles.css" />
+    <link rel="stylesheet" type="text/css" src="animations.css" />
+	<style>
+	  video.promo source {
+	    resource-priorities: postpone;
+      }
+	</style>
+  </head>
+  <body>
     <img id="siteLogo" src="/images/site.png"/>
     <img id="Header" src="/images/Header.png"/>
-		<ul class="gallery">
-    	<li>
-				<img id="img1" src=".../images/img1.png" />
-			</li>
-    	<li>
-				<img id="img3" src=".../images/img2.png" />
-			</li>
-			<li>
-				<img id="img3" src=".../images/img3.png" />
-			</li>
-		</ul>
-		<video class="promo">
-			<source src="/videos/promo.mp4">
-			<source src="/videos/promo.ogv">
-			<source src="/videos/promo.webm">
-		</video>
+	<ul class="gallery">
+      <li>
+	    <img id="img1" src=".../images/img1.png" />
+      </li>
+      <li>
+        <img id="img3" src=".../images/img2.png" />
+      </li>
+      <li>
+        <img id="img3" src=".../images/img3.png" />
+      </li>
+    </ul>
+	<video class="promo">
+	  <source src="/videos/promo.mp4">
+	  <source src="/videos/promo.ogv">
+	  <source src="/videos/promo.webm">
+	</video>
     <script src="app.js" ></script>
     <script src="GoogleAnalytics.js"></script>
- </body>
+  </body>
 </html>
 ----
 ====
@@ -78,35 +78,35 @@ The +lazyload+ and +postpone+ properties provide us an alternative that allow us
 ----
 <!DOCTYPE html>
 <html>
- <head>
-     <link rel="stylesheet" type="text/css" src="styles.css" />
-     <link rel="stylesheet" type="text/css" src="animations.css" lazyload />
-		<style>
-			video.promo source {
-				resource-priorities: postpone;
-			}
-		</style>
- </head>
- <body>
+  <head>
+    <link rel="stylesheet" type="text/css" src="styles.css" />
+    <link rel="stylesheet" type="text/css" src="animations.css" lazyload />
+    <style>
+      video.promo source {
+        resource-priorities: postpone;
+      }
+    </style>
+  </head>
+  <body>
     <img id="siteLogo" src="/images/site.png"/>
     <img id="Header" src="/images/Header.png"/>
-		<ul class="gallery">
-    	<li>
-				<img id="img1" src=".../images/img1.png" lazyload />
-			</li>
-    	<li>
-				<img id="img3" src=".../images/img2.png" postpone />
-			</li>
-			<li>
-				<img id="img3" src=".../images/img3.png" postpone />
-			</li>
-		</ul>
-		<video class="promo">
-			<source src="/videos/promo.mp4">
-			<source src="/videos/promo.ogv">
-			<source src="/videos/promo.webm">
-		</video>
-    <script src="app.js" ></script>
+    <ul class="gallery">
+      <li>
+        <img id="img1" src=".../images/img1.png" lazyload />
+      </li>
+      <li>
+        <img id="img3" src=".../images/img2.png" postpone />
+      </li>
+      <li>
+        <img id="img3" src=".../images/img3.png" postpone />
+      </li>
+    </ul>
+    <video class="promo">
+      <source src="/videos/promo.mp4">
+	  <source src="/videos/promo.ogv">
+	  <source src="/videos/promo.webm">
+	</video>
+	<script src="app.js" ></script>
     <script src="GoogleAnalytics.js" lazyload></script>
  </body>
 </html>
@@ -125,7 +125,7 @@ Before beginning construction of our prollyfill, it's important to take a moment
 
 [[EX07-03]]
 .Purpose and Goals of the Resource Priorities prollyfill, slacker.js
-----
+____
 == Purpose & Goals
 
 The purpose of this project is to serve as a complete prollyfill for the draft https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone[Resource Priorities spec], including support for new HTML attributes (+lazyload+ and +postpone+), a new CSS property (+resource-priorities+) and a DOM event (+lazyloaded+). This project includes built-in feature detection and, by-default, will only polyfill those forms features not present in the user's browser. 
@@ -145,7 +145,7 @@ This library will function as both a drop-in and opt-in prollyfill, depending on
 - This library is intended to serve as a proof-of-concept for a cutting-edge web platform feature and, as such is not meant for production use. 
 - As a proof-of-concept, this library will not be performance-tuned
 - This library may diverge from the https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone[Resource Priorities spec] in order to add convenience features, non-standard behaviors, or to add experimental APIs for consideration by spec authors.
-----
+____
 
 As you can see, this section has a lot of similarities to and differences from our Forms polyfill. Like the Forms library, this section contains a summary of the purpose of the project, as well as a few bullets covering the goals and non-goals of the project. The differences are clear in the content, however. Our prollyfill is an experiment intended to drive discussion, and you can see that reflected in the text above.
 
@@ -166,14 +166,14 @@ Even though there are really only four major features to the Resource Priorities
 
 [[EX07-05]]
 .Roadmap for slacker.js
-----
-== Prollyfill Roadmap
+____
+=== Prollyfill Roadmap
 
 - v0.1 - Support for the +lazyload+ attribute and +lazyloaded+ event
 - v0.2 - Support for the +postpone+ attribute
 - v0.5 - Support for the +resource-priorities+ CSS property
 - v1.0 - Full spec support (v0.5 + bug-fixes and enhancements)
-----
+____
 
 With a clearly defined set of goals, features and a roadmap for my library, I'm now ready to get started. In the next section, we'll set up the initial project for +slacker.js+ and start building out our polyfill.
 
@@ -195,28 +195,28 @@ In the roadmap for my prollyfill, which I shared above, I decided to first focus
 [source, js]
 ----
 describe('lazyload attribute tests', function() {
-  it('should test for the lazyload attribute before acting',
-  function() {
+  it('should test for the lazyload attribute before acting', function() {
     var s = document.createElement('script');
-      var lazyloadSupported = 'lazyload' in s;
-      var slackerFrame = document.querySelector('iframe#slackerFrame'),
-        loaded = false;
-      slackerFrame.src = path + 'lazyload.html';
+    var lazyloadSupported = 'lazyload' in s;
+    var slackerFrame = document.querySelector('iframe#slackerFrame'),
+      loaded = false;
 
-      slackerFrame.addEventListener('load', function() {
-        loaded = true;
-      });
+    slackerFrame.src = path + 'lazyload.html';
+    slackerFrame.addEventListener('load', function() {
+      loaded = true;
+    });
 
-      waitsFor(function() {
-        return loaded;
-      }, 'iframe load event never fired', 2000);
+    waitsFor(function() {
+      return loaded;
+    }, 'iframe load event never fired', 2000);
 
-      runs(function() {
-        expect(lazyloadSupported)
-          .toEqual(slackerFrame.contentWindow.slacker.features.lazyload);
+    runs(function() {
+      expect(lazyloadSupported)
+        .toEqual(slackerFrame.contentWindow.slacker.features.lazyload);
 
-        slackerFrame.src = '';
-      });  });
+      slackerFrame.src = '';
+    });
+  });
 });
 ----
 ====
@@ -231,15 +231,14 @@ There's quite a lot going on here, so let's unpack the sample above. The first t
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="styles.css" />
-    <link rel="stylesheet" type="text/css" data-href="animations.css" lazyload />
-
+  <link rel="stylesheet" type="text/css" href="styles.css" />
+  <link rel="stylesheet" type="text/css" data-href="animations.css" lazyload />
 </head>
 <body>
-    <img data-src="foo.png" lazyload/>
+  <img data-src="foo.png" lazyload/>
 
-    <script src="../../../../src/slacker.features.js"></script>
-    <script src="../../../../src/slacker.js"></script>
+  <script src="../../../../src/slacker.features.js"></script>
+  <script src="../../../../src/slacker.js"></script>
 </body>
 </html>
 ----
@@ -282,8 +281,8 @@ it('should detect the lazyload attribute and remove data-href',
 function() {
   var slackerFrame = document.querySelector('iframe#slackerFrame'),
     loaded = false;
-  slackerFrame.src = path + '/lazyload.html';
 
+  slackerFrame.src = path + '/lazyload.html';
   slackerFrame.addEventListener('load', function() {
     loaded = true;
   });
@@ -293,7 +292,7 @@ function() {
   }, 'iframe load event never fired', 2000);
 
   runs(function() {
-    var stylesheet =          slackerFrame.contentDocument.querySelectorAll('link[lazyload]');
+    var stylesheet = slackerFrame.contentDocument.querySelectorAll('link[lazyload]');
 
     expect(stylesheet.length).not.toBe(0);
     expect(stylesheet[0].getAttribute('data-href')).toEqual('');
@@ -351,8 +350,8 @@ If you take a look at <<EX07-06>> and <<EX07-09>>, you'll notice a lot of boiler
 function loadFrame(test) {
   var slackerFrame = document.querySelector('iframe#slackerFrame'),
     loaded = false;
-  slackerFrame.src = path + 'lazyload.html';
 
+  slackerFrame.src = path + 'lazyload.html';
   slackerFrame.addEventListener('load', function() {
     loaded = true;
   });
@@ -657,7 +656,8 @@ To implement this function, I can add a single line just after the +for+ loop in
 ====
 [source, js]
 ----
-window.dispatchEvent(new Event('lazyloaded'));
+var evt = new CustomEvent('lazyloaded');
+window.dispatchEvent(evt);
 ----
 ====
 
