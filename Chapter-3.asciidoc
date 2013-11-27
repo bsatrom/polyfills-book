@@ -13,7 +13,12 @@ And while it is outside of the scope of this book to discuss the politics of HTM
 
 HTML5 Forms is a minefield, so what better area to venture into as a polyfill developer, then? It’s a bit hairy, for sure, but this area of the spec if sufficiently complex enough to expose many of the polyfilling practices that I introduced in the last chapter.
 
-In addition to targeting HTML5 Forms with my polyfill, I've chosen to leverage http://kendoui.com[Kendo UI] to provide much of the functionality that my polyfill will deliver to older browsers, from visual elements like Color and Date pickers, to key framework-level features like form validation. And though Kendo UI is commonly used in commercial apps as a commercially-licensed product, all of the UI widgets and framework features I need for my polyfill are available in the Open Source licensed version of Kendo UI Web (GPLv3), which is available from http://www.kendoui.com[its website]. That said, if you're following along and prefer to instead use a UI library like http://jqueryui.com[jQuery UI], you're welcome to do so. Very little of what I cover in this chapter is dependent upon and applicable to only Kendo UI.  
+In addition to targeting HTML5 Forms with my polyfill, I've chosen to leverage http://kendoui.com[Kendo UI] to provide much of the functionality that my polyfill will deliver to older browsers, from visual elements like Color and Date pickers, to key framework-level features like form validation. And though Kendo UI is commonly used in commercial apps as a commercially-licensed product, all of the UI widgets and framework features I need for my polyfill are available in the Open Source licensed version of Kendo UI Web (GPLv3), which is available from http://www.kendoui.com[its website]. That said, if you're following along and prefer to instead use a UI library like http://jqueryui.com[jQuery UI], you're welcome to do so. Very little of what I cover in this chapter is dependent upon and applicable to only Kendo UI.
+
+[NOTE]
+====
+The HTML5 Forms Polyfill we will be building over the next three chapters can be found in its current form online at https://github.com/kendo-labs/kendo-ui-forms[https://github.com/kendo-labs/kendo-ui-forms]. The project is actively maintained, and you're welcome to view the source after reading this book if you want to dig deeper into any specifics that I was unable to cover here.
+====
 
 === Setting Up Your Polyfill Project
 
@@ -625,6 +630,8 @@ Once I have a sanitized attribute value, I'll bind my element to a blur event, w
 The final piece of the puzzle is my +blur+ event, which clears out the dummy placeholder label if the user has entered text in the input. Without this event, my placeholder text would show up over any text the user enters after he or she navigates off of the element.
 
 Of course, this is all fine in theory, but as with every other feature we've had so far, it doesn't mean a thing until we test this new feature in a non-supporting browser. However, since +placeholder+ support is so darn good, it's not as simple as testing in one of the new browsers installed on your machine. Often, testing out polyfill support means getting your hands on IE 6, 7 or 8, and we'll discuss how to do that in the next section. 
+
+At this point, you might be wondering why we're switching gears to testing when we've not yet built our entire polyfill. We could go through the exercise of building the entire HTMl5 Forms polyfill, but it's a mostly repetitive task now that we've covered the basics of input type support. Of course, there are other complexities to be solved, like forms validation, but in the interest of time and space in this short book, I decided to spend some time focusing on unit testing, performance and refactoring over the next few chapters. These aspects of polyfill development are just as important about how you go about building the features themselves, after all. That said, if you want to dig deeper into the guts of the HTML5 Forms polyfill, you're welcome to do so in the https://github.com/kendo-labs/kendo-ui-forms[online repository].
 
 === Testing out your work across browsers
 
