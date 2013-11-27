@@ -36,12 +36,7 @@ Let's take a look at an example. The page in <<EX07-01>> contains several resour
 <html>
   <head>
     <link rel="stylesheet" type="text/css" src="styles.css" />
-    <link rel="stylesheet" type="text/css" src="animations.css" />
-	<style>
-	  video.promo source {
-	    resource-priorities: postpone;
-      }
-	</style>
+    <link rel="stylesheet" type="text/css" src="animations.css" />	
   </head>
   <body>
     <img id="siteLogo" src="/images/site.png"/>

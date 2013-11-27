@@ -17,11 +17,11 @@ We'll look at each of these, in turn, in this section.
 
 ==== Setting Up Performance Benchmarks
 
-First-things-first, if you want to build for performance, you need to be able to test and asses the performance of your polyfill. You certainly *could* eyeball it and judge your library by how fast it "feels" to you, but I suggest being a bit more scientific, if you can stand it. Specifically, I suggest using http://jsperf.com[JSPerf] to benchmark and test your polyfill, not only at the start, but as you continue to iterate and make changes. JSPerf, which is based on the open-source http://benchmarkjs.com[Benchmark.js] library, is a quick and easy way to set-up tests of your library's features and functionality. Alternatively, you *could* use Benchmark.js directly, the https://github.com/shama/grunt-benchmark[grunt-benchmark] Grunt plugin, or just use the DevTools in your favorite browser to run ad-hoc tests, but I find that JSPerf has everything I need to perform performance tests across revisions to my polyfills. Plus, it has pretty charts, courtesy of http://browserscope.org[Browserscope]. In the next section, I'll walk through setting up a simple JSPerf test to show the delta after a simple tweak to my polyfill.
+First-things-first, if you want to build for performance, you need to be able to test and assess the performance of your polyfill. You certainly *could* eyeball it and judge your library by how fast it "feels" to you, but I suggest being a bit more scientific, if you can stand it. Specifically, I suggest using http://jsperf.com[JSPerf] to benchmark and test your polyfill, not only at the start, but as you continue to iterate and make changes. JSPerf, which is based on the open-source http://benchmarkjs.com[Benchmark.js] library, is a quick and easy way to set-up tests of your library's features and functionality. Alternatively, you *could* use Benchmark.js directly, the https://github.com/shama/grunt-benchmark[grunt-benchmark] Grunt plugin, or just use the DevTools in your favorite browser to run ad-hoc tests, but I find that JSPerf has everything I need to perform performance tests across revisions to my polyfills. Plus, it has pretty charts, courtesy of http://browserscope.org[Browserscope]. In the next section, I'll walk through setting up a simple JSPerf test to show the delta after a simple tweak to my polyfill.
 
 ==== Don't Execute Code Too Early or Too Often
 
-The next strategy we can employ to pass the _noticiability_ test is to make sure that our polyfill doesn't execute any code it doesn't have to. This is especially important if your library is a drop-in or opt-in polyfill that performs it's own feature detection. For instance, our HTML5 Forms Polyfill needs to test for browser support of several input types. In Chapter 3, we perform feature detection as we loop over each input in a form, as shown in <<EX5-1>>.
+The next strategy we can employ to pass the _noticeability_ test is to make sure that our polyfill doesn't execute any code it doesn't have to. This is especially important if your library is a drop-in or opt-in polyfill that performs it's own feature detection. For instance, our HTML5 Forms Polyfill needs to test for browser support of several input types. In Chapter 3, we perform feature detection as we loop over each input in a form, as shown in <<EX5-1>>.
 
 [[EX5-1]]
 .Form Support with Feature Detection
@@ -200,7 +200,7 @@ image::images/ch5-ex4.png[]
 
 As you can see from the image above, caching my feature tests is not only faster, it's nearly 60 times faster than performing feature tests each time! Of course, it's important to note that, since JSPerf runs each test case several dozen times over, reported numbers aren't indicative of raw, overall performance gains in my library. Rather, JSPerf is most valuable as a measure of relative performance between options. The bottom line, in this case, is that we know that caching feature tests is faster and, thus, an excellent refactoring choice for my library.
 
-So far, in this section, we've avoided executing unnecessary code by ensuring that feature detection tests only run once when my library is loaded. This is a specific example of a general case and beyond changes like this, another optimization I can perform is to ensure that my library doesn't perform any unnecessary initialization or set-up. Any features or functionality that my library might not need for all browsers should remain dormant until it's needed. Obviously, stylesheets and JavaScript will need to be parsed when they are included, but I want try to execute as little of that code as possible, until my library is called upon. In the case of my polyfill, the only code that runs before I initialize a Form widget is my now cached feature tests, which I've deemed necessary to run up-front since the performance gains are considerable.
+So far, in this section, we've avoided executing unnecessary code by ensuring that feature detection tests only run once when my library is loaded. Another important optimization I can perform is to ensure that my library doesn't perform any unnecessary initialization or set-up. Any features or functionality that my library might not need for all browsers should remain dormant until it's needed. Obviously, stylesheets and JavaScript will need to be parsed when they are included, but I try to execute as little of that code as possible, until my library is called upon. In the case of my polyfill, the only code that runs before I initialize a Form widget is my now cached feature tests, which I've deemed necessary to run up-front since the performance gains are considerable.
 
 ==== Iterate Until You're Happy, Then Iterate Some More
 
@@ -639,7 +639,7 @@ Instead of caching the entire form in a local variable, I cache all of the +<inp
 
 ===== The Third Perf Tweak: Ordering of Arguments
 
-The next change I'm going to make is a very small one, but it harkens back to the idea of avoiding unnecessary code paths as a way to get micro-optimizations in our code. Many times, these unneeded paths can be found in if statements that asses one or more values before taking action. For example, in <<EX5-7>>, you'll notice the following +if+ statement on line 17:
+The next change I'm going to make is a very small one, but it harkens back to the idea of avoiding unnecessary code paths as a way to get micro-optimizations in our code. Many times, these unneeded paths can be found in if statements that access one or more values before taking action. For example, in <<EX5-7>>, you'll notice the following +if+ statement on line 17:
 
 +if (!kendo.forms.features[modType] || that.options.alwaysUseWidgets)+
 
@@ -655,7 +655,7 @@ While the example above is a simple case for ordering arguments, It's always a g
 
 ===== The Fourth Perf Tweak: Minimizing Loops
 
-The final performance change I plan to make to my polyfill is a larger one, and is also a change that I expect to impact performance quite a bit. If you take a look at <<EX5-7>> a final time, you'll notice that I'm looping (+for+ or jQuery's +each+) no less than four times during widget initialization. This can't be the best approach, so I'm going to refactor my polyfill to loop as as infrequently as possible. 
+The final performance change I plan to make to my polyfill is a larger one, and is also a change that I expect to impact performance quite a bit. If you take a look at <<EX5-7>> a final time, you'll notice that I'm looping (with +for+ or jQuery's +each+ method) no less than four times during widget initialization. This can't be the best approach, so I'm going to refactor my polyfill to loop as as infrequently as possible. 
 
 In <<EX5-7>> I'm looping over the +typeUpgrades+ collection defined in +kendo.forms.types+, and then separately looping over each input that matches that type. What's more, I'm looping over each input to determine if it needs separate widget styling (provided via CSS classes that Kendo UI uses to style "vanilla" inputs) and finally, looping over each element that contains a +placeholder+ attribute and upgrading those as well, if not supported by the browser.
 

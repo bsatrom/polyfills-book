@@ -359,7 +359,7 @@ function addComment(imageUrl, text) {
 ----
 ====
 
-The the example above, I've created a simple +<template>+ element to hold some DOM that represents a comment block on a blog. The block contains a source-less image and an empty div for the text. In the script block below, I have a +addComment+ function that takes an image url and some text. The function then selects my template block, clones it into a new HTMLElement object, sets the image and text values and then appends the DOM fragment to the body of the document. At that final step, the browser parses and renders the template-based content.
+In the example above, I've created a simple +<template>+ element to hold some DOM that represents a comment block on a blog. The block contains a source-less image and an empty div for the text. In the script block below, I have an +addComment+ function that takes an image url and some text. The function then selects my template block, clones it into a new HTMLElement object, sets the image and text values and then appends the DOM fragment to the body of the document. At that final step, the browser parses and renders the template-based content.
 
 Like I said, It should seem familiar because it is. Thankfully, having first-class template support in the browser means we can put all of those templating libraries to rest and use speedy, built-in functionality.
 
@@ -375,7 +375,7 @@ image::images/ch6-ex10a.png[]
 
 With the Chrome Developer Tools, you can find out. All you need to do is open your Chrome DevTools and click the gear icon in the lower right-hand corner. Then, look for an option that reads "Show Shadow DOM" and make sure that it's checked. Then, you can navigate to any page with a +<video>+ tag, right-click it and select "Inspect Element." 
 
-What you'll see looks like <<EX06-11>> below. Inside of the innocent looking +<video>+ tag lies +<divs>+, +<inputs>+ buttons and more. Browser vendors like Google actually used standard HTML tags and inputs to create complex visual elements like +<video>+ and Shadow DOM is, simply put, the technology that allows Chrome to hide those implementation details behind a single tag that developers can rely on.
+What you'll see looks like <<EX06-11>> below. Inside of the innocent looking +<video>+ tag lies +<divs>+, +<inputs>+ buttons and more. Browser vendors like Google actually used standard HTML tags and inputs to create complex visual elements like +<video>+ and Shadow DOM is, simply put, the technology that allows Chrome and other browsers to hide those implementation details behind a single tag that developers can rely on.
 
 [[EX06-11]]
 .Shadow DOM in Action
@@ -505,7 +505,7 @@ While the syntax for my element is similar to the Custom Elements spec, there ar
 
 The second Polymer-specific aspect to this element is the call to the +Polymer+ method. This method formally registers my custom element so that it can be used in my app, while also setting the default values for properties (+selected+) and subscribing to element lifecycle events. In this example, I'm subscribing to the +created+ event which fires when a new instance of my custom element is used in an app. When my event callback fires, I create a new Kendo UI Calendar from the current element and set its current date to either the default date or the user-specified date.
 
-The rest of the process of working with Custom Elements in Polymer is pretty straightforward, as illustrated in <<EX06-16>>. In this sample, the key difference is in the +head+, where I include the minified polymer source. When included, Polymer does everything required to work with my custom element Import, process the element, and then render the element when called upon. The end result of the snippet below is a full Kendo UI Calendar with a selected date of October, 5, 2013. To the element consuming developer, it's a totally declarative approach that works great across browsers, thanks to Polymer.
+The rest of the process of working with Custom Elements in Polymer is pretty straightforward, as illustrated in <<EX06-16>>. In this sample, the key difference is in the +head+, where I include the minified polymer source. When included, Polymer does everything required to work with my custom element Import, process the element, and then render the element when called upon. The end result of the snippet below is a full Kendo UI Calendar with a selected date of October, 5, 2013. To the component-consuming developer, it's a totally declarative approach that works great across browsers, thanks to Polymer.
 
 [[EX06-16]]
 .Using Polymer elements
@@ -536,7 +536,7 @@ The rest of the process of working with Custom Elements in Polymer is pretty str
 
 === Strategies for polyfilling experimental APIs
 
-Over the course of this chapter, we've discussed a handful or great prollyfilling libraries that allow us to experiment with new and cutting edge ideas in CSS, HTML and JavaScript. In the next and final chapter of this book, we're going to try our hand at constructing our own prollyfill. But before we do, let's look briefly at a few things to keep in mind when building prollyfills for untested or experimental APIs.
+Over the course of this chapter, we've discussed a handful of great prollyfilling libraries that allow us to experiment with new and cutting edge ideas in CSS, HTML and JavaScript. In the next and final chapter of this book, we're going to try our hand at constructing our own prollyfill. But before we do, let's look briefly at a few things to keep in mind when building prollyfills for untested or experimental APIs.
 
 ==== Expect the API to change
 

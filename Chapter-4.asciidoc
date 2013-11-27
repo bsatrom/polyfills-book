@@ -195,7 +195,7 @@ Testing is critical for a good, "responsible" polyfill, and I recommend that you
 
 To start using Jasmine for my unit tests, I'll create a +lib+ directory inside of my +spec+ directory and place the jasmine bits inside. I'm also going to include the https://github.com/velesin/jasmine-jquery[jasmine-jquery] library, which I'll need in order to automatically execute my tests via grunt. 
 
-Next, I'll create a +runner.html+ file at the root of the +spec+ folder, and I'll populate it with the contents of [[EX4-6]]. Many JavaScript frameworks, Jasmine included, use an html file as their "test runner" by loading up dependencies, the project source and then executing those tests against DOM interactions on the page. On this page, we'll specify all of the CSS and JavaScript dependencies for our polyfill, including jQuery and Kendo UI for widgets and framework features, and then load up our tests via +fixtures.js+. 
+Next, I'll create a +runner.html+ file at the root of the +spec+ folder, and I'll populate it with the contents of <<EX4-6>>. Many JavaScript frameworks, Jasmine included, use an html file as their "test runner" by loading up dependencies, the project source and then executing those tests against DOM interactions on the page. On this page, we'll specify all of the CSS and JavaScript dependencies for our polyfill, including jQuery and Kendo UI for widgets and framework features, and then load up our tests via +fixtures.js+. 
 
 [[EX4-6]]
 .Jasmine runner.html file
@@ -273,11 +273,8 @@ With the runner done, let's create the key file for our testing, +fixtures.js+. 
 [source, js]
 ----
 describe('Kendo Forms Widget Test Suite', function() {
-  
   describe('Form initialization tests', function() {
-		
-    describe('Form Widget initialization', function() {
-      
+		describe('Form Widget initialization', function() {
       it('should exist in the kendo.ui namespace', function() {
         expect(kendo.ui.Form).toBeDefined();
       });
@@ -292,7 +289,7 @@ describe('Kendo Forms Widget Test Suite', function() {
 ----
 ====
 
-With this setup done, let's go ahead and run these tests in the browser. First, if you're following along and you created the +kendo.forms.js+ source file in Chapter 3, the tests above should pass. That nice, but for the sake of exploration, let's delete everything from that file and re-run our tests. If Jasmine is properly configured, you should see two failing tests, as we do [[EX4-8]]. So we have successfully configured our testing framework. Now, let's go make these tests pass!
+With this setup done, let's go ahead and run these tests in the browser. First, if you're following along and you created the +kendo.forms.js+ source file in Chapter 3, the tests above should pass. That's nice, but for the sake of exploration, let's delete everything from that file and re-run our tests. If Jasmine is properly configured, you should see two failing tests, as we do <<EX4-8>>. So we have successfully configured our testing framework. Now, let's go make these tests pass!
 
 [[EX4-8]]
 .Jasmine running in the browser
@@ -302,7 +299,7 @@ image::images/ch4-ex9.png[]
 
 When I start a new project, or add unit tests to an existing project, I like to start small and try to get a few quick win tests under my belt. This is partly because I'm still feeling out functionality in the early stages of a project, but also because I want to see my test suite running and passing as quickly as possible. It's far easier to suss out problems with my test suite setup with a smaller number of tests.
 
-With that in mind, the first two failing specs we've added to my project are minor, and easy to fix, but they help lay the foundation for my polyfill. As discussed in Chapter 3, Kendo UI itself exposes it's UI widgets to developers in two ways, and the tests above are designed to exercise that behavior. The tests in [[EX4-7]] are looking for key pieces of information. First, we check to make sure that our polyfill exists as a widget in the Kendo UI namespace, as +kendo.ui.Form+. Next, we want to ensure that the polyfill widget is available as a jQuery plugin, as illustrated in <<EX4-9>>. To make those tests pass, we can create the initial skeleton of our polyfill in a new file (in +src/+) called +kendo.forms.js+ and add the code in <<EX4-11>>, or add the code back in if you already did so in Chapter 3.
+With that in mind, the first two failing specs we've added to my project are minor, and easy to fix, but they help lay the foundation for my polyfill. As discussed in Chapter 3, Kendo UI itself exposes it's UI widgets to developers in two ways, and the tests above are designed to exercise that behavior. The tests in <<EX4-7>> are looking for key pieces of information. First, we check to make sure that our polyfill exists as a widget in the Kendo UI namespace, as +kendo.ui.Form+. Next, we want to ensure that the polyfill widget is available as a jQuery plugin. To make those tests pass, we can create the initial skeleton of our polyfill in a new file (in +src/+) called +kendo.forms.js+ and add the code in <<EX4-11>>, or add the code back in if you already did so in Chapter 3.
 
 [[EX4-11]]
 .Creating the core widget definition for our Kendo UI Forms polyfill
@@ -416,15 +413,16 @@ When I first add this test, it will fail, but I can make it pass by adding the f
 
 ==== Configuring Jasmine for the Browser and the Console
 
-After adding the markup in <<EX4-16> all three of my tests will pass. That's nice, but in the spirit of keeping our test options option, let's rerun the +grunt jasmine+ command and see what happens. Spoiler alert: it looks like [[EX4-17]]. That's a failing test. Why did our test fail in my terminal, even though it worked in the browser? The answer lies in the DOM, or lack thereof, that is. When I'm using Jasmine via the console, there is no DOM available for my tests, so in order to leverage the DOM for testing, I need to do a bit of additional set-up. For that, I'll use the https://github.com/velesin/jasmine-jquery[jasmine-jquery] library, which allows me to load HTML files into my specs and execute my tests against them.
+After adding the markup in <<EX4-16> all three of my tests will pass. That's nice, but in the spirit of keeping our test options option, let's rerun the +grunt jasmine+ command and see what happens. Spoiler alert: it looks like <<EX4-17>>. That's a failing test. Why did our test fail in my terminal, even though it worked in the browser? The answer lies in the DOM, or lack thereof, that is. When I'm using Jasmine via the console, there is no DOM available for my tests, so in order to leverage the DOM for testing, I need to do a bit of additional set-up. For that, I'll use the https://github.com/velesin/jasmine-jquery[jasmine-jquery] library, which allows me to load HTML files into my specs and execute my tests against them.
 
 [[EX4-17]]
 .Running Jasmine DOM tests in the console
 image::images/ch4-ex18.png[]
 
-First, I'll need to move the form tag from <<EX4-17>> into a standalone HTML file, and I'll place that file in a +spec/javascripts/fixtures/+ directory--the location is a convention jasmine-jquery uses. Then, I need to add the jasmine-jquery fixture loader to my +fixtures.js+ file, so I'll add the following to line 4:
+First, I'll need to move the form tag from <<EX4-17>> into a standalone HTML file, and I'll place that file in a +spec/javascripts/fixtures/+ directory--the location is a convention jasmine-jquery uses. Then, I need to add the jasmine-jquery fixture loader to my +fixtures.js+ file, so I'll add the following path to line 4:
 
 [[EX4-18]]
+.Declarative initialization of a Form widget
 ====
 [source, js]
 ----
@@ -439,6 +437,7 @@ if (document.location.pathname.indexOf('runner.html') > 0) {
 In order to run jasmine in multiple environments, I do have to add a bit of path manipulation, as you can see in the sample above. If I'm running my tests in the console, the default path (spec/javascripts/fixtures) works for loading fixtures. If I'm in the browser, however, I need to adjust things a little. Finally, in my latest test, <<EX4-15>>, I'll add a call to jasmine-jquery's +load+ method to load up my HTML fixture. The complete test is listed in <<EX4-19>>.
 
 [[EX4-19]]
+.Loading an external fixture
 ====
 [source, js]
 ----
@@ -460,7 +459,7 @@ Now that we have a good testing setup with Jasmine and Grunt, let's take this pa
 
 [NOTE]
 ====
-As I discussed in Chapter 3, while automated, cross-browser testing is a great safety net for the polyfill developer, it's no substitute for real, actual testing across browsers, especially those older versions of IE where browser quirks lie in wait.
+As I discussed in Chapter 3, automated, cross-browser testing is a great safety net for the polyfill developer, but it's no substitute for real, actual testing across browsers, especially those older versions of IE where browser quirks lie in wait.
 ====
 
 === Configuring Cross-Browser Tests with Karma
@@ -589,7 +588,7 @@ npm install karma-safari-launcher --save-dev
 
 ==== Making Karma, Jasmine and the Browser Play Nice
 
-Once I've installed those two additional launchers, I should be able to run karma using grunt with the +grunt karma+ command. If I do that, I should see all of my browsers launch, but one of my three initial tests will fail. Can you guess which ones? That's right, the DOM tests. Much as I did for Jasmine in the console, I need to add a path condition for Karma to my +fixtures.js+ file, as shown in <<EX4-35>>.
+Once I've installed those two additional launchers, I should be able to run karma using grunt with the +grunt karma+ command. If I do that, I should see all of my browsers launch, but one of my three initial tests will fail. Can you guess which ones? That's right, the DOM test. Much as I did for Jasmine in the console, I need to add a path condition for Karma to my +fixtures.js+ file, as shown in <<EX4-35>>.
 
 [[EX4-35]]
 ====
@@ -675,6 +674,7 @@ image::images/ch4-ex42.png[]
 Before we wrap up this chapter, there's one final piece of setup I suggest you perform when building a cross-browser polyfill. That is, configuring a CI server to run your tests and provide you with that extra-level sanity check. As I said above, I prefer Travis CI because the service is free for open source projects, and it's dead-simple to configure. In fact, all I need in my project is to add a file called +.travis.yml+ with a few options, as shown in <<EX4-42>>.
 
 [[EX4-42]]
+.A Travis-CI configuration file
 ====
 [souce, yaml]
 ----

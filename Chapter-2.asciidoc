@@ -22,6 +22,8 @@ I call this practice _responsible polyfilling_. That is, building your polyfill 
 
 Responsible polyfilling is about having a clear purpose, clear goals and non-goals, and about following a couple of basic principles during development. We'll talk about principles in the next section, but the first, and most important, step in polyfill development is to define the purpose and goals for your library. 
 
+==== The Polyfill "Vision Statement"
+
 Much like a vision statement for a new company or product, your polyfill needs something to clearly define why it exists, what benefit it provides and what it will and won't offer to developers. This little bit of advance planning helps drive development and clearly communicates your value. It can also spur additional feedback from developers who might have different or expanded needs from your library, thereby allowing you to enhance your polyfill, if doing so makes sense.
 
 All this "vision statement" babble might sound like a lot of work for an open source library, but it doesn't have to be. A half-hour spent defining what your polyfill is all about will streamline your development, keep you focused on the things that matter, and save you tons of time and headaches, down the road. 
@@ -76,7 +78,7 @@ With that bit of soapboxing out of the way, let's talk about principles for resp
 
 Let's talk about each of these, in turn.
     
-==== Read the Spec
+==== 1. Read the Spec
 
 I do a lot of reading. About half of my reading is technical: blog posts, articles and books, and the other half is not, from great novels to books about the joys and trials of raising two precocious boys. Across these, there are a lot of things I love to read, and many things that require a monumental force of will for me to power through.
 
@@ -86,7 +88,7 @@ This is not to say that these specifications aren't useful, or even a worthwhile
 
 For the polyfill developer, reading and understanding a specification is almost as important as it is to browser implementers themselves. As we'll discuss in the next principle, reading the spec is the best way to understand _what_ your polyfill needs to provide and thus, is essential. It's the most "rule-like" of all these principles, but also the most important. So pull up a chair, put on a pot of coffee, get yourself a Ludovico apparatus, and get to work. 
 
-==== Respect the API… if possible
+==== 2. Respect the API… if possible
 
 When reading W3C specifications, you'll often come across blocks of code-like text, similar to those found in <<EX2-2>>. This code is called Web IDL, an interface definition language designed for browsers. According to http://www.w3.org/TR/WebIDL[its specification], Web IDL "…is an IDL variant with a number of features that allow the behavior of common script objects in the web platform to be specified more readily."
 
@@ -109,13 +111,13 @@ Of course, this principle does have the caveat of "… if possible." For some li
 
 In other cases, you might be dealing with a specification that has experienced changes to it's API. One example of this scenario is the http://dev.w3.org/csswg/css-flexbox/[CSS Flexbox] module which has changed property syntax a couple of times during it's lifetime, while also experiencing early browser implementations. If you're maintaining a Flexbox library, chances are you'll need to support the legacy CSS property syntax in your implementation for a while. The bottom line is this: Specs and their APIs change, and building a polyfill might require you to bridge the gap created by API changes, in addition to merely filling in the gaps for browsers.
 
-==== Mind (only) the gaps
+==== 3. Mind (only) the gaps
 
 This is a simple principle, but an important one to highlight nonetheless. When building your polyfill, it's important to never lose sight of the fact that your library's purpose in life is to "fill in" the gaps in other browsers--or to iterate on experimental APIs, is is the case of a prollyfill--and nothing more. You should resist the temptation to add non-standard features simply because you want them or developers are clamoring for them. You can always create a separate shim that depends on your polyfill and add these features, but you'd be wise to keep them out of your main library.
 
 Of course, prollyfills are an exception to this principle. Because the point of a prollyfill is to help vet an emerging API, you _should_ experiment with new ideas and interfaces that you believe belong in the spec.
 
-==== Think like a browser developer
+==== 4. Think like a browser developer
 
 As I mentioned in the first principle, there's no doubt that most W3C specifications are written by browser developers, for browser developers. And while efforts like the "Extensible Web" movement are hoping to change that reality, for now, many of the specs in the standards pipeline were written by the people who will be adding those features to our browsers. I'm not going to weigh in here on whether that reality is or isn't an ideal world, but I do bring this point up to underscore an important fact. That is, when you're building polyfills, you need to think like the C++ developer who is working on this feature in the browser. "Thinking like a browser developer" can take a number of forms:
 
@@ -123,7 +125,7 @@ As I mentioned in the first principle, there's no doubt that most W3C specificat
 * Following the implementation discussion in the issue trackers for https://code.google.com/p/chromium/issues/list[Chrome] or https://bugzilla.mozilla.org/describecomponents.cgi?product=Firefox[Firefox]. Google and Mozilla developers do a very good job of working in the open, so these trackers reveal a lot of insight into the various design decisions that go into implementing a given feature.
 * Asking questions of developers on IRC. Picking a browser developer's brain via IRC can be one of the best ways to tap into implementation knowledge. It may sound daunting, but if you let these folks know that you're working on a polyfill for the feature they're working on, most will be happy to help. The Chrome team can be reached at #blink-dev on freenode, while Mozilla engineers typically hang out at #firefox on irc.mozilla.org.
 
-==== Build with performance in mind
+==== 5. Build with performance in mind
 
 If you talk to web developers who have been working with HTML5 for a couple of years, you might discover that many hold the opinion that polyfills are nice, but too often, slow. Often, when developers create a polyfill, they're interested first in covering features. Once those are delivered, the developer usually packs up his or her kit and heads home, thinking the job is done. 
 
@@ -131,7 +133,7 @@ But the truth is, performance is important when adopting HTML5 features, even wh
 
 There are a couple of ways you can build for performance. First, you can benchmark your implementation to native using a tool like http://jsperf.com[JSPerf] and then iterate the heck out of your library until you can't iterate any more. Second, you can create a robust set of unit tests with your polyfill, and make sure that these are tested using a cross-browser automated testing framework, like http://karma-runner.github.io/0.8/index.html[Karma]. We'll look at both of these strategies in Chapters 3 and 4.
 
-==== Plan for obsolescence
+==== 6. Plan for obsolescence
 
 Polyfills, by their nature, are temporary. Unless you're building a shim with a brand new API--and thus, not a polyfill--your goal should never be to build the next jQuery or Backbone. As a polyfill developer, recognize that you're in the humbling business of building libraries that you _want_ to become irrelevant in the future. The good news is that, for as long as developers need your library to fill in a key feature, it will be a welcome addition to their toolset. But we should never forget that the ultimate goal is to push for a world where these features exist native to all the browsers. It may seem that it goes without saying, but planning for obsolescence, along with complimentary principles like "mind (only) the gaps," will help you stay focused on polyfilling and only polyfilling, while resisting the urge to morph your library into something that's part polyfill and part shim. A _phrankenfill_, if you will.
 

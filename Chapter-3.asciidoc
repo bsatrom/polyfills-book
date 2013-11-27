@@ -259,7 +259,7 @@ image::images/ch3-ex6.png[]
 With my sample form in place, I'll next need to add a reference to my polyfill source file. In <<EX3-3>>, we created the main +kendo.forms.js+ file, which included the skeleton for our Forms widget and polyfill. I'll add a reference to that file in my sample form, and then add a script block or new file reference to activate the sample form, as illustrated in <<EX3-7>>.
 
 [[EX3-7]]
-.Activating our Forms opt-in polyfill via JavaScript
+.Activating our forms opt-in polyfill via JavaScript
 ====
 [source, js]
 ----
@@ -324,7 +324,7 @@ function isFormTypeSupported(type) {
 ----
 ====
 
-First, I'll create an in-memory +input+ element. Then, I'll set it's +type+ attribute to the type variable provided by the caller. Finally, I'll check the type attribute. If it's value is  still "text" even after I set it to another value, that means that the browser does *not* support this input type. As such, I'll return false. If the value is retained, browser support is available, and I'll return true.
+First, create an in-memory +input+ element. Then, set it's +type+ attribute to the type variable provided by the caller. Finally, check the type attribute. If it's value is  still "text" even after I set it to another value, that means that the browser does *not* support this input type. As such, I'll return false. If the value is retained, browser support is available, and I'll return true.
 
 To leverage this home-grown feature detection method, I'll modify the code in <<EX3-8>> to first check for support, as shown in <<EX3-10>>. Now, if I refresh Chrome or Opera, the built-in browser support is back, while custom widget support provided by my polyfill will be leveraged for all other browsers.
 
@@ -454,7 +454,7 @@ Refactoring is the practice of reorganizing code for maintenance, readability an
 
 ==== Refactoring Type Support
 
-When refactoring JavaScript code, I prefer to think not just of the refactor that will benefit my current code, but the code I plan to add next. This might sound like a bit of "You're not gonna need it" (or YAGNI) to you, but there are cases when I do indeed know "But I'm gonnna need it, and soon." (I tried to coin the acronym _BIGNIAS_ for this, but it doesn't quite roll off the tongue) Such is the case with my polyfill, where I know that much of the process of adding support for additional types will be consistent from one type to the next, with only a few, specific differences. 
+When refactoring JavaScript code, I prefer to think not just of the refactor that will benefit my current code, but the code I plan to add next. This might sound like a bit of "You ain't gonna need it" (or YAGNI) to you, but there are cases when I do indeed know "But I'm gonnna need it, and soon." (I tried to coin the acronym _BIGNIAS_ for this, but it doesn't quite roll off the tongue) Such is the case with my polyfill, where I know that much of the process of adding support for additional types will be consistent from one type to the next, with only a few, specific differences. 
 
 Because of this, the first step in my refactor is to move all of my +input+ type specific upgrades into a "lookup table," essentially just an array of objects that contains the type name and the upgrade function to execute for that type. My initial lookup object can be found in <<EX3-14>>.
 
@@ -577,7 +577,7 @@ span.hidden {
 
 The CSS above is adding a few classes and pseudo elements that I'll need to manipulate elements that my polyfill will be creating at runtime. The +label.placeholder+ selector applies to an element that I'll create to hold placeholder text, while the +input.placeholder+ selector applies to the original input for which I'm polyfilling attribute support. The remaining selectors cover positioning and visibility for elements and content.
 
-With our CSS in place, I'll add the JavaScript needed for placeholder support. First, I'll need to add a feature test for this attribute in order to make sure that I don't do any necessary work (which will include some DOM interaction) if the browser already supports it. Since I know that this won't be the only attribute my polyfill will need to test for--it will also need to support new attributes like +required+, +pattern+, and more--I'll go ahead and great a generic test function, just like I did for the input types:
+With our CSS in place, I'll add the JavaScript needed for placeholder support. First, I'll need to add a feature test for this attribute in order to make sure that I don't do any unnecessary work (which will include some DOM interaction) if the browser already supports it. Since I know that this won't be the only attribute my polyfill will need to test for--it will also need to support new attributes like +required+, +pattern+, and more--I'll go ahead and great a generic test function, just like I did for the input types:
 
 ====
 [source, js]
