@@ -535,6 +535,36 @@ For the Slider widget, I'll need to pass in a couple of configuration settings s
 .Sample form with range support
 image::images/ch3-ex17.png[]
 
+=== Building Utility Polyfills
+
+When building your polyfill, you might, from time-to-time, encounter a situation where your polyfill needs a polyfill of its own. For instance, there are a bevy of JavaScript utility functions that, while useful, may not be supported in older browsers like IE 6-8, which your polyfill will often need to target. Examples are useful utilities like +String.trim+ and +Array.forEach.+ 
+
+If, when developing your polyfill, you encounter a situation where some utility you need or what isn't supported, you have two choices. You can choose to either leverage some other approach that is supported across browsers, or you can build a polyfill for this utility.
+
+If you choose to take the latter approach, I recommend taking a look at the https://developer.mozilla.org/[Mozilla Developer Network] which, in addition to having the best docs on the web for front-end developers, is also a great resource for quick utility polyfills. For many of their JavaScript docs, MDN provides great information about current browser support, in addition to a quick snippet that can be used to polyfill support for that API across all browsers. An example can be seen in <<EX3-17.5>> below.
+
+[[EX3-17.5]]
+.A Simple Array.forEach polyfill
+====
+[source, JavaScript]
+----
+if (!Array.prototype.forEach) {
+  Array.prototype.forEach = function (fn, scope) {
+    'use strict';
+    var i, len;
+    
+    for (i = 0, len = this.length; i < len; ++i) {
+      if (i in this) {
+        fn.call(scope, this[i], i, this);
+      }
+    }
+  };
+}
+----
+====
+
+This example is a simple polyfill for the +Array.forEach+ method. First, I'll check for the existence of the +forEach+ method on the Array prototype. If the method exists, we do nothing. If not, we'll add our polyfill, which is a simple +for+ loop that iterates over each element of the array. For my HTML5 Forms polyfill, I've included this and other utility polyfills in a standalone source file that is included in my combined and minified production build.
+
 === Polyfilling visual features with CSS
 
 With the input type refactor done, adding support for most of the remaining types (datetime, date, time, month, etc.) is pretty straightforward and not really worth covering in this book. There are a few quirks here and there with some of the date/time types, especially when it comes to the proper way to format date attribute values, but as long as you ensure you're http://www.w3.org/TR/html5/infrastructure.html#valid-global-date-and-time-string[properly handling date and time strings as covered in the spec], you should be fine. Your author failed to do so when he first started building an HTML5 Forms polyfill, so do take my word for it. Not coincidentally, it was this experience that lead yours truly to make "Read the Spec" the first principle of responsible polyfill development, as covered in Chapter 2.
