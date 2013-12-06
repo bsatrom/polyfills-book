@@ -1083,6 +1083,27 @@ image::images/ch5-ex16.png[]
 
 Much like performance testing, cross-browser issues are hard to generalize. Each browser has their own quirks and edge cases that behave differently from all the rest. IE 7 and 8 certainly aren't alone in this regard. Modern specs have done a great job of minimizing these types of differences in newer browsers, but you should expect to encounter hairy issues from time to time as you build cross-browser polyfills. Thankfully, these quirks, and their workarounds are often well-documented, so you shouldn't need to go far to find a fix.
 
+=== Mobile-specific Considerations
+
+In this chapter, we've focused mostly on overall JavaScript and DOM rendering performance considerations. While this is important for all browsers, you'll often find that you need to focus specifically on mobile for polyfills that are meant to be used on devices. In addition to the tips shared above, let's look at a couple of mobile-specific performance recommendations.
+
+1. File Size Matters
+2. Always Test on Devices
+
+==== 1. File Size Matters
+
+While also true for the desktop, it's critical that you pay attention to overall file size when building polyfills for mobile. Not only does the size of a JavaScript or CSS file affect the rendering time on devices--which often have browser engines that don't perform as fast as their desktop counterparts--but a larger file means more for the mobile device to download from the network, which has a cost on both the user's battery and their data plan. 
+
+Web developers are becoming increasingly aware of the performance impact on app resources, so do your fellow developers a favor and make sure that your polyfill is a small as possible, both by including only the needed functionality and also by delivereing a minified production version of your library. If your polyfill is broad in scope, as is the case of the HTML5 Forms Library, you might even consider providing functionality in modules that can be delivered separately or combined via a custom build process.
+
+In the case of our Forms polyfill, it's also important for me to think about the file size of my dependencies. Specifically, in the case of Kendo UI Web, I'm onlt using a subset of all of the widgets and features available in this library, so it doesn't make sense to require the end user to download that entire file. Thankfully, Kendo UI provides its widgets in a modular form, and I can use these to create a custom build of the library that uses only the widgets required, and then ship this with the source of my polyfill.
+
+==== 2. Always Test on Devices
+
+Perhaps it goes without saying, but in today's mobile world, testing across browers means testing devices browsers, too. And even though most of the devices browsers are mobile versions of their desktop counterparts, it doesn't mean that every feature available in Chrome for the desktop is also available in Chrome for mobile. What's more, because the speed and performance of your library is just as important as its functionality, it's critical that you regularly run your tests on physical mobile devices to ensure that you're delviering a great polyfill experience.
+
+Unfortunately, it's not possible to use tools like Karma and Browser Stack to automatically test mobile browsers, so you'll likely need to rely on friends, family and the goodwill of developers working with your polyfill to test across devices. Even better, if you live in a city with an open device lab, consider scheduling regular visits for testing. Finally, there are paid services--like DeviceAnywhere--for accessing physical devices for testing, but since you're not likely to be building your polyfill for profit, it's probably not worth the steep cost of these services.
+
 Over the last three chapters, we've discussed many of the ins and outs of building your own cross-browser polyfills, from getting started, to configuring a solid build and test environment and finally, to performance and edge-case tuning. Collectively, you should have a solid foundation to use for building your own polyfills, and I can't wait to see what you'll come up with!
 
 Next, we'll turn the discussion to future polyfilling, or the practice of adding new APIs and functionality to our browsers, for the purpose of vetting and testing out what's next for the web platform.
