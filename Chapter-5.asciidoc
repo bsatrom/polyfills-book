@@ -15,13 +15,13 @@ This is a high bar, for sure. Your polyfill's performance baseline is the native
 
 We'll look at each of these, in turn, in this section.
 
-==== Setting Up Performance Benchmarks
+==== 1. Setting Up Performance Benchmarks
 
 First-things-first, if you want to build for performance, you need to be able to test and assess the performance of your polyfill. You certainly *could* eyeball it and judge your library by how fast it "feels" to you, but I suggest being a bit more scientific, if you can stand it. Specifically, I suggest using http://jsperf.com[JSPerf] to benchmark and test your polyfill, not only at the start, but as you continue to iterate and make changes. JSPerf, which is based on the open-source http://benchmarkjs.com[Benchmark.js] library, is a quick and easy way to set-up tests of your library's features and functionality. Alternatively, you *could* use Benchmark.js directly, the https://github.com/shama/grunt-benchmark[grunt-benchmark] Grunt plugin, or just use the DevTools in your favorite browser to run ad-hoc tests, but I find that JSPerf has everything I need to perform performance tests across revisions to my polyfills. Plus, it has pretty charts, courtesy of http://browserscope.org[Browserscope]. In the next section, I'll walk through setting up a simple JSPerf test to show the delta after a simple tweak to my polyfill.
 
-==== Don't Execute Code Too Early or Too Often
+==== 2. Don't Execute Code Too Early or Too Often
 
-The next strategy we can employ to pass the _noticeability_ test is to make sure that our polyfill doesn't execute any code it doesn't have to. This is especially important if your library is a drop-in or opt-in polyfill that performs it's own feature detection. For instance, our HTML5 Forms Polyfill needs to test for browser support of several input types. In Chapter 3, we perform feature detection as we loop over each input in a form, as shown in <<EX5-1>>.
+The next strategy we can employ to pass the _noticeability_ test is to make sure that our polyfill doesn't execute any code it doesn't have to. This is especially important if your library is a drop-in or opt-in polyfill that performs it's own feature detection. For instance, our HTML5 Forms Polyfill needs to test for browser support of several input types. In Chapter 3, we perform feature detection as we loop over each input in a form, as shown in <<EX5-1>>. In this snippet, I create an array called +typeUpgrades+ to represent each form input type and the "upgrade" logic needed to convert these into Kendo UI widgets. Then I create a custom widget for my polyfill and specify the logic to perform when that widget is initialized, which iterates over each type, finds any form fields that match and finally, upgrades each field based on its type.
 
 [[EX5-1]]
 .Form Support with Feature Detection
@@ -182,6 +182,8 @@ In <<EX5-2>>, I moved the +isFormTypeSupported+ function outside of my widget in
 
 This is nice in theory, and it certainly looks a bit cleaner, but just how fast is it? To answer that question, I can head over to http://jsperf.com[JSPerf] and create a test. 
 
+===== Using jsPerf
+
 JSPerf can seem a bit daunting if you've only ever viewed others' tests before, but it's actually quite simple to create tests of your own. The basic idea behind JSPerf is to create multiple test cases that execute blocks of JavaScript code--performing operations, mutating the DOM, etc.--which the tool then executes over and over again in order to determine which operations are fastest and slowest. JSPerf takes care of all of the looping and re-runs, so all you need to do is specify the test cases, and any set-up or teardown that should happen before or after each test run.
 
 In order to test just how much feature test caching improves the performance of our code, I created the test shown in <<EX5-3>>. You can also http://jsperf.com/feature-test-cache[access the test online], and run it yourself, if you so desire.
@@ -192,7 +194,7 @@ image::images/ch5-ex3.png[]
 
 The "Preparation Code" section in <<EX5-3>> shows the setup and teardown code that will run before each test. This code does not impact the timing of the tests. Here, I create a global feature test method, +isFormTypeSupported+, as well as a global +featureDetects+ object, similar to <<EX5-2>>. 
 
-The "Test Runner" section contains my actual tests. The "Test Each Time" block does exactly what it says, each time that block is called, it will call the +isTypeSupported+ method. This block mimics my original functionality in <<EX5-1>>. The "Cache Tests" block, on the other hand, simply accesses the cached feature test values. If I run these tests a few times, I'll get a result similar to <<EX5-4>>.
+The "Test Runner" section in <<EX5-3>> contains my actual tests. The "Test Each Time" section does exactly what it says, each time that block is called, it will call the +isTypeSupported+ method. This block mimics my original functionality in <<EX5-1>>. The "Cache Tests" section in <<EX5-3>>, on the other hand, simply accesses the cached feature test values once. If I run these tests a few times, I'll get a result similar to <<EX5-4>>, which shows the test case from <<EX5-3>> after I've run the test several times through.
 
 [[EX5-4]]
 .JSPerf Test Results for Feature Test Caching
@@ -202,7 +204,7 @@ As you can see from the image above, caching my feature tests is not only faster
 
 So far, in this section, we've avoided executing unnecessary code by ensuring that feature detection tests only run once when my library is loaded. Another important optimization I can perform is to ensure that my library doesn't perform any unnecessary initialization or set-up. Any features or functionality that my library might not need for all browsers should remain dormant until it's needed. Obviously, stylesheets and JavaScript will need to be parsed when they are included, but I try to execute as little of that code as possible, until my library is called upon. In the case of my polyfill, the only code that runs before I initialize a Form widget is my now cached feature tests, which I've deemed necessary to run up-front since the performance gains are considerable.
 
-==== Iterate Until You're Happy, Then Iterate Some More
+==== 3. Iterate Until You're Happy, Then Iterate Some More
 
 The final strategy to keep your library performing well under the watchful eyes of consuming devs is to iterate, test and iterate again. In essence, this is a bit of a hunt and peck exercise, where I'll look for micro- and macro-optimizations in my library, make changes and then test those against the last version, using JSPerf, of course. Some changes will make no difference in the performance of my library, while others will make a noticeable difference. Some might even harm performance, innocent as they may seem.
 
@@ -535,7 +537,7 @@ An example of this element caching approach with jQuery can be seen in <<EX5-7>>
 
 In this case, +element+ represents the +<form>+ that I'm calling the Kendo UI Widget constructor on (+new kendoForm()+). The jQuery method gives me the +<form>+ element, which I then assign to the +form+ variable. 
 
-Further down the sample, you'll notice that I then access this variable three additional times, each time calling +form.find+ to further refine the list. In this case, even though the form itself is cached, jQuery has to return to the DOM to give me the collection of elements that match my +find+ selector. Since all of my +find+ operations are meant to operate on HTML input elements, I can make my cached variable a bit more targeted, which I've done in <<EX5-8>>:
+Further down the sample, you'll notice that I then access this variable three additional times, each time calling +form.find+ to further refine the list. In this case, even though the form itself is cached, jQuery has to return to the DOM to give me the collection of elements that match my +find+ selector. Since all of my +find+ operations are meant to operate on HTML input elements, I can make my cached variable a bit more targeted, which I've done in <<EX5-8>>. Note that I've clipped some code from the source that's not relevant to the current discussion.
 
 [[EX5-8]]
 .Forms polyfill refactored to cache form inputs
@@ -567,22 +569,10 @@ Further down the sample, you'll notice that I then access this variable three ad
 
       if (that.options.styleInputs) {
         inputs.each(function(index, val) { <3>
-          // Add the k-input class to each form element (or 
-          // k-button for buttons), providing Kendo UI styling 
-          // to all elements, not just those the widget will transform.
-          var el = $(val);
-
-          if (val.type === 'button' ||
-            val.type === 'submit' ||
-            val.type === 'reset') {
-             el.addClass('k-button');
-          } else {
-            el.addClass('k-input');
-          }
+          /* clipped */
         });
       }
 
-      // Add basic support for form types defined in the typeUpgrades array
       for (i = 0, len = typeUpgrades.length; i < len; i++) {
         var typeObj = typeUpgrades[i];
         upgradeFormType(typeObj.type, typeObj.upgrade);
@@ -590,41 +580,11 @@ Further down the sample, you'll notice that I then access this variable three ad
 
       // Add placeholder support if not provided by the browser
       if(!kendo.forms.features.placeholder) {
-        inputs.filter('[placeholder]').each(function(index, val) {
-          var el = $(val);
-          // Strip CR and LF from attribute vales, as specified in
-          // www.w3.org/TR/html5/forms.html#the-placeholder-attribute
-          var placeholderText = el.attr('placeholder')
-            .replace(/(\\r\\n|\\n|\\r)/gm,'');
-
-          // When the field loses focus, clear out the placeholder if
-          // the input contains a value.
-          el.on('blur', function() {
-            var $el = $(this);
-            var labelNode = this.previousSibling;
-
-            if (this.value) {
-              labelNode.nodeValue = '';
-              $el.addClass('relPlaceholder');
-            } else if (labelNode.nodeValue !== placeholderText) {
-              labelNode.nodeValue = placeholderText;
-              $el.removeClass('relPlaceholder');
-            }
-          });
-
-          el.wrap('<label class="placeholder">' + placeholderText + '</label>');
-          el.addClass('placeholder');
-        });
+        /* clipped */
       }
     },
 
-    options: {
-      // the name is what it will appear in the kendo namespace (kendo.ui.Form).
-      // The jQuery plugin would be jQuery.fn.kendoForm.
-      name: 'Form',
-      alwaysUseWidgets: false,
-      styleInputs: true
-    }
+    options: { /* clipped */ }
   });
 
   ui.plugin(Form);
@@ -676,10 +636,6 @@ So, to shift from several loops to a single loop, I need to move a few things ar
       $(val).addClass('k-input');
     },
 
-    button: upgradeButton,
-    submit: upgradeButton,
-    reset: upgradeButton,
-
     color: function(val) {
       $(val).kendoColorPicker({ palette: 'basic' });
     },
@@ -698,123 +654,11 @@ So, to shift from several loops to a single loop, I need to move a few things ar
     file: function(val) {
       $(val).kendoUpload();
     },
-
-    datetime: dateTimeUpgrade,
-    'datetime-local': dateTimeUpgrade,
-
-    time: function(val) {
-      var input = $(val),
-        dummyDate = '2013-10-04T';
-
-      input.kendoTimePicker({
-        value: input.val().length > 0 ? new Date(dummyDate + input.val())
-          : null,
-        min: input.attr('min') ? new Date(dummyDate + input.attr('min'))
-          : new Date(2049, 0, 1, 0, 0, 0),
-        max: input.attr('max') ? new Date(dummyDate + input.attr('max'))
-          : new Date(2099, 11, 31, 0, 0, 0),
-        // Step attribute is seconds, interval in minute
-        interval: input.attr('step') ?
-          Math.round(parseInt(input.attr('step'), 10)/60) : 30
-      });
-    },
-
-    month: function(val) {
-      var input = $(val),
-        value = convertMonthPartToDate(input.val()),
-        min = convertMonthPartToDate(input.attr('min')),
-        max = convertMonthPartToDate(input.attr('max'));
-
-      input.kendoDatePicker({
-        // Set the start and depth properties to year, which means
-        // that only month values are displayed.
-        start: 'year',
-        depth: 'year',
-        // If the conversion returned a NaN, use the default values
-        value: isNaN(value) ? null : new Date(value),
-        min: isNaN(min) ? new Date(1900, 0, 1) : new Date(min),
-        max: isNaN(max) ? new Date(2099, 11, 31) : new Date(max)
-      });
-    },
-
-    week: function(val) {
-      var input = $(val),
-        value = getDateFromWeekString(input.val()),
-        min = getDateFromWeekString(input.attr('min')),
-        max = getDateFromWeekString(input.attr('max'));
-
-      input.kendoDatePicker({
-        // Set the start and depth properties to month, which means
-        // that only day/week values are displayed.
-        depth: 'month',
-        // If the conversion returned a null date, use the default values
-        value: value,
-        min: min === null ? new Date(1900, 0, 1) : min,
-        max: max === null ? new Date(2099, 11, 31) : max
-      });
-    },
-
-    date: function(val) {
-      var input = $(val);
-      var defaults = getDateTimeDefaults(input);
-      input.kendoDatePicker(defaults);
-    }
+    
+    /* clipped */
   };
 
-  function convertMonthPartToDate(val) {
-    // Add dummy day of month for valid date parsing
-    val = val + '-' + new Date().getDate();
-    return Date.parse(val);
-  }
-
-  function getDateFromWeekString(weekString) {
-    var week, year, dateParts;
-
-    if (!weekString) {
-      return null;
-    }
-
-    dateParts = weekString.split('-');
-
-    if (dateParts.length < 2) {
-      return null;
-    }
-
-    year = dateParts[0];
-    week = dateParts[1].replace(/w/gi, '');
-
-    if (isNaN(parseInt(week, 10)) || isNaN(parseInt(year, 10))) {
-      return null;
-    }
-
-    // Jan 1 + 7 days per week
-    var day = (1 + (week - 1) * 7);
-    return new Date(year, 0, day);
-  }
-
-  function dateTimeUpgrade(val) {
-    var input = $(val);
-
-    // Step attribute is seconds, interval in minute
-    var defaults = getDateTimeDefaults(input);
-    defaults.interval = input.attr('step') ?
-      Math.round(parseInt(input.attr('step'), 10)/60) : 30;
-    input.kendoDateTimePicker(defaults);
-  }
-
-  function getDateTimeDefaults(input) {
-    return {
-      value: input.val().length > 0 ? new Date(input.val()) : null,
-      min: input.attr('min') ? new Date(input.attr('min'))
-        : new Date(1900, 0, 1),
-      max: input.attr('max') ? new Date(input.attr('max'))
-        : new Date(2099, 11, 31)
-    };
-  }
-
-  function upgradeButton(val) {
-    $(val).addClass('k-button');
-  }
+  /* clipped */
 
   kendo.forms.types = typeUpgrades;
 } (kendo));
@@ -842,80 +686,42 @@ Next up, I'll make some changes to the core widget logic for my polyfill, as ill
 
       Widget.fn.init.call(this, element, options);
 
-      inputs.each(function(index, el) {
-        that.upgradeInputType(that, el);
+      inputs.each(function(index, el) { <1>
+        that.upgradeInputType(that, el); <2>
 
         if (el.getAttribute('placeholder') &&
           !kendo.forms.features.placeholder) {
-          that.upgradePlaceholder(el);
+          that.upgradePlaceholder(el); <3>
         }
       });
     },
     shouldUpgradeType: function(type) {
-      var that = this;
-      return (that.options.alwaysUseWidgets ||
-        !features[type]) &&
-        type in typeUpgrades &&
-        !vanillaInputRegEx.test(type);
+      /* clipped */
     },
     upgradeInputType: function(that, el) {
-      var type = el.getAttribute('type');
-
-      if (!type && el.nodeName === 'BUTTON') {
-        type = 'button';
-      }
-
-      if(vanillaInputRegEx.test(type) && that.options.styleInputs) {
-        typeUpgrades[type](el);
-      }
-
-      if (that.shouldUpgradeType(type)) {
-        typeUpgrades[type](el);
-      }
-
+      /* clipped */
     },
     upgradePlaceholder: function(el) {
-      el = $(el);
-      // Strip CR and LF from attribute vales, as specified in
-      // www.w3.org/TR/html5/forms.html#the-placeholder-attribute
-      var placeholderText = el.attr('placeholder')
-        .replace(/(\\r\\n|\\n|\\r)/gm,'');
-
-      // When the field loses focus, clear out the placeholder if
-      // the input contains a value.
-      el.on('blur', function() {
-        var $el = $(this);
-        var labelNode = this.previousSibling;
-        if (this.value) {
-          labelNode.nodeValue = '';
-          $el.addClass('relPlaceholder');
-        } else if (labelNode.nodeValue !== placeholderText) {
-          labelNode.nodeValue = placeholderText;
-          $el.removeClass('relPlaceholder');
-        }
-      });
-      el.wrap('<label class="placeholder">' + placeholderText + '</label>');
-      el.addClass('placeholder');
+      /* clipped */
     },
     options: {
-      // the name is what it will appear in the kendo namespace (kendo.ui.Form).
-      // The jQuery plugin would be jQuery.fn.kendoForm.
-      name: 'Form',
-      alwaysUseWidgets: false,
-      styleInputs: true
+      /* clipped */
     }
   });
 
   ui.plugin(Form);
 } (jQuery, kendo));
 ----
+<1> Single loop for evaluating all form inputs
+<2> Core upgrade functionality, refactored into an external function
+<3> Upgrade functionality for the placeholder attribute, refactored into an external function
 ====
 
 I think you'll agree that this is much cleaner, but is it any faster? For that matter, have any of these changes made a difference? Let's take a look in the next section.
 
 ==== Running Performance Benchmarks
 
-One of the nice things about JSPerf is that, with a little bit of setup, it's easy to do side-by-side testing of revisions. In the case of our last three tweaks, I created a new JSPerf test, which you can http://jsperf.com/kendo-ui-forms-performance/5[view online], if you so desire. You can also append +/edit+ to the end of the url if you want to see how the test was set-up, or make edits of your own. 
+One of the nice things about JSPerf is that, with a little bit of setup, it's easy to do side-by-side testing of revisions to your code. Along those lines, I created a new JSPerf test that includes all of the tweaks we've made in this chapter, and you can http://jsperf.com/kendo-ui-forms-performance/5[view it online], if you so desire. You can also append +/edit+ to the end of the url if you want to see how the test was set-up, or make edits of your own. 
 
 For this test, I included the same sample Form that we created in Chapter 3, and used JSPerf's set-up capability to load a different version of my polyfill source, depending on the individual test case. All-in-all, I created four tests:
 
@@ -934,7 +740,7 @@ There are a couple of things to take away from the image above:
 
 . Individual test runs can give different results, so be sure to run your tests several times, and in as many browsers as possible. In the image above, my element cache refactor looks like the slowest test, though it's still well within the standard deviation (+/-) of 4.96% indicated by JSPerf. If you look at the bar charts at the bottom of the image, you'll note that, over a larger sample size, the element cache refactor (in yellow) is faster than my baseline test (in red) in most browsers.
 . For most browsers, the argument reordering change isn't much faster than the element cache refactor. I expected this, so as long as it's not noticeably _slower_, it's a worthwhile change. It does seem to be visibly faster in the current version (at the time of writing) of Chrome, however, so I'll take it.
-. Finally, as expected, the single loop refactor yielded the largest gains across most browsers, especially Chrome. It's faster in Opera and Safari, as well and, even though you can't see it due to scale, was faster in my IE 8 tests. Surprisingly, these changes are all about even on Firefox but, again, since performance isn't markedly worse, I'm okay with an outlier or two.
+. Finally, as expected, the single loop refactor yielded the largest gains across most browsers, especially Chrome. It's faster in Opera and Safari, and in IE 8, though because of the huge speed improvements in modern browsers, the IE 8 row looks empty. Surprisingly, these changes are all about even on Firefox but, again, since performance isn't markedly worse, I'm okay with an outlier or two.
 
 ==== Tune It, But Don't Overdo It
 
@@ -944,7 +750,9 @@ Before I close this section, a word of caution: performance tuning is important,
 
 === Dealing with Browser-Specific Edge-Cases
 
-Now that we've talked about general performance testing, I'll close this chapter with a brief discussion on browser-specific edge-cases. As I mentioned at the end of Chapter 4, regardless of your build and automated testing workflow, there's no substitute for hands-on actual testing with certain browsers, especially oldIE. While it's still important to test IE 7 and 8 for most kinds of sites and apps, it's critically important when you are building polyfills. More often than not, IE 7 and 8 will need the functionality your polyfill provides, so you'll want to test on these browsers early and often.
+Now that we've talked about general performance testing, I'll close this chapter with a brief discussion on browser-specific edge-cases. As you can see from the last sections, it's possible to set up a very robust process for testing performance across several browsers. This is useful, but there will always be  outliers in both performance and functionality (in our case, IE 7 and 8). Once we've identified these, it's time to investigate with some additional, manual tests. 
+
+Regardless of your build and automated testing workflow, there's no substitute for hands-on actual testing with certain browsers, especially oldIE. While it's still important to test IE 7 and 8 for most kinds of sites and apps, it's critically important when you are building polyfills. More often than not, IE 7 and 8 will need the functionality your polyfill provides, so you'll want to test on these browsers early and often.
 
 After making each of the performance tweaks listed in this chapter, I was sure to run all of my automated tests with the +grunt test+ and +grunt x-test+ commands I set up in Chapter 4. Everything looks great in the latest browsers, but when I open up a VM with IE 8 or IE 7, I see something that looks more like <<EX5-12>>.
 
@@ -1104,6 +912,8 @@ Perhaps it goes without saying, but in today's mobile world, testing across brow
 
 Unfortunately, it's not possible to use tools like Karma and Browser Stack to automatically test mobile browsers, so you'll likely need to rely on friends, family and the goodwill of developers working with your polyfill to test across devices. Even better, if you live in a city with an open device lab, consider scheduling regular visits for testing. Finally, there are paid services--like DeviceAnywhere--for accessing physical devices for testing, but since you're not likely to be building your polyfill for profit, it's probably not worth the steep cost of these services.
 
-Over the last three chapters, we've discussed many of the ins and outs of building your own cross-browser polyfills, from getting started, to configuring a solid build and test environment and finally, to performance and edge-case tuning. Collectively, you should have a solid foundation to use for building your own polyfills, and I can't wait to see what you'll come up with!
+=== Summary
+
+Over the last three chapters, we've discussed many of the ins and outs of building your own cross-browser polyfills. In Chapter 3 we explored some practices for project structure and explored the ins and outs of adding initial functionality and a bit of refactoring. Then, in Chapter 4, we configured a solid build and test environment which allowed us to test our polyfill in the browser and via command-line tools like Grunt, Jasmine and Karma. Finally we looked at performance and edge-case tuning, and explored some examples using JSPerf to fine-tune the speed of our polyfill. Collectively, you should have a solid foundation to use for building your own polyfills, and I can't wait to see what you'll come up with!
 
 Next, we'll turn the discussion to future polyfilling, or the practice of adding new APIs and functionality to our browsers, for the purpose of vetting and testing out what's next for the web platform.

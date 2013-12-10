@@ -9,7 +9,11 @@ First, let's take a look at our candidate library for the next two chapters: an 
 
 What we know of today as "http://www.w3.org/TR/2011/WD-html5-20110525/forms.html[HTML5 forms]" was actually the first technology to be proposed under the umbrella of what eventually became "HTML5." First introduced outside of the WC3 as "Web Forms 2.0" by a consortium of browser vendors that included Google, Mozilla, Opera Software and Apple, this proposal arrived at a time when the W3C was still pouring much of their effort into the now-deduct XHTML 2.0 specification. As an outflow of "Web Forms 2.0," these vendors formed the Web Hypertext Application Technology Working Group (WHATWG), a sibling standards body to the W3C that still exists today.
 
-And while it is outside of the scope of this book to discuss the politics of HTML5, various collected standards and competing standards bodies, it is important to note that HTML5 forms has not only been around a while, but it’s still one of the most hotly-debated aspects of the HTML5 spec. While certain aspects of the forms spec have near universal support (i.e. forms validation), some of the more visual aspects of the spec—new input types like number, color and datetime—have yet to be consistently implemented across all browsers. What’s more, in some cases, for those browsers that do support certain types, the specifics of said support are often inconsistent from one implementation to the next. This means that you, the developer, might not get exactly the behavior you expect, every time.
+And while it is outside of the scope of this book to discuss the politics of HTML5, various collected standards and competing standards bodies, it is important to note that HTML5 forms has not only been around a while, but it’s still one of the most hotly-debated aspects of the HTML5 spec. While certain aspects of the forms spec have near universal support (i.e. forms validation), some of the more visual aspects of the spec—new input types like number, color and datetime—have yet to be consistently implemented across all browsers, as illustrated in <<EX3-1a>>. What’s more, in some cases, for those browsers that do support certain types, the specifics of said support are often inconsistent from one implementation to the next. This means that you, the developer, might not get exactly the behavior you expect, every time.
+
+[[EX3-1a]]
+.Color Inputs viewed in Opera, Chrome and Firefox
+image::images/ch3-ex1a.png[]
 
 HTML5 Forms is a minefield, so what better area to venture into as a polyfill developer, then? It’s a bit hairy, for sure, but this area of the spec if sufficiently complex enough to expose many of the polyfilling practices that I introduced in the last chapter.
 
@@ -25,6 +29,10 @@ In our case, however, I've chosen to use a UI library because it allows me to fo
 ====
 The HTML5 Forms Polyfill we will be building over the next three chapters can be found in its current form online at https://github.com/kendo-labs/kendo-ui-forms[https://github.com/kendo-labs/kendo-ui-forms]. The project is actively maintained, and you're welcome to view the source after reading this book if you want to dig deeper into any specifics that I was unable to cover here.
 ====
+
+Finally, it's worth mentioning that I've decided to build my HTML5 Forms polyfill as an "opt-in" polyfill, as opposed to a "drop-in" library. While it's certainly possible to do the latter, I think the former is a better approach, in my case, for a couple of reasons. For starters, since I'm using Kendo UI to power my widgets, and Kendo UI requires explicit widget initialization, I feel that it's appropriate for me to do the same with my polyfill and require that the developer "activate" the capabilities of my polyfill. I've also chosen to pursue an "opt-in" approach because the HTML5 Forms spec is so broad and complex that I'm not sure if my library will ever be able to support every single corner of the spec to the letter. By taking a "opt-in" approach, and documenting what I do and don't support, I can make sure that the developer knows what they are buying into.
+
+That said, even though my polyfill is opt-in, it doesn't mean that I can't future proof my library. Just as with a drop-in polyfill, my goal is to provide a polyfill that can be easily removed (along with a line or two of code) when all browsers support the HTML5 Forms spec.
 
 === Setting Up Your Polyfill Project
 
@@ -839,6 +847,11 @@ Modern, self-updating browsers are commonly referred to as "Evergreen," because 
 |Safari             |Varies        |http://www.apple.com/safari/
 |Safari Beta        |Varies        |https://developer.apple.com/technologies/safari/
 |=======
+
+[NOTE]
+====
+While many of the names above are pretty straightforward, "Chrome Canary" isn't very self-explanatory. Canary is Google's "nightly" browser, which is updated once per day and represents the most cutting-edge work being done to Google Chrome.
+====
 
 ==== Testing in oldIE
 

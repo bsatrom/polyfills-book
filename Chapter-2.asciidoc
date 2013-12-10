@@ -86,14 +86,14 @@ Specifications, be they the W3C or WHATWG variety, fall squarely into that latte
 
 This is not to say that these specifications aren't useful, or even a worthwhile read. As a matter of fact, they are enormously useful to their primary audience: browser implementers. And they are worth your time. Much like my four-year old needs to be reminded that eating one's vegetables are important, I have to be reminded from time-to-time that specifications are very useful, even to us lowly web developers.
 
-For the polyfill developer, reading and understanding a specification is almost as important as it is to browser implementers themselves. As we'll discuss in the next principle, reading the spec is the best way to understand _what_ your polyfill needs to provide and thus, is essential. It's the most "rule-like" of all these principles, but also the most important. So pull up a chair, put on a pot of coffee, get yourself a Ludovico apparatus, and get to work. 
+For the polyfill developer, reading and understanding a specificallytion is almost as important as it is to browser implementers themselves. As we'll discuss in the next principle, reading the spec is the best way to understand _what_ your polyfill needs to provide and thus, is essential. It's the most "rule-like" of all these principles, but also the most important. So pull up a chair, put on a pot of coffee, get yourself a Ludovico apparatus, and get to work. 
 
 ==== 2. Respect the API… if possible
 
 When reading W3C specifications, you'll often come across blocks of code-like text, similar to those found in <<EX2-2>>. This code is called Web IDL, an interface definition language designed for browsers. According to http://www.w3.org/TR/WebIDL[its specification], Web IDL "…is an IDL variant with a number of features that allow the behavior of common script objects in the web platform to be specified more readily."
 
 [[EX2-2]]
-.Example WebIDL Snippet
+.Example WebIDL Snippet for the http://www.w3.org/TR/html5/forms.html#the-form-element[HTML Form Element]
 image::images/ch2-ex2.png[]
 
 So Web IDL specifies the interface that browsers are to use when building a standard implementation, and all of the browsers do exactly that. What's more, most of them--perhaps even all of them, but I can't claim all without seeing Internet Explorer's code base, which is not open source--automatically generate Web IDL bindings directly from the spec-defined IDL. 

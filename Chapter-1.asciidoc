@@ -1,3 +1,8 @@
+[[polyfills_part_1]]
+= Building Polyfills
+
+In this first part, I'll share the ins and outs of polyfill development, starting with the current landscape of polyfilling in Chapter 1. In Chapter 2, I'll introduce some principles and practices for the polyfill developer, guidance that I hope you'll find useful regardless of the type of polyfill you plan to build. Then, in Chapters 3-5, we'll dig deep into polyfill development with a real-life library. In Chapter 3, I'll introduce our sample project, an HTML5 Forms polyfill, and we'll build out several features for this library. In Chapter 4 we'll talk about testing and build workflows, and I'll introduce you to some tools that can make your life easier as a polyfill developer. Finally, we'll wrap up part one with a discussion on polyfill performance in Chapter 5 and I'll walk through a couple of cases where we can improve the speed of our polyfill.
+
 [[polyfills_chapter_1]]
 == The Current State of Web Polyfills
 
@@ -30,13 +35,13 @@ _Progressive enhancement,_ and it's cousin _graceful degradation,_ also don't wo
 
 When Remy Sharp conceived of the term _polyfill_, he wasn't attempting to coin a new phrase for posterity. Instead, he was hoping to describe an increasingly relevant practice that would undoubtably become even more important as HTML5 and the "open web" continued to proliferate throughout the development world. The web development community needed a term to describe this burgeoning practice, and Sharp had one to offer. In spite of claims from time-to-time that the word should be changed, "polyfilling" has caught on. I don't expect that it, or the practice that it represents to go anywhere, anytime soon. Quite the opposite, in fact, which is why you hold this book in your hands.  
 
-=== The Polyfilling Spectrum
+=== Types of Polyfills
 
-With a proper explanation of polyfills out of the way, let's spend a few moments talking about types of polyfills, or the polyfilling spectrum. While the formal definition does have a pure, simple interpretation, polyfills in reality don't always respect this definition to a T. In this section, we'll look at some common "classes" of polyfills, as well as the pros and cons of choosing each approach when building your own.
+With a proper explanation of polyfills out of the way, let's spend a few moments talking about types of polyfills. While the formal definition does have a pure, simple interpretation, polyfills in reality don't always respect this definition to a T. In this section, we'll look at some common "classes" of polyfills, as well as the pros and cons of choosing each approach when building your own.
 
 ==== The Shim
 
-A _shim_ is not a polyfill, at least by definition, but it does fall on the left side of our contrived polyfill spectrum. This is for two reasons: 1) people often do use the two terms interchangeably, and; 2) shims and polyfills share similar goals, in spite of their differing approaches. 
+A _shim_ is not a polyfill, at least by definition, but its often considered a type of polyfill. This is for two reasons: 1) people often do use the two terms interchangeably, and; 2) shims and polyfills share similar goals, in spite of their differing approaches. 
 
 A shim is a piece of code, typically JavaScript, that's designed to add functionality into the browser that is not already present, or to bring a level of consistency to various browser implementations. Unlike the various polyfill types, shims do not map their functionality to a built-in or specified browser API, instead choosing to implement their own API that developers must learn and adopt in order to leverage provided functionality. 
 
@@ -128,7 +133,7 @@ On the other hand, _opt-in polyfills_ do still introduce technical debt in the f
 
 ==== The Drop-in Polyfill
 
-The next type of polyfill on our spectrum is the so-called _drop-in_ or _pure polyfill_. I've chosen this name to indicate a polyfill that adheres to the API of the feature in question while requiring no additional configuration beyond a script include. When included, a "drop-in" polyfill goes to work by adding its functionality to the browser, typically via additions to JavaScript prototypes or globals like +window+ and +document+. Once the polyfill is included and parsed, the developer is free to rely on standard functionality without the need for additional feature detects or User Agent interrogation.
+The next type of polyfill is the so-called _drop-in_ or _pure polyfill_. I've chosen this name to indicate a polyfill that adheres to the API of the feature in question while requiring no additional configuration beyond a script include. When included, a "drop-in" polyfill goes to work by adding its functionality to the browser, typically via additions to JavaScript prototypes or globals like +window+ and +document+. Once the polyfill is included and parsed, the developer is free to rely on standard functionality without the need for additional feature detects or User Agent interrogation.
 
 Let's take a look at a simple, yet appropriate example: +String.trim()+. This useful function is included in all modern browsers, but is notably absent from Internet Explorer 6-8. If you're tasked with supporting these browsers, and you absolutely must trim your strings with a built-in function, you can add that needed functionality via a drop-in polyfill, as illustrated in <<EX1-4>>, courtesy of https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Trim[Mozilla's excellent MDN documentation]
 
@@ -149,13 +154,13 @@ In this example, we're checking to see if the +trim+ function exists on the +Str
 
 The biggest advantage of the drop-in polyfill is hands-off adoption for the developer. Because the workflow for using this type of library is a single step--include the library in your app--this type of approach is quite appealing for many developers looking for a quick solution that takes them out of the feature detection game. 
 
-On the other hand, the biggest benefit of the drop-in polyfill is also its weakness. A drop-in polyfill misleads developers into thinking that the API they are looking to leverage is both fully-supported and implemented exactly to the standard approaches taken by already-supporting browsers. As a result, building drop-in polyfills is not for the faint of heart. Taking on this type of library necessitates a deep understanding of the relevant spec, as well as some knowledge of the inner-workings of compliant implementations in other browsers.
+On the other hand, the biggest benefit of the drop-in polyfill is also its weakness. A drop-in polyfill can mislead developers into thinking that the API they are looking to leverage is both fully-supported and implemented in a similar manner as standard approaches taken by already-supporting browsers. If your polyfill deviates from the spec in any way, or behaves unpredictably, you run the risk of confusing or annoying developers relying on your tool. As a result, building drop-in polyfills is not for the faint of heart. Taking on this type of library necessitates a deep understanding of the relevant spec, as well as some knowledge of the inner-workings of compliant implementations in other browsers.
 
 It also requires that you either support the *entire* API, or be crystal clear which aspects you do and don't support. By definition, drop-in polyfills can be subdivided into two types: those that fully fill the complete feature API, and those that fill only a portion of that API. An example of the latter sub-type is the http://code.google.com/p/explorercanvas/[excanvas] polyfill, which supports much of the HTML5 Canvas API, but does not support the rendering of text via the standard +fillText+ and +strokeText+ APIs. For text, the developer must either avoid using these functions, or leverage an additional polyfill for this functionality. While a partial drop-in polyfill is still useful, it somewhat obviates the benefits of building this type of library because the developer still must feature test for those aspects of the API not supported by your library. It's not always possible or sensible to fully support a standard API, of course, but where possible, you should make every effort to do so when building this type of polyfill.
 
 ==== The _Prollyfill_, or _forward polyfill_ 
 
-The last type of polyfill on our spectrum is an emerging type: the _prollyfill_. According to Alex Sexton, who https://twitter.com/SlexAxton/status/257543702124306432[coined the term], a prollyfill is ".. a polyfill for a not yet standardized API." These types of libraries, also called _forward polyfills_, are unique in that they are not designed to fill in existing standards gaps, as polyfills have done traditionally. Rather, these polyfills are designed to test out new or emerging standards inside of the browsers. 
+The last type of polyfill is an emerging type: the _prollyfill_. According to Alex Sexton, who https://twitter.com/SlexAxton/status/257543702124306432[coined the term], a prollyfill is ".. a polyfill for a not yet standardized API." These types of libraries, also called _forward polyfills_, are unique in that they are not designed to fill in existing standards gaps, as polyfills have done traditionally. Rather, these polyfills are designed to test out new or emerging standards inside of the browsers. 
 
 The prollyfill pattern is becoming more and more important to web developers and standards authors alike because they create a feedback loop between developers, spec authors and browser engineers that's heretofore been unseen on the web. Traditionally, browser standardization has been very top-down and, often, developers have no opportunity to experiment with new APIs until these are implemented in one or more browsers. If you want proof that top-down standardization isn't always the best approach, see XHTML 2.0, Microformats, WebSQL, Application Cache or any number of standards that failed to gain traction once subjected to real-world use by developers.
 

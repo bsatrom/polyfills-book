@@ -1,11 +1,14 @@
-[[polyfills_chapter_6]]
-== The Future of Polyfilling
+[[polyfills_part_2]]
+= Prollyfilling and the Future of the Web Platform
 
-So far in this book, we've discussed polyfilling in its original context: a strategy for "filling in the gaps" of older browsers with modern web APIs and technologies. In the last two chapters, I'd like to shift our focus from the past and present and look towards the future. Specifically, we'll talk about a variation of polyfilling that enables developers to experiment with not-yet-standardized APIs and developer-driven ideas that could potentially make their way into the browsers, in the future. In this chapter, I'll introduce that variation, prollyfilling, and will provides several examples of popular and notable prollyfilling libraries that push the boundaries of the Web Platform. Then, in Chapter 7, I'll close this book with a  hands-on exploration of prollyfill construction, and how it compares to our polyfill construction exercise in Chapters 3-5.
-  
-=== Polyfilling: Not just for older browsers
+In Part 1, we looked at polyfilling in its original context: a strategy for "filling in the gaps" of older browsers with modern web APIs and technologies. In Part 2, we'll shift our focus from the past and present and look towards the future. Specifically, we'll talk about a variation of polyfilling that enables developers to experiment with not-yet-standardized APIs and developer-driven ideas that could potentially make their way into the browsers, in the future. In Chapter 6, I'll introduce the future of polyfilling, the prollyfill, and will provide several examples of popular and notable prollyfilling libraries that push the boundaries of the Web Platform. Then, in Chapter 7, I'll close this book with a  hands-on exploration of prollyfill construction, and how it compares to our polyfill construction exercise in Part 1.
+
+[[polyfills_chapter_6]]
+== The Future of Polyfilling 
 
 As our browsers release updates at a faster and faster clip, and  legacy browsers like IE 6-8 decline in global use, it's easy to fall into the trap of thinking that polyfilling, as an idea, is becoming increasingly irrelevant. And while it's true that "classical" polyfills for popular HTML5 and CSS3 features are being used less and less, for every mainstream feature in the Web Platform, like CSS3 Animations, we're seeing 3-4 new ideas and technologies introduced via the W3C or WHATWG and landing in one or more browsers. HTML5 and friends may have modernized the web and our browsers in key ways, but don't think for a moment that they also brought feature parity along for the ride.
+
+=== Polyfilling: Not just for older browsers
 
 The bottom line is this: each new feature that's supported in Firefox but has yet to be implemented in Chrome, IE or Safari needs a polyfill just as much as that localStorage feature you'd like to offer to IE7 users. If newer technologies are to take off and become accepted by developers, we need to use them on actual sites. In some cases, we might take a "forked experience" approach and support the feature only where native to the browser. In many cases, however, new features bring capabilities that we wish to share with as many of our users as possible. In this case, pollyfilling is a must.
 
@@ -21,7 +24,7 @@ But the honeymoon didn't last. After being subjected to real-world use on sites 
 
 If the authors and advocates of the Extensible Web Manifesto have their way, new technologies like Application Cache would not be introduced for full-blown standardization without first spending some time in the hands of developers. And by unlocking certain low-level browser APIs, like those mentioned above, developers can not only vet new ideas while in their infancy, but can also be a source of new ideas and feature proposals.
 
-At it's core, this idea is referred to as "future polyfilling," or *prollyfilling,* the latter term being coined by Alex Sexton to describe building a polyfill for a not-yet-standardized API. Prollyfilling builds on the core ideas of polyfilling, building cross-browser functionality for developers to rely on, but places it square in the middle of the standardization process, which I believe will make the practice critical to the success of the Web Platform over the next decade.
+At it's core, this idea is referred to as "future polyfilling," or *prollyfilling,* the latter term being coined by Alex Sexton to describe building a polyfill for a not-yet-standardized API (ostensibly, this term is a mixture of probably and polyfill). Prollyfilling builds on the core ideas of polyfilling, building cross-browser functionality for developers to rely on, but places it square in the mix of the standardization process, which I believe will make the practice critical to the success of the Web Platform over the next decade.
 
 === Prollyfills in Action: Prollyfilling CSS
 
@@ -161,7 +164,7 @@ As you can see, HitchJS is easy to get started with and use in your own apps. By
 
 ==== Building your own "hitches"
 
-Earlier in this chapter, I introduced the new +:matches+ pseudo-class selector being considered for inclusion in the Selectors Level 4 spec. Rather than waiting for one or more browsers to implement support for this new selector, I'd like to try it on for size in my own apps--and possibly even share my experiences with other developers and members of the CSS Working Group. With HitchJS, I can do that by creating a "hitch," or a JavaScript module that defines the logic for my selector. I then import my custom hitch into my app and when HitchJS is activated, it calls my module to determine if the element in question matches my custom selector.
+Earlier in this chapter, I introduced the new +:matches+ pseudo-class selector being considered for inclusion in the Selectors Level 4 spec. Rather than waiting for one or more browsers to implement support for this new selector, I'd like to try it on for size in my own apps--and possibly even share my experiences with other developers and members of the CSS Working Group. HitchJS allows me to do this. With the library as a dependency. I can creating a "hitch," or a JavaScript module of my own that defines the logic for my selector. I then import that custom logic into my app and when HitchJS is activated, it calls my module to determine if the element in question matches my custom selector.
 
 So, to define my custom "hitch" for the CSS +:matches+ selector, I'll first need to create a new file called +selector-matches.js+ in my project. Then, I'll add the initial module definition that Hitch requires, as illustrated in <<EX06-04>>.
 
@@ -375,7 +378,7 @@ image::images/ch6-ex10a.png[]
 
 With the Chrome Developer Tools, you can find out. All you need to do is open your Chrome DevTools and click the gear icon in the lower right-hand corner. Then, look for an option that reads "Show Shadow DOM" and make sure that it's checked. Then, you can navigate to any page with a +<video>+ tag, right-click it and select "Inspect Element." 
 
-What you'll see looks like <<EX06-11>> below. Inside of the innocent looking +<video>+ tag lies +<divs>+, +<inputs>+ buttons and more. Browser vendors like Google actually used standard HTML tags and inputs to create complex visual elements like +<video>+ and Shadow DOM is, simply put, the technology that allows Chrome and other browsers to hide those implementation details behind a single tag that developers can rely on.
+What you'll see looks like <<EX06-11>> below. Inside of the innocent looking +<video>+ tag lies +<divs>+, +<inputs>+ buttons and more. Browser vendors like Google actually use standard HTML tags and inputs--though the specific tags are up to the vendor--to create complex visual elements like +<video>+ and Shadow DOM is, simply put, the technology that allows Chrome and other browsers to hide those implementation details behind a single tag that developers can rely on.
 
 [[EX06-11]]
 .Shadow DOM in Action

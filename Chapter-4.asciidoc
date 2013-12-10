@@ -7,11 +7,13 @@ In Chapter 3, you got your first taste of cross-browser polyfill development via
 
 In Chapter 3, we got right to work building our polyfill without considering much beyond simple project and source control setup. At this point, I'd like to back up and discuss some important workflow considerations that polyfill developers should address when starting up a project. Specifically, we want to begin with the end in mind. That is, before we write a single line of code, we should think about how we plan to distribute our hard work, and how we expect other developers to leverage our polyfill in their apps, and even how we can enable others to contribute to our project. All of these considerations can be addressed at the start of a project with a solid development workflow, which includes several core pieces:
 
-. Source control and collaboration (covered in Chapter 3)
+. Source control and collaboration 
 . Package and dependency management
 . Build and Workflow Management
 . Automated and Cross-Browser Testing
 . Continuous Integration
+
+Source control and collaboration were discussed in Chapter 3, so let's look next at package and dependency management.
 
 ==== Package and Dependency Management
 
@@ -113,7 +115,7 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    concat: {
+    concat: { <1>
       options: {
         separator: ';',
         banner: '// kendo-ui-forms v<%= pkg.version %>'
@@ -123,7 +125,7 @@ module.exports = function(grunt) {
         dest: 'dist/js/kendo.forms.js'
       }
     },
-    uglify: {
+    uglify: { <2>
       options: {
         banner: '// kendo-ui-forms v<%= pkg.version %>'
       },
@@ -133,7 +135,7 @@ module.exports = function(grunt) {
         }
       }
     },
-    cssmin: {
+    cssmin: { <3>
       options: {
         banner: '// kendo-ui-forms v<%= pkg.version %>'
       },
@@ -150,7 +152,7 @@ module.exports = function(grunt) {
         ext: '.forms.min.css'
       }
     },
-    jshint: {
+    jshint: { <4>
       files: ['gruntfile.js', 'src/**/*.js', 'spec/js/*.js'],
       options: {
         globals: {
@@ -174,14 +176,13 @@ module.exports = function(grunt) {
   grunt.registerTask('minify', ['jshint', 'concat', 'cssmin', 'uglify']);
 };
 ----
+<1> Combines all of the JavaScript files in the +src/+ directory into a single file.
+<2> Minifies the concatenated JavaScript file
+<3> Combines and minifies any CSS files defined in +src/+.
+<4> Performs static analysis on my JavaScript source files to make sure I'm following a consistent coding style. (see http://jshint.com for more information)
 ====
 
-Though it seems like there's a lot going on here, a grunt file is pretty easy to parse once you get the hang of it. A gruntfile is made up of a series of named tasks, like +concat+, +uglify+ and the like. Each task tells grunt what actions to perform, and which files to perform those actions on when that task is executed. In this starter gruntfile, I've defined four tasks.
-
-. +concat+ - Combines all of the JavaScript files in the +src/+ directory into a single file.
-. +uglify+ - Minifies the concatenated JavaScript file
-. +cssmin+ - Combines and minifies any CSS files defined in +src/+.
-. +jshint+ - Performs static analysis on my JavaScript source files to make sure I'm following a consistent coding style. (see http://jshint.com for more information)
+Though it seems like there's a lot going on here, a grunt file is pretty easy to parse once you get the hang of it. A gruntfile is made up of a series of named tasks, like +concat+, +uglify+ and the like. Each task tells grunt what actions to perform, and which files to perform those actions on when that task is executed.
 
 At the bottom of my +gruntfile+, I've also defined two additional tasks: a +default+ task, which runs when I execute the +grunt+ command with no other task, and a custom +minify+ command, which is a combination of several commands defined above.
 
@@ -195,7 +196,7 @@ Testing is critical for a good, "responsible" polyfill, and I recommend that you
 
 To start using Jasmine for my unit tests, I'll create a +lib+ directory inside of my +spec+ directory and place the jasmine bits inside. I'm also going to include the https://github.com/velesin/jasmine-jquery[jasmine-jquery] library, which I'll need in order to automatically execute my tests via grunt. 
 
-Next, I'll create a +runner.html+ file at the root of the +spec+ folder, and I'll populate it with the contents of <<EX4-6>>. Many JavaScript frameworks, Jasmine included, use an html file as their "test runner" by loading up dependencies, the project source and then executing those tests against DOM interactions on the page. On this page, we'll specify all of the CSS and JavaScript dependencies for our polyfill, including jQuery and Kendo UI for widgets and framework features, and then load up our tests via +fixtures.js+. 
+Next, I'll create a +runner.html+ file at the root of the +spec+ folder, and I'll populate it with the contents of <<EX4-6>>. Many JavaScript frameworks, Jasmine included, use an html file as their "test runner" by loading up dependencies, the project source and then executing those tests against DOM interactions on the page. On this page, we'll specify all of the CSS and JavaScript dependencies for our polyfill, including jQuery and Kendo UI for widgets and framework features, and then load up our tests via +fixtures.js+.
 
 [[EX4-6]]
 .Jasmine runner.html file
@@ -336,7 +337,7 @@ image::images/ch4-ex13.png[]
 
 ==== Running Jasmine Tests via Grunt
 
-So far, we've gotten Jasmine configured for our unit tests, and we've even gotten a couple of failing tests to pass. This is a great start, but all of our work is in the browser, and running our tests requires that we refresh a browser tab to verify. This is probably fine for many projects, but I'd like to be able to execute my tests in both the browser and via the command-line, which will come in handy when I start working with Karma and Travis CI, later.
+So far, we've gotten Jasmine configured for our unit tests, and we've even gotten a couple of failing tests to pass. This is a great start, but all of our work is in the browser, and running our tests requires that we refresh a browser tab to verify. This is probably fine for many projects, but I'd like to be able to execute my tests in both the browser and via the command-line, the latter of which is required when I start working with Karma and Travis CI, later.
 
 Thankfully, I'm not alone in my desire for console-based JavaScript testing, and there just so happens to be a Grunt plugin for Jasmine that I can add to my project. First, I'll want to configure jasmine by adding a few lines to my +gruntfile+. I'll add the +grunt-contrib-jasmine+ task declaration to the bottom of the file, like so +grunt.loadNpmTasks('grunt-contrib-jasmine');+. Then, I need to add a jasmine task to the +initConfig+ section of the file, as shown in <<EX4-13>>. This task definition tells Jasmine where to look to find my project source, the specs to run and finally, any 3rd party "vendor" libraries that should also be loaded.
 
@@ -455,7 +456,7 @@ When I re-run +grunt jasmine+ in the console, I should see all green. I can also
 
 === Automating Cross-Browser Polyfill Testing
 
-Now that we have a good testing setup with Jasmine and Grunt, let's take this party to the next level and add in some cross-browser testing. While automated cross-browser testing might be considered overkill for some types of projects, it's a must when building a polyfill. As you build your polyfill, you'll quickly discover cases where a certain test isn't needed in your everyday development browser because the feature is present, but the feature still needs a good solid test because your polyfill provides capabilities for another browser to leverage. Performing automated testing across several installed browsers can be a quick sanity check to ensure that development of your polyfill is progressing along without a hitch and, thankfully, there are some great tools out there that we can pair with our existing grunt workflow. My tool of choice is Karma, a simple test runner than can call out to all major browsers using test runner plugins.
+Now that we have a good testing setup with Jasmine and Grunt, let's take this party to the next level and add in some cross-browser testing. While automated cross-browser testing might be considered overkill for some types of projects, it's a must when building a polyfill. As you build your polyfill, you'll quickly discover cases where a certain test isn't needed in your everyday development browser because the feature is present, but the feature still needs a good solid test because your polyfill provides capabilities for another browser to leverage. Performing automated testing across several installed browsers can be a quick sanity check to ensure that development of your polyfill is progressing along without a hitch and, thankfully, there are some great tools out there that we can pair with our existing grunt workflow. My tool of choice is http://karma-runner.github.io/0.10/index.html[Karma], a simple test runner than can call out to all major browsers using test runner plugins and also integrates nicely with Grunt.
 
 [NOTE]
 ====
@@ -625,7 +626,7 @@ grunt.registerTask('x-test', ['minify', 'jasmine', 'karma:forms']);
 ----
 ====
 
-Now, I can run +grunt test+ in the console and have my files linted, minified, combined and tested, or I can run +grunt x-test+, which will do all of the above and then run my tests across all browsers using Karma. And while task customization is nice, what I'd really like to be able to do is execute a grunt command once, and have that command watch my source files for changes. Then, when one of those files is saved, grunt will execute one or more tasks, automatically. Sounds awesome, right? It is, and with grunt, it's built in. All I need is the grunt-contrib-watch plugin, which I can install via npm:
+Now, I can run +grunt test+ in the console and have my files _linted_, minified, combined and tested, or I can run +grunt x-test+, which will do all of the above and then run my tests across all browsers using Karma. And while task customization is nice, what I'd really like to be able to do is execute a grunt command once, and have that command watch my source files for changes. Then, when one of those files is saved, grunt will execute one or more tasks, automatically. Sounds awesome, right? It is, and with grunt, it's built in. All I need is the grunt-contrib-watch plugin, which I can install via npm:
 
 [[EX4-38]]
 ====
@@ -664,6 +665,11 @@ watch: {
 ====
 
 Now, I can run +grunt watch+ before I begin working on my polyfill. As I make changes to important files, grunt will pick those up, lint the files and run my Jasmine tests, automatically, as shown in <<EX4-41>>.
+
+[TIP]
+====
+"linting" is the practice of checking source code for syntax errors or style violations. In the JavaScript space, two popular code-linting tools are http://jslint.com[JSLint] and http://jshint.com[JSHint].
+====
 
 [[EX4-41]]
 .Developing iteratively with +grunt watch+
