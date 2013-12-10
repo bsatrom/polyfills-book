@@ -1,7 +1,7 @@
 [[polyfills_chapter_3]]
 == Building Your First Polyfill, Part 1 - Getting Started
 
-Over the last two chapters, we've covered why polyfilling is still important, as well as some principles for responsible polyfill development. In this chapter, I'm going to walk through some practical steps for building cross-browser polyfills via an actual, real-world project that I've been working on for the last few months. We won't go through every line of code, or every excruciating detail, but I will introduce you to some practical examples and considerations that you'll want to keep in mind for your own polyfill development, no matter the technology being targeted. We'll start with a discussion on project setup and structure before diving into setting up your API and deciding what you plan to build and not to build. Then we'll explore adding basic features and refactoring your polyfill as you expand scope over time. We'll then wrap up the chapter with a look at manual cross-browser testing, and some tips for streamlining your cross-browser testing workflow. 
+Over the last two chapters, we've covered why polyfilling is still important, as well as some principles for responsible polyfill development. In this chapter, I'm going to walk through some practical steps for building cross-browser polyfills via an actual, real-world project that I've been working on for the last few months. We won't go through every line of code, or every excruciating detail, but I will introduce you to some practical examples and considerations that you'll want to keep in mind for your own polyfill development, no matter the web platform feature being targeted. We'll start with a discussion on project setup and structure before diving into setting up your API and deciding what you plan to build and not to build. Then we'll explore adding basic features and refactoring your polyfill as you expand scope over time. We'll then wrap up the chapter with a look at manual cross-browser testing, and some tips for streamlining your cross-browser testing workflow. 
 
 === The HTML5 Forms Polyfill
 
@@ -279,7 +279,43 @@ Now, if I refresh the page in my browser, I'll see… that nothing is different.
 
 ==== The First Feature: Color Support
 
-When I created the roadmap for my polyfill, I decided to tackle new input types first, and build up in complexity from there. The first type I'll add support for is the color option, which, http://www.w3.org/TR/html5/forms.html#color-state-(type=color)[according to the Forms section of the HTML5 spec], is intended to offer a simple "color well" control that supports visual selection of simple colors and retrieval of sRGB or Hexadecimal equivalents of these. You can see from <<EX3-5>> above that Chrome supports this attribute, but Safari 6.1 does not, as shown in <<EX3-6>> (Safari simply shows the hex value I set in the sample form). Coincidentally, Kendo UI Web provides a http://demos.kendoui.com/web/colorpicker/index.html[+ColorPicker+] widget, so this control is a great first addition to our polyfill.
+When I created the roadmap for my polyfill, I decided to tackle new input types first, and build up in complexity from there. The first type I'll add support for is the color option, which is covered in section http://www.w3.org/TR/2011/WD-html5-20110525/number-state.html#color-state[4.10.7.1.15 of the HTML5 Forms spec]. Here's the text of that section.
+
+.Color State Section of the HTML5 Forms Spec
+[quote, W3C HTML Working Group, http://www.w3.org/TR/2011/WD-html5-20110525/number-state.html#color-state]
+____
+*4.10.7.1.15 Color state*
+
+When an input element's type attribute is in the Color state, the rules in this section apply.
+
+The input element represents a _color well control_, for setting the element's value to a string representing a http://www.w3.org/TR/2011/WD-html5-20110525/common-microsyntaxes.html#simple-color[simple color].
+
+_Note: In this state, there is always a color picked, and there is no way to set the value to the empty string._
+
+If the element is mutable, the user agent should allow the user to change the color represented by its value, as obtained from applying the rules for parsing simple color values to it. User agents must not allow the user to set the value to a string that is not a valid lowercase simple color. If the user agent provides a user interface for selecting a color, then the value must be set to the result of using the http://www.w3.org/TR/2011/WD-html5-20110525/common-microsyntaxes.html#rules-for-serializing-simple-color-values[rules for serializing simple color values] to the user's selection. User agents must not allow the user to set the value to the empty string.
+
+The value attribute, if specified and not empty, must have a value that is a valid simple color.
+
+*The value sanitization algorithm is as follows*: If the value of the element is a valid simple color, then set it to the value of the element converted to ASCII lowercase; otherwise, set it to the string "#000000".
+
+*Bookkeeping details*
+
+- The following common input element content attributes, IDL attributes, and methods apply to the element: autocomplete and list content attributes; list, value, and selectedOption IDL attributes.
+- The value IDL attribute is in mode value.
+- The input and change events apply.
+- The following content attributes must not be specified and do not apply to the element: accept, alt, checked, dirname, formaction, formenctype, formmethod, formnovalidate, formtarget, height, maxlength, max, min, multiple, pattern, placeholder, readonly, required, size, src, step, and width.
+- The following IDL attributes and methods do not apply to the element: checked, files, selectionStart, selectionEnd, selectionDirection, valueAsDate, and valueAsNumber IDL attributes; select(), setSelectionRange(), stepDown(), and stepUp() methods.
+____
+
+As noted in the section, the "Color" type is intended to offer a simple "color well" control that supports visual selection of simple colors and retrieval of sRGB or Hexadecimal equivalents of these. While there's a lot of W3C-speak in the section above, the rules for browser implementing a color input type are pretty straightforward:
+
+1. The value attribute of an input with a type of "color" is a seven character string ("#" and six characters for the color values) that represents a valid sRGB color.
+2. A valid color value must always be selected; null and empty string values are not permitted.
+3. The default color value string is "#000000".
+4. The UI for the color type must be a mask input; That is, it will not accept values that do not represent a valid sRGB color.
+5. The string value for the color input should always be represented by a lowercase string, and converted to a lowercase string upon input, if uppercase characters are used.
+
+You can see from <<EX3-5>> above that Chrome supports this attribute, but Safari 6.1 does not, as shown in <<EX3-6>> (Safari simply shows the hex value I set in the sample form). Coincidentally, Kendo UI Web provides a http://demos.kendoui.com/web/colorpicker/index.html[+ColorPicker+] widget that follows all of the rules above, so this control is a great first addition to our polyfill.
 
 When I initialize my polyfill by calling +kendoForm()+ (or via the declarative approach), the +init()+ method in <<EX3-3>> will be fired, so that's the right place to start adding my functionality. Inside that method, and just after the call to +Widget.fn.init+, I'll add the code in <<EX3-8>>.
 
@@ -419,7 +455,51 @@ So far, we've added basic support for the color +input+ type, feature detection 
 
 ==== Adding Support for the Number Type
 
-The next feature for which I'll add support in my polyfill is the +number+ input type. As defined in the http://www.w3.org/TR/html5/forms.html#number-state-(type=number)[HTML5 spec] the number type is basically an edit mask that ensures that a user only enter numeric values into fields given the +type=number+ attribute value. Kendo UI Web has a http://demos.kendoui.com/web/numerictextbox/index.html[NumericTestBox] widget that behaves in a very similar manner, so we'll use this widget to polyfill non-supporting browsers. <<EX3-12>> contains the +number+ specific code that I'll add to +kendo.forms.js+, just after my color type code:
+The next feature for which I'll add support in my polyfill is the +number+ input type, which is covered in [section 4.10.7.1.13 of the HTML5 Forms specification]:
+
+.Number State Section of the HTML5 Forms Spec
+[quote, W3C HTML Working Group, http://www.w3.org/TR/2011/WD-html5-20110525/number-state.html#number-state]
+____
+*4.10.7.1.13 Number state*
+
+When an input element's type attribute is in the *Number* state, the rules in this section apply.
+
+The input element represents a control for setting the element's value to a string representing a number.
+
+If the element is mutable, the user agent should allow the user to change the number represented by its value, as obtained from applying the rules for parsing floating point number values to it. User agents must not allow the user to set the value to a non-empty string that is not a valid floating point number. If the user agent provides a user interface for selecting a number, then the value must be set to the best representation of the number representing the user's selection as a floating point number. User agents should allow the user to set the value to the empty string.
+
+The value attribute, if specified and not empty, must have a value that is a valid floating point number.
+
+*The value sanitization algorithm is as follows*: If the value of the element is not a valid floating point number, then set it to the empty string instead.
+
+The *min* attribute, if specified, must have a value that is a valid floating point number. The *max* attribute, if specified, must have a value that is a valid floating point number.
+
+The *step* scale factor is 1. The default step is 1 (allowing only integers, unless the min attribute has a non-integer value).
+
+When the element is suffering from a step mismatch, the user agent may round the element's value to the nearest number for which the element would not suffer from a step mismatch. If there are two such numbers, user agents are encouraged to pick the one nearest positive infinity.
+
+*The algorithm to convert a string to a number, given a string input, is as follows*: If applying the rules for parsing floating point number values to input results in an error, then return an error; otherwise, return the resulting number.
+
+*The algorithm to convert a number to a string, given a number input, is as follows*: Return a valid floating point number that represents input.
+
+*Bookkeeping details*
+- The following common input element content attributes, IDL attributes, and methods apply to the element: autocomplete, list, max, min, readonly, required, and step content attributes; list, value, valueAsNumber, and selectedOption IDL attributes; stepDown() and stepUp() methods.
+- The value IDL attribute is in mode value.
+- The input and change events apply.
+- The following content attributes must not be specified and do not apply to the element: accept, alt, checked, dirname, formaction, formenctype, formmethod, formnovalidate, formtarget, height, maxlength, multiple, pattern, placeholder, size, src, and width.
+- The following IDL attributes and methods do not apply to the element: checked, files, selectionStart, selectionEnd, selectionDirection, and valueAsDate IDL attributes; select() and setSelectionRange() methods.
+____
+
+As detailed in the spec, the number type is basically an edit mask that ensures that a user only enter numeric values into fields given the +type=number+ attribute value. Let's take the wall of text above and translate it into some simple rules:
+
+1. The value attribute of an input with a type of "number" is a floating point number.
+2. A valid number value is *not* required at all times. If a valid number is not selected, the value is "empty string."
+3. If the user attempts to enter an invalid or non-numeric value, the input value should be set to "empty string."
+4. The "min" and "max" attributes are allowed on this input, and should both represent valid floating point numbers.
+5. The "step" attribute is allowed and has a default value of 1, which allows only integers to be specified).
+6. If the value of the input is set programmatically and that value   violates the specified "step" property (i.e. step is 1 and a value of 2.88 is set), the control should round the set value up or down based on rounding rules (in this example, the value would be set to 3).
+
+Just as with the color type, Kendo UI Web has a http://demos.kendoui.com/web/numerictextbox/index.html[NumericTestBox] widget that functions as a nice edit mask control for floating point values, so we'll use this widget to polyfill non-supporting browsers. <<EX3-12>> contains the +number+ specific code that I'll add to +kendo.forms.js+, just after my color type code:
 
 [[EX3-12]]
 .Adding +number+ input type support to my Forms polyfill
@@ -510,7 +590,67 @@ Before I move on, however, it's worth mentioning that refactoring doesn't have t
 
 ==== Adding Input Types 3-_n_
 
-Now that we've refactored things a bit, let's add support for a third input type: the +range+ type. The http://www.w3.org/TR/html5/forms.html#range-state-(type=range)[+range+ input type] enables developers to capture numeric data via a slider control with built-in min, max and step values. In Kendo UI, the equivalent is the http://demos.kendoui.com/web/slider/index.html[Slider] control, which has identical behavior, and supports all of the necessary attributes. To add support for the range type, I'll add another object literal to my +typeUpgrades+ array, as shown in <<EX3-16>>:
+Now that we've refactored things a bit, let's add support for a third input type: the +range+ type. The http://www.w3.org/TR/html5/forms.html#range-state-(type=range)[+range+ input type] enables developers to capture numeric data via a slider control with built-in min, max and step values. Here's the text from http://www.w3.org/TR/2011/WD-html5-20110525/number-state.html#range-state[section 4.10.7.1.14 in the HTML5 spec]:
+
+.Number State Section of the HTML5 Forms Spec
+[quote, W3C HTML Working Group, http://www.w3.org/TR/2011/WD-html5-20110525/number-state.html#number-state]
+____
+*4.10.7.1.14 Range state*
+
+When an input element's type attribute is in the *Range* state, the rules in this section apply.
+
+The input element represents a control for setting the element's value to a string representing a number, but with the caveat that the exact value is not important, letting UAs provide a simpler interface than they do for the Number state.
+
+_Note: In this state, the range and step constraints are enforced even during user input, and there is no way to set the value to the empty string._
+
+If the element is mutable, the user agent should allow the user to change the number represented by its value, as obtained from applying the rules for parsing floating point number values to it. User agents must not allow the user to set the value to a string that is not a valid floating point number. If the user agent provides a user interface for selecting a number, then the value must be set to a best representation of the number representing the user's selection as a floating point number. User agents must not allow the user to set the value to the empty string.
+
+The *value* attribute, if specified, must have a value that is a valid floating point number.
+
+*The value sanitization algorithm is as follows*: If the value of the element is not a valid floating point number, then set it to a valid floating point number that represents the default value.
+
+The *min* attribute, if specified, must have a value that is a valid floating point number. The default minimum is 0. The *max* attribute, if specified, must have a value that is a valid floating point number. The default maximum is 100.
+
+The *default value* is the minimum plus half the difference between the minimum and the maximum, unless the maximum is less than the minimum, in which case the default value is the minimum.
+
+When the element is suffering from an *underflow*, the user agent must set the element's value to a valid floating point number that represents the minimum.
+
+When the element is suffering from an *overflow*, if the maximum is not less than the minimum, the user agent must set the element's value to a valid floating point number that represents the maximum.
+
+The *step* scale factor is 1. The default step is 1 (allowing only integers, unless the min attribute has a non-integer value).
+
+When the element is suffering from a step mismatch, the user agent must round the element's value to the nearest number for which the element would not suffer from a step mismatch, and which is greater than or equal to the minimum, and, if the maximum is not less than the minimum, which is less than or equal to the maximum. If two numbers match these constraints, then user agents must use the one nearest to positive infinity.
+
+For example, the markup +<input type="range" min=0 max=100 step=20 value=50>+ results in a range control whose initial value is 60.
+
+*The algorithm to convert a string to a number, given a string input, is as follows*: If applying the rules for parsing floating point number values to input results in an error, then return an error; otherwise, return the resulting number.
+
+*The algorithm to convert a number to a string, given a number input, is as follows*: Return a valid floating point number that represents input.
+
+*Bookkeeping details*
+
+- The following common input element content attributes, IDL attributes, and methods apply to the element: autocomplete, list, max, min, and step content attributes; list, value, valueAsNumber, and selectedOption IDL attributes; stepDown() and stepUp() methods.
+- The value IDL attribute is in mode value.
+- The input and change events apply.
+- The following content attributes must not be specified and do not apply to the element: accept, alt, checked, dirname, formaction, formenctype, formmethod, formnovalidate, formtarget, height, maxlength, multiple, pattern, placeholder, readonly, required, size, src, and width.
+- The following IDL attributes and methods do not apply to the element: checked, files, selectionStart, selectionEnd, selectionDirection, and valueAsDate IDL attributes; select() and setSelectionRange() methods.
+____
+
+This is a bit more complex than section for our color and number types, but there's some overlap with the number type, especially around attributes. Let's break this down into some rules, as we've done for the other two:
+
+1. The value attribute of an input with a type of "range" is a floating point number.
+2. A valid range value is required at all times. If a valid range is not selected, the default value is used.
+3. The range value cannot be set to an empty string.
+4. If the user attempts to enter an invalid or non-numeric value, the input value should be set to the default value.
+5. The "min" attribute is allowed, and should represent a valid floating point number. The default "min" value is 0.
+6. The "max" attribute is allowed, and should represent a valid floating point number. The default "max" value is 100.
+7. The *default value* of the range input, if no value is set, is the minimum plus half the difference between the minimum and maximum (+d = min + (max - min)x.5+). If the default min and max values are used, the default value is 50 (+0 + (100-0)x.5+).
+8. When the set value is smaller than the minimum, the value should be automatically set to the minimum.
+9. When the set value is larger than the maximum, the value should be automatically set to the maximum.
+10. The "step" attribute is allowed and has a default value of 1, which allows only integers to be specified).
+11. If the value of the input is set programmatically and that value   violates the specified "step" property (i.e. step is 20 and a value of 50 is set), the control should round the set value up to the closest value that matches the step and which does not violate the max attribute (in this example, the value would be set to 60).
+
+In Kendo UI, the equivalent widget to the range type is the http://demos.kendoui.com/web/slider/index.html[Slider] control, which has identical behavior, and supports all of the necessary attributes and rules specified above. To add support for the range type, I'll add another object literal to my +typeUpgrades+ array, as shown in <<EX3-16>>:
 
 [[EX3-16]]
 .Adding support for the +range+ input type 
