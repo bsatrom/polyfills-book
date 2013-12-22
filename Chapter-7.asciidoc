@@ -186,19 +186,9 @@ In the roadmap for my prollyfill, which I shared above, I decided to first focus
 ____
 If you're using Chrome, some tests will fail because of cross-domain restrictions. To work around this, you'll want to either run your tests using a local webserver, or run Chrome with the +--allow-file-access-from-files+ terminal command. 
 
-For OSX:
+For OSX, run "+open -a /Applications/Google\ Chrome.app --args --allow-file-access-from-files+"
 
-[source]
-----
-open -a /Applications/Google\ Chrome.app --args --allow-file-access-from-files
-----
-
-And Windows:
-
-[source]
-----
-C:\Users\[UserName]\AppData\Local\Google\Chrome[ SxS]\Application\chrome.exe --allow-file-access-from-files
-----
+And for Windows, run "C:\Users\[UserName]\AppData\Local\Google\Chrome[ SxS]\Application\chrome.exe --allow-file-access-from-files"
 ____
 
 [[EX07-06]]
