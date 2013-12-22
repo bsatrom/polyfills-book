@@ -238,7 +238,7 @@ Then, I'll add a new rule using my hitch:
 ----
 ====
 
-With this rule, I'm instructing my custom hitch to look for any +li+ with a class of "urgent" and an Id of "next-action," and to style the +label+ for that +li+ to be bold and have a blue color. And with that, we have prollyfill-based support for the CSS +:matches+ rule, courtesy of HitchJS! The result can be seen in <<EX06-06>>.
+With this rule, I'm instructing my custom hitch to look for any +li+ with a class of "urgent" and an Id of "next-action," and to style the +label+ for that +li+ to be bold and have a blue color. And with that, we have prollyfill-based support for the CSS +:matches+ rule, courtesy of HitchJS! The result can be seen in <<EX06-06>>. Note that the styles in the image below are taken from the fantastic http://todomvc.com[TodoMVC] project. If you're following along at home and want to emulate the same styles, you can grab them from any of the samples in the project website.
 
 [[EX06-06]]
 .Our custom Hitch in action
@@ -254,7 +254,7 @@ ServiceWorker is a proposal, spearheaded by Alex Russell of Google and others, d
 
 If you're thinking that this is starting to sound a lot like a JavaScript-based version of the oft-maligned Application Cache, you'd be right, and also wrong at the same time. Because ServiceWorker is meant to be a low-level API, it's far broader than an imperative AppCache. It can certainly be used to handle application asset and resource caching, but it's also far broader than that. In a very general sense a ServiceWorker is a script that, when installed in your app, listens for network events. When those events occur, a ServiceWorker can intercept the network request and serve cached resources before the browser ever attempts to connect to a remote server.
 
-The first step in using a ServiceWorker is to install a worker on a page after a user visits for the first time. This means that the page, and all of its resources, will be served from the network at least once before the worker takes over. <<EX06-07>> shows and example of what the API for creating a new worker could look like:
+The first step in using a ServiceWorker is to install a worker on a page after a user visits for the first time. This means that the page, and all of its resources, will be served from the network at least once before the worker takes over. <<EX06-07>> shows and example of what the API for creating a new worker could look like. Please note that these examples aren't yet functional in any browser at the time of writing.
 
 [[EX06-07]]
 .Creating a new ServiceWorker object
@@ -470,6 +470,11 @@ Notice that Angular enables me to go all out and use my directive via a +<calend
 The http://polymer-project.org[Polymer] project is a Google-sponsored project designed to speed up the adoption of cutting-edge Web Platform technologies by providing a series of robust prollyfills that work across "evergreen browsers," a term meaning browsers that ship via automatic updates to their installed base of users. The Polymer project actually provides a number of prollyfills, but the core of the offering is support for Shadow DOM, Templates, Custom Elements and HTML Imports.
 
 In our discussion on Web Components, I shared some code snippets meant to communicate the "perfect world" approach for building components, as defined by the current draft of each spec. Polymer enables us to create Web Components using much of the same syntax, with only a few small differences.
+
+[Note]
+____
+At the time of writing, the Polymer authors are careful to note that the library is in an Alpha state. You'll want to keep this in mind when using, or even installing, the library.
+____
 
 Let's say, for instance, and in keeping with our AngularJS example from above, that I want to create a custom Calendar element which provides a declarative way of working with a Kendo UI Calendar widget. To create my custom element with Polymer, I'll create a new file called 'x-calendar.html' and populate it with my custom element definition, as illustrated in <<EX06-15>>:
 

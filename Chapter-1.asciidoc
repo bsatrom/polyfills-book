@@ -53,10 +53,10 @@ As stated above, jQuery--specifically the library's sizzle selector engine and e
 [source, js]
 ----
 $('#myTodoList').find('li.dueToday')
-  .css(‘background-color’,‘yellow’)
+  .css('background-color','yellow')
   .end()
-  .find(‘li.overdue’)
-  .css(‘background-color’, ‘red’);
+  .find('li.overdue')
+  .css('background-color', 'red');
 ----
 ====
 
@@ -96,14 +96,14 @@ In this example, the opt-in happens when the browser's parser encounters the +be
 
 When loaded, +PIE.htc+ uses the CSS properties defined in it's loading selector--+border-radius+ in this case--to fake those features using the HTC component. So, PIE is using a decade-old IE-specific hack in order to add support for CSS3 to IE 6-8. That's pretty clever! Not only that; it's also efficient. Since other browsers don't support the +behavior+ property, it's existence will be overlooked and the HTC file will be neither loaded nor parsed by browsers that already support CSS3 properties.
 
-If the thought of using DHTML to fake CSS3 support in IE isn't your cup 'o tea, you can also use JavaScript to add PIE to your apps, as illustrated in <<EX1-3>>.
+If the thought of using DHTML to fake CSS3 support in IE isn't your cup 'o tea, you can also use JavaScript to add PIE to your apps, as illustrated in <<EX1-3>>. Of course, you'll still need to define the CSS for +border-radius+, as well as include any of PIE's dependendies, like jQuery.
 
 [[EX1-3]]
 .Activate PIE using JavaScript
 ====
 [source, js]
 ----
-Modernizr.load([
+Modernizr.load({
   test: Modernizr.borderradius,
   nope: 'PIE.js',
   complete: function() {
@@ -114,7 +114,7 @@ Modernizr.load([
       });
     }
   }
-]);
+});
 ----
 ====
 

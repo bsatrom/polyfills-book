@@ -87,7 +87,7 @@ image::images/ch4-ex3.png[]
 ==== Configuring Grunt
 
 Now, let's install Grunt. Before you run the Grunt config step, you'll need to add the following to your 
-+package.json+ and run +npm install+ from the terminal. The settings below will make sure that the Grunt command-line interface is available in your project.
++package.json+, within the outer curly brace of the root object literal, and run +npm install+ from the terminal. The settings below will make sure that the Grunt command-line interface is available in your project.
 
 [[EX4-4]]
 .Grunt dependencies in package.json
@@ -97,7 +97,7 @@ Now, let's install Grunt. Before you run the Grunt config step, you'll need to a
 "devDependencies": {
   "grunt": "~0.4.1",
   "grunt-contrib-jshint": "~0.6.0",
-  "grunt-contrib-uglify": "~0.2.2"
+  "grunt-contrib-uglify": "~0.2.2",
   "grunt-contrib-concat": "~0.3.0",
   "grunt-contrib-cssmin": "~0.6.1"
 }
@@ -118,7 +118,7 @@ module.exports = function(grunt) {
     concat: { <1>
       options: {
         separator: ';',
-        banner: '// kendo-ui-forms v<%= pkg.version %>'
+        banner: '// kendo-ui-forms v<%= pkg.version %> \n'
       },
       dist: {
         src: [ 'src/js/*.js' ],
@@ -127,7 +127,7 @@ module.exports = function(grunt) {
     },
     uglify: { <2>
       options: {
-        banner: '// kendo-ui-forms v<%= pkg.version %>'
+        banner: '// kendo-ui-forms v<%= pkg.version %> \n'
       },
       dist: {
         files: {
@@ -137,7 +137,7 @@ module.exports = function(grunt) {
     },
     cssmin: { <3>
       options: {
-        banner: '// kendo-ui-forms v<%= pkg.version %>'
+        banner: '// kendo-ui-forms v<%= pkg.version %> \n'
       },
       combine: {
         files: {
@@ -196,7 +196,7 @@ Testing is critical for a good, "responsible" polyfill, and I recommend that you
 
 To start using Jasmine for my unit tests, I'll create a +lib+ directory inside of my +spec+ directory and place the jasmine bits inside. I'm also going to include the https://github.com/velesin/jasmine-jquery[jasmine-jquery] library, which I'll need in order to automatically execute my tests via grunt. 
 
-Next, I'll create a +runner.html+ file at the root of the +spec+ folder, and I'll populate it with the contents of <<EX4-6>>. Many JavaScript frameworks, Jasmine included, use an html file as their "test runner" by loading up dependencies, the project source and then executing those tests against DOM interactions on the page. On this page, we'll specify all of the CSS and JavaScript dependencies for our polyfill, including jQuery and Kendo UI for widgets and framework features, and then load up our tests via +fixtures.js+.
+Next, I'll create a +runner.html+ file at the root of the +spec+ folder, and I'll populate it with the contents of <<EX4-6>>. Many JavaScript frameworks, Jasmine included, use an html file as their "test runner" by loading up dependencies, the project source and then executing those tests against DOM interactions on the page. On this page, we'll specify all of the CSS and JavaScript dependencies for our polyfill, including jQuery and Kendo UI for widgets and framework features, and then load up our tests via +fixtures.js+. Note that, for external dependencies, I'm following the directory structure outlined in Chapter 3.
 
 [[EX4-6]]
 .Jasmine runner.html file
@@ -339,7 +339,11 @@ image::images/ch4-ex13.png[]
 
 So far, we've gotten Jasmine configured for our unit tests, and we've even gotten a couple of failing tests to pass. This is a great start, but all of our work is in the browser, and running our tests requires that we refresh a browser tab to verify. This is probably fine for many projects, but I'd like to be able to execute my tests in both the browser and via the command-line, the latter of which is required when I start working with Karma and Travis CI, later.
 
-Thankfully, I'm not alone in my desire for console-based JavaScript testing, and there just so happens to be a Grunt plugin for Jasmine that I can add to my project. First, I'll want to configure jasmine by adding a few lines to my +gruntfile+. I'll add the +grunt-contrib-jasmine+ task declaration to the bottom of the file, like so +grunt.loadNpmTasks('grunt-contrib-jasmine');+. Then, I need to add a jasmine task to the +initConfig+ section of the file, as shown in <<EX4-13>>. This task definition tells Jasmine where to look to find my project source, the specs to run and finally, any 3rd party "vendor" libraries that should also be loaded.
+Thankfully, I'm not alone in my desire for console-based JavaScript testing, and there just so happens to be a Grunt plugin for Jasmine that I can add to my project. First, I'll want to configure jasmine by adding a few lines to my +gruntfile+. I'll add the "+grunt-contrib-jasmine+" task declaration to the bottom of the file, like so:
+
+ +grunt.loadNpmTasks('grunt-contrib-jasmine');+
+
+Then, I need to add a jasmine task to the +initConfig+ section of the file, as shown in <<EX4-13>>. This task definition tells Jasmine where to look to find my project source, the specs to run and finally, any 3rd party "vendor" libraries that should also be loaded.
 
 [[EX4-13]]
 .Adding a jasmine grunt task
@@ -347,7 +351,11 @@ Thankfully, I'm not alone in my desire for console-based JavaScript testing, and
 [source, js]
 ----
 jasmine: {
-  src: ['lib/**/*.js', 'dist/js/kendo.forms.min.js'],
+  src: ['lib/**/*.js', 'src/js/kendo.forms.utils.js',
+    'src/js/kendo.forms.types.js', 
+    'src/js/kendo.forms.features.js', 
+    'src/js/kendo.forms.js'
+  ],
   options: {
     specs: 'spec/js/*.js',
     vendor: [
@@ -358,7 +366,11 @@ jasmine: {
 ----
 ====
 
-Next, I'll want to install the jasmine grunt plugin via the terminal command +npm install grunt-contrib-jasmine --save-dev+.  Once I've done so, I can run the command +grunt jasmine+ via the console, and I'll get a result that looks like <<EX4-14>>.
+Next, I'll want to install the jasmine grunt plugin via the following terminal command:
+
++npm install grunt-contrib-jasmine --save-dev+
+
+Once I've done so, I can run the command +grunt jasmine+ via the console, and I'll get a result that looks like <<EX4-14>>.
 
 [NOTE]
 ====
@@ -420,7 +432,7 @@ After adding the markup in <<EX4-16> all three of my tests will pass. That's nic
 .Running Jasmine DOM tests in the console
 image::images/ch4-ex18.png[]
 
-First, I'll need to move the form tag from <<EX4-17>> into a standalone HTML file, and I'll place that file in a +spec/javascripts/fixtures/+ directory--the location is a convention jasmine-jquery uses. Then, I need to add the jasmine-jquery fixture loader to my +fixtures.js+ file, so I'll add the following path to line 4:
+First, I'll need to move the form tag from <<EX4-16>> into a standalone HTML file named "declarative-form.html", and I'll place that file in a +spec/javascripts/fixtures/+ directory--the location is a convention jasmine-jquery uses. Then, I need to add the jasmine-jquery fixture loader to my +fixtures.js+ file, so I'll add the following path to line 4:
 
 [[EX4-18]]
 .Declarative initialization of a Form widget
@@ -465,7 +477,7 @@ As I discussed in Chapter 3, automated, cross-browser testing is a great safety 
 
 === Configuring Cross-Browser Tests with Karma
 
-To get started with Karma, I'll need to install grunt-karma via npm:
+To get started with Karma, I'll need to install "grunt-karma" via npm:
 
 [[EX4-20]]
 ====
@@ -543,7 +555,7 @@ module.exports = function(config) {
       {pattern: 'src/js/*.js', watched: true, served: true, 
         included: false},
       {pattern: 'spec/**/*.html', included: false},
-      'spec/javascripts/*.js',
+      'spec/js/*.js',
     ],
 
     // list of files to exclude
@@ -569,6 +581,7 @@ module.exports = function(config) {
       'karma-firefox-launcher',
       'karma-safari-launcher',
       'karma-opera-launcher',
+      'karma-ie-launcher',
       'karma-script-launcher'
     ]
   });
@@ -576,7 +589,7 @@ module.exports = function(config) {
 ----
 ====
 
-By default, Karma includes the launchers for Firefox and Chrome, so I'll need to install the Opera and Safari launchers to use them:
+By default, Karma includes the launchers for Firefox and Chrome, so I'll need to install the Opera, Safari and IE launchers to use them:
 
 [[EX4-34]]
 ====
@@ -584,6 +597,7 @@ By default, Karma includes the launchers for Firefox and Chrome, so I'll need to
 ----
 npm install karma-opera-launcher --save-dev
 npm install karma-safari-launcher --save-dev
+npm install karma-ie-launcher --save-dev
 ----
 ====
 

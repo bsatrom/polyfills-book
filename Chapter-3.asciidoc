@@ -74,12 +74,12 @@ If, on the other hand, you're building an "opt-in" polyfill, you'll need to prov
 
 ==== Initializing an Opt-In Polyfill
 
-Kendo UI allows developers to initialize widgets in one of two ways. I can use jQuery-style widget initialization, as illustrated in <<EX3-1>>, or I can use a declarative-style declaration, which hinges on placing +data-role+ attributes on relevant elements in my markup. This approach is illustrated in <<EX3-2>>.
+Kendo UI allows developers to initialize widgets in one of two ways. I can use jQuery-style widget initialization, as illustrated in <<EX3-1>>, or I can use a declarative-style declaration, which hinges on placing +data-role+ attributes on relevant elements in my markup. This approach is illustrated in <<EX3-2>>. Note that the next few examples assume the inclusion jQuery, Kendo UI JavaScript and Kendo UI CSS in the page.
 
 [[EX3-1]]
 .Initializing the Forms polyfill using JavaScript
 ====
-[source, js]
+[source, html]
 ----
 <form id="myForm">
   <!-- Rest of form declaration -->
@@ -93,7 +93,7 @@ Kendo UI allows developers to initialize widgets in one of two ways. I can use j
 [[EX3-2]]
 .Initializing the Forms polyfill via declarative initialization
 ====
-[source, js]
+[source, html]
 ----
 <form action="input.html" data-role="form">
   <!-- Rest of form declaration -->
@@ -367,6 +367,8 @@ To check for support for the color +input+ type, I'll create a function inside o
 [source, js]
 ----
 function isFormTypeSupported(type) {
+  if (type === 'text') { return true; }
+
   var input = document.createElement('input');
   input.setAttribute('type', type);
   return input.type !== 'text';
@@ -383,7 +385,7 @@ To leverage this home-grown feature detection method, I'll modify the code in <<
 ====
 [source, js]
 ----
-if (!isFormTypeSupported("color")) {
+if (!isFormTypeSupported('color')) {
   form.find('input[type=color]').kendoColorPicker({ palette: 'basic' });
 }
 ----
@@ -427,7 +429,7 @@ To add an "override" for visual elements to my polyfill, I can leverage the buil
         return input.type !== 'text';
       }
 
-      if (!isFormTypeSupported("color")) {
+      if (!isFormTypeSupported('color')) {
         form.find('input[type=color]').kendoColorPicker({ palette: 'basic' });
       }
     },
@@ -514,7 +516,7 @@ Just as with the color type, Kendo UI Web has a http://demos.kendoui.com/web/num
 ====
 [source, js]
 ----
-if (!isFormTypeSupported("number")) {
+if (!isFormTypeSupported('number')) {
   form.find('input[type=number]').kendoNumericTextBox();
 }
 ----
@@ -529,11 +531,11 @@ To see what I mean, let's look at our two features together:
 ====
 [source, js]
 ----
-if (!isFormTypeSupported("color")) {
+if (!isFormTypeSupported('color')) {
   form.find('input[type=color]').kendoColorPicker({ palette: 'basic' });
 }
 
-if (!isFormTypeSupported("number")) {
+if (!isFormTypeSupported('number')) {
   form.find('input[type=number]').kendoNumericTextBox();
 }
 ----
