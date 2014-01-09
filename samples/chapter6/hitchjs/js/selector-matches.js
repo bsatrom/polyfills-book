@@ -12,8 +12,6 @@ var matchesHitch = {
           var q = list.querySelector(args[i].trim());
           if (q && q === el) {
             match = true;
-          } else {
-            match = false;
           }
         }
 

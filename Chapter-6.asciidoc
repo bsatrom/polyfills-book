@@ -14,17 +14,17 @@ The bottom line is this: each new feature that's supported in Firefox but has ye
 
 === Prollyfilling: Extending the Web Forward
 
-Of course, sometimes pollyfilling specified features isn't always enough for us, as web developers. We're a smart, ambitious bunch, and this is our platform too. Most of the time, we think we're just as qualified as browser vendors when it comes to determining what capabilities the web platform, and our  browsers, really need.
+Sometimes, pollyfilling specified features isn't always enough for us, as web developers. We're a smart, ambitious bunch, and this is our platform too. Most of the time, we think we're just as qualified as browser vendors when it comes to determining what capabilities the web platform, and our  browsers, really need.
 
-In Chapter 1, I mentioned something called the "http://extensiblewebmanifesto.org/[Extensible Web Manifesto]" a rallying cry of sorts, for front-end developers. It's one that calls us to "extend the web forward" by working on speculative and cutting edge ideas in our browsers. It also calls upon browser vendors to "unlock" low-level capabilities in the browser (for instance, the browser's networking stack or HTML parser) and allow developers to write their own JavaScript libraries and APIs on top of those capabilities. The core idea that the manifesto argues for is that, with access to these low-level APIs, developers can experiment with real-world ideas their solve real-world problems. I use the phrase "real-world" here, because, on occasion, the W3C will pursue ideas that, while academically sound, are rejected by developers when subjected to actual use.
+In Chapter 1, I mentioned something called the "http://extensiblewebmanifesto.org/[Extensible Web Manifesto]" a rallying cry of sorts, for front-end developers. It's one that calls us to "extend the web forward" by working on speculative and cutting edge ideas in our browsers. It also calls upon browser vendors to "unlock" low-level capabilities in the browser (for instance, the browser's networking stack or its HTML parser) and allow developers to write their own JavaScript libraries and APIs on top of those capabilities. The core idea that the manifesto argues for is that, with access to these low-level APIs, developers can experiment with real-world ideas that solve real-world problems. I use the phrase "real-world" here, because, on occasion, the W3C will pursue ideas that, while academically sound, are rejected by developers when subjected to actual use.
 
-Take the oft-maligned Application Cache, for instance. This specification, which enjoys wide support across all modern desktop and mobile browsers, was introduced as a declarative API  intended to solve the very real problem of caching web sites and applications for offline use. It's a fantastic idea, and developers everywhere applauded the introduction of the technology when it was first introduced several years ago.
+Take the oft-maligned Application Cache, for instance. This specification, which enjoys wide support across all modern desktop and mobile browsers, was introduced as a declarative API intended to solve the very real problem of caching web sites and applications for offline use. It's a fantastic idea, and developers everywhere applauded the introduction of the technology when it was first introduced several years ago.
 
-But the honeymoon didn't last. After being subjected to real-world use on sites and applications of all sizes, developers discovered that AppCache was plagued  by a series of bugs and "bug-like features" that made the technology difficult or sometimes impossible to rely on. Ironically, while the Application Cache seemed well-suited for content-driven and static sites, it proved weakest when used for dynamic web-based applications.
+But the honeymoon hasn't lasted. After being subjected to real-world use on sites and applications of all sizes, developers discovered that AppCache is plagued by a series of bugs and "bug-like features" that make the technology difficult or sometimes impossible to rely on. Ironically, while the Application Cache seemes well-suited for content-driven and static sites, it is weakest when used for dynamic web-based applications.
 
 If the authors and advocates of the Extensible Web Manifesto have their way, new technologies like Application Cache would not be introduced for full-blown standardization without first spending some time in the hands of developers. And by unlocking certain low-level browser APIs, like those mentioned above, developers can not only vet new ideas while in their infancy, but can also be a source of new ideas and feature proposals.
 
-At it's core, this idea is referred to as "future polyfilling," or *prollyfilling,* the latter term being coined by Alex Sexton to describe building a polyfill for a not-yet-standardized API (ostensibly, this term is a mixture of probably and polyfill). Prollyfilling builds on the core ideas of polyfilling, building cross-browser functionality for developers to rely on, but places it square in the mix of the standardization process, which I believe will make the practice critical to the success of the Web Platform over the next decade.
+At it's core, this idea is referred to as "future polyfilling," or _prollyfilling_, the latter term being coined by Alex Sexton to describe building a polyfill for a not-yet-standardized API (ostensibly, this term is a mixture of probably and polyfill). Prollyfilling builds on the core ideas of polyfilling, building cross-browser functionality on which developers can rely, but places it square in the mix of the standardization process, which I believe will make the practice critical to the success of the web platform over the next decade.
 
 === Prollyfills in Action: Prollyfilling CSS
 
@@ -32,7 +32,7 @@ So what does a prollyfill look like? It varies, and sometimes pretty widely. The
 
 If you're a CSS aficionado, you know that there are some great new features on the horizon, like filter effects, grid layout, regions, exclusions, and more. Another exciting set of enhancements are being proposed in the http://dev.w3.org/csswg/selectors4[CSS Selectors Level 4] specification, through which the CSS Working Group hopes to add a bevy of new, powerful selectors, while also upgrading some selectors introduced with CSS3.
 
-For example, consider the new +:matches+ pseudo-class selector. This selector allows developers to group matching elements with simpler syntax than is possible currently. For instance, consider the following rule:
+For example, consider the new +:matches+ pseudo-class selector. This selector allows developers to group matching elements with simpler syntax than is possible currently. For instance, consider the following today:
 
 ====
 [source, css]
@@ -57,9 +57,7 @@ ul.tasks li a:matches(:link, :hover, :visited, :focus) {
 ----
 ====
 
-It's a simple change, but it greatly cleans up the authoring experience, while also making your CSS just a bit more readable, which is nice. 
-
-+:matches+ is just one example of the great new CSS selectors in the Level 4 spec. Of course, the only problem is that we can't exactly try these experimental new selectors out for ourselves because they're still being discussed in the CSS Working Group and have not yet landed in any browser. But in the meantime, wouldn't it be great if we could actually start using new pseudo-class selectors like +:matches+ and even try out a few of our own? And not just to be early adopters, but to really try these new features on for size and see if they work as designed.
+It's a simple change, but it greatly cleans up the authoring experience, while also making your CSS just a bit more readable, which is nice. +:matches+ is just one example of the great new CSS selectors in the Level 4 spec. The only problem is that we can't exactly try these experimental new selectors out for ourselves because they're still being discussed in the CSS Working Group and have not yet landed in any browser. But in the meantime, wouldn't it be great if we could actually start using new pseudo-class selectors like +:matches+ and even try out a few of our own? And not just to be early adopters, but to really try these new features on for size and see if they work as designed.
 
 ==== Using HitchJS to experiment with CSS
 
@@ -74,7 +72,7 @@ First things first, you'll need to download Hitch, which is distributed as a scr
 ----
 ====
 
-Next, you "activate" Hitch by decorating +<style>+ and +<link>+ tags with the +data-hitch-interpret+ attribute, which tells hitch to scan the CSS at the location for Hitch-specific selectors.
+Next, you "activate" Hitch by decorating +<style>+ and +<link>+ tags with the +data-hitch-interpret+ attribute, which tells hitch to scan the CSS at the location for library-specific selectors.
 
 ====
 [source, html]
@@ -106,7 +104,7 @@ In this example, I'm telling Hitch to look for rules in the +styles.css+ file. <
 
 Notice the pseudo-class selectors that start with +-hitch-+. All three of these, +-hitch-anyof+, +-hitch-noneof+ and +-hitch-allof+ are selectors that Hitch provides out of the box. +Anyof+ will  match any element in the comma-delimited list, +noneof+ is a negation selector that will only apply the rule if the +li+ has none of the classes in the list, and +allof+ is inclusive, only +li+ elements with both classes will match and apply the rule.
 
-Now let's take a look at the source HTML, which is a list of todos decorated with classes where the todo is urgent, overdue or both:
+Now let's take a look at the source HTML, which is a list of to-dos decorated with classes where the todo is urgent, overdue or both:
 
 [[EX06-02]]
 .Todo list HTML
@@ -164,12 +162,12 @@ As you can see, HitchJS is easy to get started with and use in your own apps. By
 
 ==== Building your own "hitches"
 
-Earlier in this chapter, I introduced the new +:matches+ pseudo-class selector being considered for inclusion in the Selectors Level 4 spec. Rather than waiting for one or more browsers to implement support for this new selector, I'd like to try it on for size in my own apps--and possibly even share my experiences with other developers and members of the CSS Working Group. HitchJS allows me to do this. With the library as a dependency. I can creating a "hitch," or a JavaScript module of my own that defines the logic for my selector. I then import that custom logic into my app and when HitchJS is activated, it calls my module to determine if the element in question matches my custom selector.
+Earlier in this chapter, I introduced the new +:matches+ pseudo-class selector being considered for inclusion in the Selectors Level 4 spec. Rather than waiting for one or more browsers to implement support for this new selector, I'd like to try it on for size in my own apps--and possibly even share my experiences with other developers and members of the CSS Working Group. HitchJS allows me to do this. With the library as a dependency. I can create a "hitch," or a JavaScript module of my own that defines the logic for my selector. I then import that custom logic into my app and when HitchJS is activated, it calls my module to determine if the element in question matches my custom selector.
 
 So, to define my custom "hitch" for the CSS +:matches+ selector, I'll first need to create a new file called +selector-matches.js+ in my project. Then, I'll add the initial module definition that Hitch requires, as illustrated in <<EX06-04>>.
 
 [[EX06-04]]
-.Creating a Hitch for The Matches selector
+.Creating a Hitch for The Matches selector in +selector-matches.js+
 ====
 [source, js]
 ----
@@ -187,10 +185,10 @@ Hitch.add(matchesHitch);
 
 The +matchesHitch+ object contains all of the properties that HitchJS requires when I define my own hitches. Most importantly, the +name+ represents the CSS selector value and the +filter+ represents a function that runs against every element that matches the base selector, but which needs to be filtered further by my hitch. This method should contain the core logic for my hitch and should return a boolean after I determine whether the element in question meets the filter criteria.
 
-To emulate the CSS Selectors Level 4 +:matches+ pesudo-class selector, I'll need to test a comma-delimited string of class and Id values against an element, and if the element contains all of the values specified in the +:matches+ selector, I'll return true, at which point Hitch will apply the CSS defined inside my custom selector. The source for my Hitch's filter method can be found in <<EX06-05>>.
+To emulate the CSS Selectors Level 4 +:matches+ pesudo-class selector, I'll need to test a comma-delimited string of class and id values against an element. If the element contains any of the values specified in the +:matches+ selector, I'll return true, at which point Hitch will apply the CSS defined inside my custom selector. The source for my Hitch's filter method can be found in <<EX06-05>>.
 
 [[EX06-05]]
-.Custom Matches Selector method in HitchJS
+.Custom Matches Selector method  in +selector-matches.js+
 ====
 [source, js]
 ----
@@ -205,8 +203,6 @@ filter: function(el, selectorArgs){
 
     if (q && q === el) {
       match = true;
-    } else {
-      match = false;
     }
   }
 
@@ -215,12 +211,13 @@ filter: function(el, selectorArgs){
 ----
 ====
 
-After setting up some helper variables, I split my +selectorArgs+ variable, which contains the comma-delimited list of classes and Ids into an array. Then, I loop over that array and attempt to match each selector argument against the current element. If the element has all of the values defined in the +selectorArgs+ array, I'll return true, and the styles inside of the +:matches+-dependent rule will be applied.
+After setting up some helper variables, I split my +selectorArgs+ variable, which contains the comma-delimited list of classes and ids into an array. Then, I loop over that array and attempt to match each selector argument against the current element. If the element has all of the values defined in the +selectorArgs+ array, I'll return true, and the styles inside of the +:matches+-dependent rule will be applied.
 
 Now that we have our custom hitch, let's try out our new rule in CSS. First, I'll need to "import" my hitch by using Hitch's +@-hitch-requires+ directive at the top of my +styles.css+ file:
 
 ====
 [source, html]
+.Importing Hitch into a stylesheet, +styles.css+ 
 ----
 @-hitch-requires ../js/selector-matches.js;
 ----
@@ -230,6 +227,7 @@ Then, I'll add a new rule using my hitch:
 
 ====
 [source, css]
+.Using my custom +matches+ selector in +styles.css+
 ----
 #todo-list li:matches(.urgent, #next-action) label {
   font-weight: bold;
@@ -238,7 +236,7 @@ Then, I'll add a new rule using my hitch:
 ----
 ====
 
-With this rule, I'm instructing my custom hitch to look for any +li+ with a class of "urgent" and an Id of "next-action," and to style the +label+ for that +li+ to be bold and have a blue color. And with that, we have prollyfill-based support for the CSS +:matches+ rule, courtesy of HitchJS! The result can be seen in <<EX06-06>>. Note that the styles in the image below are taken from the fantastic http://todomvc.com[TodoMVC] project. If you're following along at home and want to emulate the same styles, you can grab them from any of the samples in the project website.
+With this rule, I'm instructing my custom hitch to look for any +li+ with a class of "urgent" and an id of "next-action," and to style the +label+ for that +li+ to be bold and have a blue color. And with that, we have prollyfill-based support for the CSS +:matches+ rule, courtesy of HitchJS! The result can be seen in <<EX06-06>>. Note that the styles in the image below are taken from the fantastic http://todomvc.com[TodoMVC] project. If you're following along at home and want to emulate the same styles, you can grab them from any of the samples in the project website.
 
 [[EX06-06]]
 .Our custom Hitch in action
@@ -254,7 +252,12 @@ ServiceWorker is a proposal, spearheaded by Alex Russell of Google and others, d
 
 If you're thinking that this is starting to sound a lot like a JavaScript-based version of the oft-maligned Application Cache, you'd be right, and also wrong at the same time. Because ServiceWorker is meant to be a low-level API, it's far broader than an imperative AppCache. It can certainly be used to handle application asset and resource caching, but it's also far broader than that. In a very general sense a ServiceWorker is a script that, when installed in your app, listens for network events. When those events occur, a ServiceWorker can intercept the network request and serve cached resources before the browser ever attempts to connect to a remote server.
 
-The first step in using a ServiceWorker is to install a worker on a page after a user visits for the first time. This means that the page, and all of its resources, will be served from the network at least once before the worker takes over. <<EX06-07>> shows and example of what the API for creating a new worker could look like. Please note that these examples aren't yet functional in any browser at the time of writing.
+The first step in using a ServiceWorker is to install a worker on a page after a user visits for the first time. This means that the page, and all of its resources, will be served from the network at least once before the worker takes over. <<EX06-07>> shows and example of what the API for creating a new worker could look like. 
+
+[CAUTION]
+____
+At the time of writing, ServiceWorker is not availble in any browser. As such, the snippets below are not runnable.
+____
 
 [[EX06-07]]
 .Creating a new ServiceWorker object
@@ -327,7 +330,7 @@ The public API for the ServiceWorker proposal can be found in a https://github.c
 
 So far, we've looked at how prollyfills can help us work with experimental CSS and JavaScript, but what about experimenting with HTML itself? Before you laugh me off the reservation and put down the book, bear with me.
 
-As it turns out, there are a handful of W3C specifications that have been in the making for the last few years that do just that: provide an official way for developers and site authors to extend the semantics of HTML for our apps. These specifications are typically referred to using the umbrella term of "Web Components." According to the http://www.w3.org/TR/2013/WD-components-intro-20130606/[W3C explainer document], "… Web Components enable Web application authors to define widgets with a level of visual richness and interactivity not possible with CSS alone, and ease of composition and reuse not possible with script libraries today."
+As it turns out, there are a handful of W3C specifications that have been in the making for the last few years that do just that: provide an official way for developers and site authors to extend the semantics of HTML for apps. These specifications are typically referred to using the umbrella term of "Web Components." According to the http://www.w3.org/TR/2013/WD-components-intro-20130606/[W3C explainer document], "… Web Components enable Web application authors to define widgets with a level of visual richness and interactivity not possible with CSS alone, and ease of composition and reuse not possible with script libraries today."
 
 Widgets? Composition? Reuse? If you've been a developer for any length of time, these terms are familiar to you, but did you ever think you'd hear them in the context of HTML? Me either, and yet here we are, talking about ways to bring a first-class widget construction workflow to the web.
 
@@ -373,7 +376,7 @@ The next Web Compoents spec is http://www.w3.org/TR/2013/WD-components-intro-201
 Take a look at <<EX06-10>> below. What do you see? A rectangle with a video canvas and several controls, right? Right, but have you ever wondered how the browsers actually implement tags like +<video>+ and audio?
 
 [[EX06-10]]
-.An HTML Video Tag
+.An HTML Video element in action
 image::images/ch6-ex10a.png[]
 
 With the Chrome Developer Tools, you can find out. All you need to do is open your Chrome DevTools and click the gear icon in the lower right-hand corner. Then, look for an option that reads "Show Shadow DOM" and make sure that it's checked. Then, you can navigate to any page with a +<video>+ tag, right-click it and select "Inspect Element." 
@@ -483,13 +486,13 @@ Let's say, for instance, and in keeping with our AngularJS example from above, t
 ====
 [source, html]
 ----
-<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="jquery-1.10.2.min.js"></script>
 <!-- Kendo UI Scripts -->
-<script src="http://cdn.kendostatic.com/2013.2.716/js/kendo.web.min.js"></script>
+<script src="kendo.web.min.js"></script>
 
 <polymer-element name="x-calendar" attributes="selected">
-  <link rel="stylesheet" href="http://cdn.kendostatic.com/2013.2.716/styles/kendo.common.min.css">
-  <link rel="stylesheet" href="http://cdn.kendostatic.com/2013.2.716/styles/kendo.default.min.css">
+  <link rel="stylesheet" href="kendo.common.min.css">
+  <link rel="stylesheet" href="kendo.default.min.css">
   
   <!-- Element Here -->
   <template>
