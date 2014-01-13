@@ -677,7 +677,7 @@ This is much more complex than section for our color and number types, but there
 4. If the user attempts to enter an invalid or non-numeric value, the input value should be set to the default value.
 5. The "min" attribute is allowed, and should represent a valid floating point number. The default "min" value is 0.
 6. The "max" attribute is allowed, and should represent a valid floating point number. The default "max" value is 100.
-7. The *default value* of the range input, if no value is set, is the minimum plus half the difference between the minimum and maximum (+d = min + (max - min)*.5+). If the default min and max values are used, the default value is 50 (+0 + (100-0)*.5+).
+7. The *default value* of the range input, if no value is set, is the minimum plus half the difference between the minimum and maximum (+d = min + (max - min)\*.5+). If the default min and max values are used, the default value is 50 (++0 + (100-0)*.5+).
 8. When the set value is smaller than the minimum, the value should be automatically set to the minimum.
 9. When the set value is larger than the maximum, the value should be automatically set to the maximum.
 10. The "step" attribute is allowed and has a default value of 1, which allows only integers to be specified).
