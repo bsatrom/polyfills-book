@@ -38,12 +38,17 @@ _++Constant width italic++_:: Shows text that should be replaced with user-suppl
 
 [TIP]
 ====
-This icon signifies a tip, suggestion, or general note.
+This element signifies a tip or suggestion.
+====
+
+[NOTE]
+====
+This element signifies a general note.
 ====
 
 [WARNING]
 ====
-This icon indicates a warning or caution.
+This element indicates a warning or caution.
 ====
 
 === Using Code Examples
