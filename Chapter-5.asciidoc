@@ -194,7 +194,7 @@ In order to test just how much feature test caching improves the performance of 
 
 [[EX5-3]]
 .JSPerf Test for Feature Test Caching
-image::images/ch5-ex3.png[]
+image::images/bdpf_0501.png[]
 
 The "Preparation Code" section in <<EX5-3>> shows the setup and teardown code that will run before each test. This code does not impact the timing of the tests. Here, I create a global feature test method, +isFormTypeSupported+, as well as a global +featureDetects+ object, similar to <<EX5-2>>. 
 
@@ -202,7 +202,7 @@ The "Test Runner" section in <<EX5-3>> contains my actual tests. The "Test Each 
 
 [[EX5-4]]
 .JSPerf Test Results for Feature Test Caching
-image::images/ch5-ex4.png[]
+image::images/bdpf_0502.png[]
 
 As you can see from the image above, caching my feature tests is not only faster, it's nearly 60 times faster on Chrome than performing feature tests each time! It's important to note that, since JSPerf runs each test case several dozen times over, reported numbers aren't indicative of raw, overall performance gains in my library. Rather, JSPerf is most valuable as a measure of relative performance between options. I should also point out that performance gains--or losses--will vary from one browser to the next. In the example above, our gains in Chrome are far higher than IE, so it's important to test across browser to get an accurate picture of changes. The bottom line, in this case, is that we know that caching feature tests is faster and, thus, an excellent refactoring choice for my library.
 
@@ -752,7 +752,7 @@ The results can be seen in <<EX5-11>>. The results for an individual run can be 
 
 [[EX5-11]]
 .JSPerf test for tweaks 2-4
-image::images/ch5-ex11.png[]
+image::images/bdpf_0503.png[]
 
 There are a couple of things to take away from the image above:
 
@@ -776,7 +776,7 @@ After making each of the performance tweaks listed in this chapter, I was sure t
 
 [[EX5-12]]
 .Testing my polyfill with IE 8
-image::images/ch5-ex12.png[] 
+image::images/bdpf_0504.png[] 
 
 In spite of all of my testing, I still have a handful of failing tests in IE 7 and 8. Digging deeper, however, I see that they're all Date- and Time-related tests, which suggests a common cause for all of these. Let's take a look at the first failing test, which is listed in <<EX5-13>>:
 
@@ -902,7 +902,7 @@ With this in place, my datetime and datetime-local tests will pass. The remainin
 
 [[EX5-16]]	
 .All tests passing in IE 8
-image::images/ch5-ex16.png[] 
+image::images/bdpf_0505.png[] 
 
 Much like performance testing, cross-browser issues are hard to generalize. Each browser has their own quirks and edge cases that behave differently from all the rest. IE 7 and 8 certainly aren't alone in this regard. Modern specs have done a great job of minimizing these types of differences in newer browsers, but you should expect to encounter hairy issues from time to time as you build cross-browser polyfills. Thankfully, these quirks, and their workarounds are often well-documented, so you shouldn't need to go far to find a fix.
 

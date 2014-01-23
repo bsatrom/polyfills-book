@@ -13,7 +13,7 @@ And while it is outside of the scope of this book to discuss the politics of HTM
 
 [[EX3-1a]]
 .Color Inputs viewed in Opera, Chrome and Firefox
-image::images/ch3-ex1a.png[]
+image::images/bdpf_0301.png[]
 
 HTML5 Forms is a minefield, and I can't think of a better area in which to venture as a polyfill developer. It’s a bit hairy, for sure, but this area of the spec if sufficiently complex enough to expose many of the polyfilling practices that I introduced in the last chapter.
 
@@ -264,11 +264,11 @@ As you can see from the sample, it's a pretty robust form, and it also uses all 
 
 [[EX3-5]]
 .Sample Form as viewed in Google Chrome 29
-image::images/ch3-ex5.png[]
+image::images/bdpf_0302.png[]
 
 [[EX3-6]]
 .Sample Form as viewed in Safari 6.1
-image::images/ch3-ex6.png[]
+image::images/bdpf_0303.png[]
 
 With my sample form in place, I'll next need to add a reference to my polyfill source file. In <<EX3-3>>, we created the main +kendo.forms.js+ file, which included the skeleton for our Forms widget and polyfill. I'll add a reference to that file in my sample form, and then add a script block or new file reference to activate the sample form, as illustrated in <<EX3-7>>.
 
@@ -360,7 +360,7 @@ In this sample, I'm looking for every input on my form with the attribute +type=
 
 [[EX3-9]]
 .Color Support in the Forms Polyfill (Safari 6.1)
-image::images/ch3-ex9.png[]
+image::images/bdpf_0304.png[]
 
 ==== To Feature Detect, or Not to Feature Detect
 
@@ -706,7 +706,7 @@ For the Slider widget, I'll need to pass in a couple of configuration settings s
 
 [[EX3-17]]
 .Sample form with range support
-image::images/ch3-ex17.png[]
+image::images/bdpf_0305.png[]
 
 === Building Utility Polyfills
 
@@ -884,11 +884,11 @@ In addition to testing out your polyfill in the latest version of all of the bro
 
 [[EX3-21]]
 .Testing IE8 Via IE 10's Browser Mode simulator
-image::images/ch3-ex21.png[]
+image::images/bdpf_0306.png[]
 
 [[EX3-22]]
 .Testing IE8 via an actual IE8 installation
-image::images/ch3-ex22.png[]
+image::images/bdpf_0307.png[]
 
 Thankfully, testing oldIE doesn't require that you buy old Windows Vista and XP licenses and install these browsers on the old hardware sitting in your closet. On the contrary, Microsoft hosts a fantastic site called http://modern.ie[modern.ie] that's purpose built around the idea of providing developers with all the tools they need to support and test the various Internet Explorer browsers. In addition to providing tools like a page scanning service and documentation on standards support for newer versions of the browser, the site provides free virtual machines for testing all versions of IE, including 6, 7 and 8. Whether you use VirtualBox, VMWare, Parallels, Virtual PC or Hyper-V, there are free VMs available for you to download, fire-up and use to test out your hard work. To grab a VM, just head over to http://modern.ie[modern.ie] and click the "Test Across Browsers" menu option.
 

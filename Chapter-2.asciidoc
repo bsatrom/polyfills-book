@@ -95,7 +95,7 @@ When reading W3C specifications, you'll often come across blocks of text and pse
 
 [[EX2-2]]
 .Example WebIDL Snippet for the http://www.w3.org/TR/html5/forms.html#the-form-element[HTML Form Element]
-image::images/ch2-ex2.png[]
+image::images/bdpf_0201.png[]
 
 So Web IDL specifies the interface that browsers are to use when building a standard implementation, and browsers do exactly that. What's more, most of them--perhaps even all of them, but I can't claim all without seeing Internet Explorer's code base, which is not open source--automatically generate Web IDL bindings directly from the spec-defined IDL. Chrome even includes http://www.chromium.org/blink/webidl[Web IDL docs] for developers working with the browser source.
 

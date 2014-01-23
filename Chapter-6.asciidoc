@@ -150,7 +150,7 @@ With everything in place, I should be able to load my todo list up and see the a
 
 [[EX06-03]]
 .Todo list with HitchJS-based styling
-image::images/ch6-ex03.png[]
+image::images/bdpf_0601.png[]
 
 [CAUTION]
 ====
@@ -240,7 +240,7 @@ With this rule, I'm instructing my custom hitch to look for any +li+ with a clas
 
 [[EX06-06]]
 .Our custom Hitch in action
-image::images/ch6-ex06.png[]
+image::images/bdpf_0602.png[]
 
 HitchJS is a versatile library, and now that you've seen how easy it is to create your own hitches, you've got everything you need to try our experimental CSS features, or even prototype and play with your own!
 
@@ -377,7 +377,7 @@ Take a look at <<EX06-10>> below. What do you see? A rectangle with a video canv
 
 [[EX06-10]]
 .An HTML Video element in action
-image::images/ch6-ex10a.png[]
+image::images/bdpf_0603.png[]
 
 With the Chrome Developer Tools, you can find out. All you need to do is open your Chrome DevTools and click the gear icon in the lower right-hand corner. Then, look for an option that reads "Show Shadow DOM" and make sure that it's checked. Then, you can navigate to any page with a +<video>+ tag, right-click it and select "Inspect Element." 
 
@@ -385,7 +385,7 @@ What you'll see looks like <<EX06-11>> below. Inside of the innocent looking +<v
 
 [[EX06-11]]
 .Shadow DOM in Action
-image::images/ch6-ex10.png[]
+image::images/bdpf_0604.png[]
 
 By making Shadow DOM developer-accessible and supported in the browsers, we can do the same. We can build our own complex widgets and features that are easy for developers to use, but which also hide their implementation details and can even prevent unauthorized access to sub-elements and widget styles.
 

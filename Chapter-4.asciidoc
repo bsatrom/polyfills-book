@@ -55,7 +55,7 @@ To configure npm, I'll run **`npm init`** inside my project directory and follow
 
 [[EX4-2]]
 .Running +npm init+ to configure your package.json file
-image::images/ch4-ex3.png[]
+image::images/bdpf_0401.png[]
 
 [[EX4-3]]
 .Sample package.json file
@@ -294,7 +294,7 @@ With this setup done, let's go ahead and run these tests in the browser. First, 
 
 [[EX4-8]]
 .Jasmine running in the browser
-image::images/ch4-ex9.png[]
+image::images/bdpf_0402.png[]
 
 ==== Red to Green: Making the First Tests Pass
 
@@ -333,7 +333,7 @@ We added a lot more code to this file in Chapter 3 before all was said and done,
 
 [[EX4-12]]
 .Jasmine running in the browser
-image::images/ch4-ex13.png[]
+image::images/bdpf_0403.png[]
 
 ==== Running Jasmine Tests via Grunt
 
@@ -435,7 +435,7 @@ After adding the markup in <<EX4-16>> all three of my tests will pass. That's ni
 
 [[EX4-17]]
 .Running Jasmine DOM tests in the console
-image::images/ch4-ex18.png[]
+image::images/bdpf_0404.png[]
 
 First, I'll need to move the form tag from <<EX4-16>> into a standalone HTML file named "declarative-form.html", and I'll place that file in a +spec/javascripts/fixtures/+ directory--the location is a convention jasmine-jquery uses. Then, I need to add the jasmine-jquery fixture loader to my +fixtures.js+ file, so I'll add the following path to line 4:
 
@@ -632,7 +632,7 @@ With this additional condition, I'm looking for +context.html+ in my path, which
 
 [[EX4-36]]
 .Running cross-browser tests with Karma
-image::images/ch4-ex37.png[]
+image::images/bdpf_0405.png[]
 
 ==== Automating Polyfill Development with Grunt Tasks
 
@@ -699,7 +699,7 @@ Now, I can run +grunt watch+ before I begin working on my polyfill. As I make ch
 
 [[EX4-41]]
 .Developing iteratively with +grunt watch+
-image::images/ch4-ex42.png[]
+image::images/bdpf_0406.png[]
 
 ==== Performing Remote Testing with Travis-CI
 
@@ -725,7 +725,7 @@ Once everything is set up, any time I push a commit to my repo from GitHub to Tr
 
 [[EX4-43]]
 .The Travis.ci dashboard with test results for our polyfill
-image::images/ch4-ex44.png[]
+image::images/bdpf_0407.png[]
 
 Since there are so many moving pieces involved in getting cross-browser testing set-up, I've purposely kept our fixtures file small, covering only three tests. However, the full +kendo-ui-forms+ polyfill contains a much larger test suite, and I suggest you https://github.com/kendo-labs/kendo-ui-forms/blob/master/spec/js/fixtures.js[check it out for yourself] when venturing into testing for your own polyfills.
 
