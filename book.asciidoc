@@ -1,3 +1,4 @@
+:bookseries: animal
 = Building Polyfills
 
 include::preface.asciidoc[]
@@ -15,3 +16,7 @@ include::Chapter-5.asciidoc[]
 include::Chapter-6.asciidoc[]
 
 include::Chapter-7.asciidoc[]
+
+include::index.asciidoc[]
+
+include::colo.asciidoc[]
