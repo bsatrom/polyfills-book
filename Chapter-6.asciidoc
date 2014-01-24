@@ -1,7 +1,10 @@
 [[polyfills_part_2]]
 = Prollyfilling and the Future of the Web Platform
 
-In Part 1, we looked at polyfilling in its original context: a strategy for "filling in the gaps" of older browsers with modern web APIs and technologies. In Part 2, we'll shift our focus from the past and present and look towards the future. Specifically, we'll talk about a variation of polyfilling that enables developers to experiment with not-yet-standardized APIs and developer-driven ideas that could potentially make their way into the browsers, in the future. In Chapter 6, I'll introduce the future of polyfilling, the prollyfill, and will provide several examples of popular and notable prollyfilling libraries that push the boundaries of the Web Platform. Then, in Chapter 7, I'll close this book with a  hands-on exploration of prollyfill construction, and how it compares to our polyfill construction exercise in Part 1.
+[partintro]
+--
+In Part 1, we looked at polyfilling in its original context: a strategy for "filling in the gaps" of older browsers with modern web APIs and technologies. In Part 2, we'll shift our focus from the past and present and look towards the future. Specifically, we'll talk about a variation of polyfilling that enables developers to experiment with not-yet-standardized APIs and developer-driven ideas that could potentially make their way into the browsers, in the future. In <<polyfills_chapter_6>>, I'll introduce the future of polyfilling, the prollyfill, and will provide several examples of popular and notable prollyfilling libraries that push the boundaries of the Web Platform. Then, in <<polyfills_chapter_7>>, I'll close this book with a  hands-on exploration of prollyfill construction, and how it compares to our polyfill construction exercise in Part 1.
+--
 
 [[polyfills_chapter_6]]
 == The Future of Polyfilling 
@@ -16,7 +19,7 @@ The bottom line is this: each new feature that's supported in Firefox but has ye
 
 Sometimes, pollyfilling specified features isn't always enough for us, as web developers. We're a smart, ambitious bunch, and this is our platform too. Most of the time, we think we're just as qualified as browser vendors when it comes to determining what capabilities the web platform, and our  browsers, really need.
 
-In Chapter 1, I mentioned something called the "http://extensiblewebmanifesto.org/[Extensible Web Manifesto]" a rallying cry of sorts, for front-end developers. It's one that calls us to "extend the web forward" by working on speculative and cutting edge ideas in our browsers. It also calls upon browser vendors to "unlock" low-level capabilities in the browser (for instance, the browser's networking stack or its HTML parser) and allow developers to write their own JavaScript libraries and APIs on top of those capabilities. The core idea that the manifesto argues for is that, with access to these low-level APIs, developers can experiment with real-world ideas that solve real-world problems. I use the phrase "real-world" here, because, on occasion, the W3C will pursue ideas that, while academically sound, are rejected by developers when subjected to actual use.
+In <<polyfills_chapter_1>>, I mentioned something called the "http://extensiblewebmanifesto.org/[Extensible Web Manifesto]" a rallying cry of sorts, for front-end developers. It's one that calls us to "extend the web forward" by working on speculative and cutting edge ideas in our browsers. It also calls upon browser vendors to "unlock" low-level capabilities in the browser (for instance, the browser's networking stack or its HTML parser) and allow developers to write their own JavaScript libraries and APIs on top of those capabilities. The core idea that the manifesto argues for is that, with access to these low-level APIs, developers can experiment with real-world ideas that solve real-world problems. I use the phrase "real-world" here, because, on occasion, the W3C will pursue ideas that, while academically sound, are rejected by developers when subjected to actual use.
 
 Take the oft-maligned Application Cache, for instance. This specification, which enjoys wide support across all modern desktop and mobile browsers, was introduced as a declarative API intended to solve the very real problem of caching web sites and applications for offline use. It's a fantastic idea, and developers everywhere applauded the introduction of the technology when it was first introduced several years ago.
 
@@ -167,7 +170,7 @@ Earlier in this chapter, I introduced the new +:matches+ pseudo-class selector b
 So, to define my custom "hitch" for the CSS +:matches+ selector, I'll first need to create a new file called +selector-matches.js+ in my project. Then, I'll add the initial module definition that Hitch requires, as illustrated in <<EX06-04>>.
 
 [[EX06-04]]
-.Creating a Hitch for The Matches selector in +selector-matches.js+
+.Creating a Hitch for The Matches selector in selector-matches.js
 ====
 [source, js]
 ----
@@ -188,7 +191,7 @@ The +matchesHitch+ object contains all of the properties that HitchJS requires w
 To emulate the CSS Selectors Level 4 +:matches+ pesudo-class selector, I'll need to test a comma-delimited string of class and id values against an element. If the element contains any of the values specified in the +:matches+ selector, I'll return true, at which point Hitch will apply the CSS defined inside my custom selector. The source for my Hitch's filter method can be found in <<EX06-05>>.
 
 [[EX06-05]]
-.Custom Matches Selector method  in +selector-matches.js+
+.Custom Matches Selector method  in selector-matches.js
 ====
 [source, js]
 ----
@@ -217,7 +220,7 @@ Now that we have our custom hitch, let's try out our new rule in CSS. First, I'l
 
 ====
 [source, html]
-.Importing Hitch into a stylesheet, +styles.css+ 
+.Importing Hitch into a stylesheet, styles.css 
 ----
 @-hitch-requires ../js/selector-matches.js;
 ----
@@ -227,7 +230,7 @@ Then, I'll add a new rule using my hitch:
 
 ====
 [source, css]
-.Using my custom +matches+ selector in +styles.css+
+.Using my custom +matches+ selector in styles.css
 ----
 #todo-list li:matches(.urgent, #next-action) label {
   font-weight: bold;
@@ -255,9 +258,9 @@ If you're thinking that this is starting to sound a lot like a JavaScript-based 
 The first step in using a ServiceWorker is to install a worker on a page after a user visits for the first time. This means that the page, and all of its resources, will be served from the network at least once before the worker takes over. <<EX06-07>> shows and example of what the API for creating a new worker could look like. 
 
 [CAUTION]
-____
+====
 At the time of writing, ServiceWorker is not availble in any browser. As such, the snippets below are not runnable.
-____
+====
 
 [[EX06-07]]
 .Creating a new ServiceWorker object
@@ -474,7 +477,7 @@ The http://polymer-project.org[Polymer] project is a Google-sponsored project de
 
 In our discussion on Web Components, I shared some code snippets meant to communicate the "perfect world" approach for building components, as defined by the current draft of each spec. Polymer enables us to create Web Components using much of the same syntax, with only a few small differences.
 
-[Note]
+[[NOTE]]
 ____
 At the time of writing, the Polymer authors are careful to note that the library is in an Alpha state. You'll want to keep this in mind when using, or even installing, the library.
 ____

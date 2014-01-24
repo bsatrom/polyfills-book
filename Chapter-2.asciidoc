@@ -1,7 +1,7 @@
 [[polyfills_chapter_2]]
 == Principles and Practices of Polyfill Development
 
-In Chapter 1, we talked about what polyfills are and are not, various types of polyfills, and why these libraries are still important in the world of web development. In this chapter, I'm going to introduce the concept of _responsible polyfills_, that is, a polyfill built to serve the needs of the consuming web developer. It's a common-sense subject, for sure, but one that I still believe warrants explicit discussion.
+In <<polyfills_chapter_1>>, we talked about what polyfills are and are not, various types of polyfills, and why these libraries are still important in the world of web development. In this chapter, I'm going to introduce the concept of _responsible polyfills_, that is, a polyfill built to serve the needs of the consuming web developer. It's a common-sense subject, for sure, but one that I still believe warrants explicit discussion.
 
 Once I've introduced the _responsible polyfills_ concept, I'll share some principles of polyfill development to use as your guide, regardless of the type of library you're building. For many of these principles, the discussion will include some of the common challenges and pitfalls of polyfilling you might run into.
 

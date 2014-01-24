@@ -1,11 +1,11 @@
 [[polyfills_chapter_4]]
 == Building Your First Polyfill, Part 2 - Build Workflows and Cross-Browser Testing
 
-In Chapter 3, you got your first taste of cross-browser polyfill development via the construction of an HTML5 Forms polyfill. We managed to cover a lot of ground in a short time, but there's no doubt that our polyfill is missing some critical pieces. Some of these relate to our build and deploy process, while others relate to improving the quality and performance of the code itself with some unit and performance texts. Over these next two chapters, we'll round out the construction of our first polyfill. In this chapter, we'll cover the ins and outs of setting up your build process and performing automated testing. Then, in Chapter 5, we'll discuss how to deal with hairy edge cases in a spec, and testing/refactoring for performance.
+In <<polyfills_chapter_3>>, you got your first taste of cross-browser polyfill development via the construction of an HTML5 Forms polyfill. We managed to cover a lot of ground in a short time, but there's no doubt that our polyfill is missing some critical pieces. Some of these relate to our build and deploy process, while others relate to improving the quality and performance of the code itself with some unit and performance texts. Over these next two chapters, we'll round out the construction of our first polyfill. In this chapter, we'll cover the ins and outs of setting up your build process and performing automated testing. Then, in <<polyfills_chapter_5>>, we'll discuss how to deal with hairy edge cases in a spec, and testing/refactoring for performance.
 
 === Setting up Your Project Workflow
 
-In Chapter 3, we got right to work building our polyfill without considering much beyond simple project and source control setup. At this point, I'd like to back up and discuss some important workflow considerations that polyfill developers should address when starting up a project. Specifically, we want to begin with the end in mind. That is, before we write a single line of code, we should think about how we plan to distribute our hard work, and how we expect other developers to leverage our polyfill in their apps, and even how we can enable others to contribute to our project. All of these considerations can be addressed at the start of a project with a solid development workflow, which includes several core pieces:
+In <<polyfills_chapter_3>>, we got right to work building our polyfill without considering much beyond simple project and source control setup. At this point, I'd like to back up and discuss some important workflow considerations that polyfill developers should address when starting up a project. Specifically, we want to begin with the end in mind. That is, before we write a single line of code, we should think about how we plan to distribute our hard work, and how we expect other developers to leverage our polyfill in their apps, and even how we can enable others to contribute to our project. All of these considerations can be addressed at the start of a project with a solid development workflow, which includes several core pieces:
 
 - Source control and collaboration 
 - Package and dependency management
@@ -13,7 +13,7 @@ In Chapter 3, we got right to work building our polyfill without considering muc
 - Automated and Cross-Browser Testing
 - Continuous Integration
 
-Source control and collaboration were discussed in Chapter 3, so let's look next at package and dependency management.
+Source control and collaboration were discussed in <<polyfills_chapter_3>>, so let's look next at package and dependency management.
 
 ==== Package and Dependency Management
 
@@ -47,14 +47,14 @@ For my projects, I prefer to use https://travis-ci.org/[Travis], a CI server use
 
 === Jumpstarting Your Workflow
 
-In Chapter 3, I covered initial project setup, including a recommended directory structure and essential files. With your basic project structure in place, your next key workflow steps are to configure +npm+ and +grunt+, which we'll cover in this section.
+In <<polyfills_chapter_3>>, I covered initial project setup, including a recommended directory structure and essential files. With your basic project structure in place, your next key workflow steps are to configure +npm+ and +grunt+, which we'll cover in this section.
 
-==== Configuring +npm+
+==== Configuring npm
 
 To configure npm, I'll run **`npm init`** inside my project directory and follow the interactive prompts. You can see the result of running the command in my terminal in <<EX4-2>>. Once done, npm will create a +package.json+ file that looks similar to <<EX4-3>>. While this file isn't strictly required unless you plan to publish your polyfill to npm, it will make it easier to work with Grunt, which we'll set up next. 
 
 [[EX4-2]]
-.Running +npm init+ to configure your package.json file
+.Running npm init to configure your package.json file
 image::images/bdpf_0401.png[]
 
 [[EX4-3]]
@@ -107,7 +107,7 @@ Now, let's install Grunt. Before you run the Grunt config step, you'll need to a
 Once you've installed Grunt, configuring the tool is a bit more manual. While there are http://gruntjs.com/project-scaffolding[several +grunt-init+ tasks] available for you to use, our project is pretty specific-use, so it's easier if we just start with a very basic gruntfile, which you can pull from <<EX4-5>>. Create a new file at the project root called +gruntfile.js+ and copy the contents below into that new file.
 
 [[EX4-5]]
-.Starter +gruntfile.js+ for our Polyfill
+.Starter gruntfile.js for our Polyfill
 ====
 [source, js]
 ----
@@ -196,10 +196,10 @@ Testing is critical for a good, "responsible" polyfill, and I recommend that you
 
 To start using Jasmine for my unit tests, I'll create a +lib+ directory inside of my +spec+ directory and place the jasmine bits inside. I'm also going to include the https://github.com/velesin/jasmine-jquery[jasmine-jquery] library, which I'll need in order to automatically execute my tests via grunt. 
 
-Next, I'll create a +runner.html+ file at the root of the +spec+ folder, and I'll populate it with the contents of <<EX4-6>>. Many JavaScript frameworks, Jasmine included, use an html file as their "test runner" by loading up dependencies, the project source and then executing those tests against DOM interactions on the page. On this page, we'll specify all of the CSS and JavaScript dependencies for our polyfill, including jQuery and Kendo UI for widgets and framework features, and then load up our tests via +fixtures.js+. Note that, for external dependencies, I'm following the directory structure outlined in Chapter 3.
+Next, I'll create a +runner.html+ file at the root of the +spec+ folder, and I'll populate it with the contents of <<EX4-6>>. Many JavaScript frameworks, Jasmine included, use an html file as their "test runner" by loading up dependencies, the project source and then executing those tests against DOM interactions on the page. On this page, we'll specify all of the CSS and JavaScript dependencies for our polyfill, including jQuery and Kendo UI for widgets and framework features, and then load up our tests via +fixtures.js+. Note that, for external dependencies, I'm following the directory structure outlined in <<polyfills_chapter_3>>.
 
 [[EX4-6]]
-.Jasmine's main +runner.html+ file
+.Jasmine's main runner.html file
 ====
 [source, html]
 ----
@@ -269,7 +269,7 @@ Next, I'll create a +runner.html+ file at the root of the +spec+ folder, and I'l
 With the runner done, let's create the key file for our testing, +fixtures.js+. <<EX4-7>> contains an initial test file with a couple of tests. You'll notice that Jasmine uses functions like +describe+, +it+ and +expect+, and that my test names are written in narrative form. Because Jasmine is a BDD-style testing framework, you'll hopefully find, as I do, that it's easy to write readable test names and assertions that make sense, not just now, but when you're hunting down regressions later. 
 
 [[EX4-7]]
-.A basic Jasmine +fixtures.js+ file for our polyfill
+.A basic Jasmine fixtures.js file for our polyfill
 ====
 [source, js]
 ----
@@ -290,7 +290,7 @@ describe('Kendo Forms Widget Test Suite', function() {
 ----
 ====
 
-With this setup done, let's go ahead and run these tests in the browser. First, if you're following along and you created the +kendo.forms.js+ source file in Chapter 3, the tests above should pass. That's nice, but for the sake of exploration, let's delete everything from that file and re-run our tests. If Jasmine is properly configured, you should see two failing tests, as we do <<EX4-8>>. So we have successfully configured our testing framework. Now, let's go make these tests pass!
+With this setup done, let's go ahead and run these tests in the browser. First, if you're following along and you created the +kendo.forms.js+ source file in <<polyfills_chapter_3>>, the tests above should pass. That's nice, but for the sake of exploration, let's delete everything from that file and re-run our tests. If Jasmine is properly configured, you should see two failing tests, as we do <<EX4-8>>. So we have successfully configured our testing framework. Now, let's go make these tests pass!
 
 [[EX4-8]]
 .Jasmine running in the browser
@@ -300,10 +300,10 @@ image::images/bdpf_0402.png[]
 
 When I start a new project, or add unit tests to an existing project, I like to start small and try to get a few quick win tests under my belt. This is partly because I'm still feeling out functionality in the early stages of a project, but also because I want to see my test suite running and passing as quickly as possible. It's far easier to suss out problems with my test suite setup with a smaller number of tests.
 
-With that in mind, the first two failing specs we've added to my project are minor, and easy to fix, but they help lay the foundation for my polyfill. As discussed in Chapter 3, Kendo UI itself exposes it's UI widgets to developers in two ways, and the tests above are designed to exercise that behavior. The tests in <<EX4-7>> are looking for key pieces of information. First, we check to make sure that our polyfill exists as a widget in the Kendo UI namespace, as +kendo.ui.Form+. Next, we want to ensure that the polyfill widget is available as a jQuery plugin. To make those tests pass, we can create the initial skeleton of our polyfill in a new file (in +src/+) called +kendo.forms.js+ and add the code in <<EX4-11>>, or add the code back in if you already did so in Chapter 3.
+With that in mind, the first two failing specs we've added to my project are minor, and easy to fix, but they help lay the foundation for my polyfill. As discussed in <<polyfills_chapter_3>>, Kendo UI itself exposes it's UI widgets to developers in two ways, and the tests above are designed to exercise that behavior. The tests in <<EX4-7>> are looking for key pieces of information. First, we check to make sure that our polyfill exists as a widget in the Kendo UI namespace, as +kendo.ui.Form+. Next, we want to ensure that the polyfill widget is available as a jQuery plugin. To make those tests pass, we can create the initial skeleton of our polyfill in a new file (in +src/+) called +kendo.forms.js+ and add the code in <<EX4-11>>, or add the code back in if you already did so in <<polyfills_chapter_3>>.
 
 [[EX4-11]]
-.Creating the core widget definition for our Kendo UI Forms polyfill in +kendo.forms.js+
+.Creating the core widget definition for our Kendo UI Forms polyfill in kendo.forms.js
 ====
 [source, js]
 ----
@@ -329,7 +329,7 @@ With that in mind, the first two failing specs we've added to my project are min
 ----
 ====
 
-We added a lot more code to this file in Chapter 3 before all was said and done, but this skeleton code we've written so far lays the foundation for my library, and it's also enough to make my first tests pass, as you can see in <<EX4-12>>.
+We added a lot more code to this file in <<polyfills_chapter_3>> before all was said and done, but this skeleton code we've written so far lays the foundation for my library, and it's also enough to make my first tests pass, as you can see in <<EX4-12>>.
 
 [[EX4-12]]
 .Jasmine running in the browser
@@ -351,7 +351,7 @@ grunt.loadNpmTasks('grunt-contrib-jasmine');
 Then, I need to add a jasmine task to the +initConfig+ section of the file, as shown in <<EX4-13>>. This task definition tells Jasmine where to look to find my project source, the specs to run and finally, any 3rd party "vendor" libraries that should also be loaded.
 
 [[EX4-13]]
-.Adding a jasmine grunt task to +gruntfile.js+
+.Adding a jasmine grunt task to gruntfile.js
 ====
 [source, js]
 ----
@@ -385,7 +385,7 @@ The +--save-dev+ switch will automatically save the package as a +devDependency+
 [[EX4-14]]
 .Running jasmine via the console
 ====
-[source, shell]
+[source, sh]
 ----
 $ grunt jasmine
 Running "jasmine:src" (jasmine) task
@@ -403,7 +403,7 @@ Now I've got Jasmine running in the browser, and in the terminal, which is nice!
 Let's add our third test, and the first to access the DOM. I'll open +fixtures.js+ back up and add the following test:
 
 [[EX4-15]]
-.Testing declarative form initialization in +fixtures.js+
+.Testing declarative form initialization in fixtures.js
 ====
 [source, js]
 ----
@@ -421,7 +421,7 @@ As discussed previously, Kendo UI widgets can be declared one of two ways, eithe
 When I first add this test and refresh the browser, it will fail, but I can make it pass by adding the following to the +runner.html+ file, just inside the +<body>+ element:
 
 [[EX4-16]]
-.Declarative initialization of a Form widget in +runner.html+
+.Declarative initialization of a Form widget in runner.html
 ====
 [source, html]
 ----
@@ -440,7 +440,7 @@ image::images/bdpf_0404.png[]
 First, I'll need to move the form tag from <<EX4-16>> into a standalone HTML file named "declarative-form.html", and I'll place that file in a +spec/javascripts/fixtures/+ directory--the location is a convention jasmine-jquery uses. Then, I need to add the jasmine-jquery fixture loader to my +fixtures.js+ file, so I'll add the following path to line 4:
 
 [[EX4-18]]
-.Setup for loading external fixtures from +fixtures.js+
+.Setup for loading external fixtures from fixtures.js
 ====
 [source, js]
 ----
@@ -455,7 +455,7 @@ if (document.location.pathname.indexOf('runner.html') > 0) {
 In order to run jasmine in multiple environments, I do have to add a bit of path manipulation, as you can see in the sample above. If I'm running my tests in the console, the default path (spec/javascripts/fixtures) works for loading fixtures. If I'm in the browser, however, I need to adjust things a little. Finally, in my latest test, <<EX4-15>>, I'll add a call to jasmine-jquery's +load+ method to load up my HTML fixture. The complete test is listed in <<EX4-19>>.
 
 [[EX4-19]]
-.Loading an external fixture from +fixtures.js+
+.Loading an external fixture from fixtures.js
 ====
 [source, js]
 ----
@@ -477,7 +477,7 @@ Now that we have a good testing setup with Jasmine and Grunt, let's take this pa
 
 [NOTE]
 ====
-As I discussed in Chapter 3, automated, cross-browser testing is a great safety net for the polyfill developer, but it's no substitute for real, actual testing across browsers, especially those older versions of IE where browser quirks lie in wait.
+As I discussed in <<polyfills_chapter_3>>, automated, cross-browser testing is a great safety net for the polyfill developer, but it's no substitute for real, actual testing across browsers, especially those older versions of IE where browser quirks lie in wait.
 ====
 
 === Configuring Cross-Browser Tests with Karma
@@ -486,7 +486,7 @@ To get started with Karma, I'll need to install "grunt-karma" via npm:
 
 [[EX4-20]]
 ====
-[source, shell]
+[source, sh]
 ----
 npm install grunt-karma --save-dev
 ----
@@ -495,7 +495,7 @@ npm install grunt-karma --save-dev
 Both Karma and grunt-karma will be installed, and a series of karma-related dependencies will be added to your +package.json+ file. Next, you'll want to add the line +grunt.loadNpmTasks('grunt-karma');+ to the end of the +loadNpmTasks+ calls in your +gruntfile+. Then, I'll add the karma task to my +gruntfile,+ starting with a bit of logic to populate an array of browsers I want to test with, at the top of the file.
 
 [[EX4-21]]
-.Adding a browser array to +gruntfile.js+
+.Adding a browser array to gruntfile.js
 ====
 [source, js]
 ----
@@ -516,7 +516,7 @@ var browsers;
 
 In this snippet, I'm using Node to interrogate with which OS I'm testing. If I'm using OSX (which reports as _Darwin_), I'll add Chrome Canary and Safari. If, on the other hand, I'm on Windows, I'll add IE to my browsers array. 
 
-[Note]
+[NOTE]
 ====
 Both Internet Explorer and, recently Safari are single-OS browsers, meaning that they only run on Windows and Mac OSX, respectively. This means that it's not possible to run a complete set of cross-browser tests for your polyfills on a single OS. You'll either need a few Windows VMs on hand for various versions of IE, or a cheap Mac OSX box for Safari testing if either of these is not your primary operating system.
 ====
@@ -524,7 +524,7 @@ Both Internet Explorer and, recently Safari are single-OS browsers, meaning that
 Next, I'll add a task for Karma to the +grunt.initConfig+ method:
 
 [[EX4-22]]
-.Adding a Karma task to +gruntfile.js+
+.Adding a Karma task to gruntfile.js
 ====
 [source, js]
 ----
@@ -543,7 +543,7 @@ karma: {
 Key in this section is the +configFile+ property, which accepts a path to a separate Karma configuration file. Karma has a lot of configuration options, so placing these in a separate file is usually a good approach. The contents of my +karma.conf.js+ can be found in <<EX4-23>>.
 
 [[EX4-23]]
-.+karma.conf.js+ Karma configuration file for our forms polyfill
+.karma.conf.js Karma configuration file for our forms polyfill
 ====
 [source, js]
 ----
@@ -601,7 +601,7 @@ This file contains a couple of key sections. First, the +files+ array contains a
 
 [[EX4-34]]
 ====
-[source, shell]
+[source, sh]
 ----
 npm install karma-opera-launcher --save-dev
 npm install karma-safari-launcher --save-dev
@@ -614,7 +614,7 @@ npm install karma-ie-launcher --save-dev
 Once I've installed those two additional launchers, I should be able to run karma using grunt with the +grunt karma+ command. If I do that, I should see all of my browsers launch, but one of my three initial tests will fail. Can you guess which ones? That's right, the DOM test. Much as I did for Jasmine in the console, I need to add a path condition for Karma to my +fixtures.js+ file, as shown in <<EX4-35>>.
 
 [[EX4-35]]
-.Modifying the +fixtures.js+ external fixtures load path for Karma
+.Modifying the fixtures.js external fixtures load path for Karma
 ====
 [source, js]
 ----
@@ -641,7 +641,7 @@ Thus far in this chapter, we've set up a new polyfill project, we've configured 
 Now that we've added some testing, let's add a few more custom tasks that combine our test frameworks with our JSHint and magnification tasks. 
 
 [[EX4-37]]
-.Adding additional tasks to +gruntfile.js+
+.Adding additional tasks to gruntfile.js
 ====
 [source, js]
 ----
@@ -654,7 +654,7 @@ Now, I can run +grunt test+ in the console and have my files _linted_, minified,
 
 [[EX4-38]]
 ====
-[source, shell]
+[source, sh]
 ----
 npm install grunt-contrib-watch --save-dev
 ----
@@ -668,7 +668,7 @@ npm install grunt-contrib-watch --save-dev
 Once I've installed this plugin, I'll include the task via a call to +loadNpmTasks+:
 
 [[EX4-39]]
-.Adding a watch task to +gruntfile.js+
+.Adding a watch task to gruntfile.js
 ====
 [source, js]
 ----
@@ -679,7 +679,7 @@ grunt.loadNpmTasks('grunt-contrib-watch');
 And finally, I'll add the task to +grunt.initConfig+:
 
 [[EX4-40]]
-.Configuring a watch task in +gruntfile.js+
+.Configuring a watch task in gruntfile.js
 ====
 [source, js]
 ----
@@ -698,7 +698,7 @@ watch: {
 Now, I can run +grunt watch+ before I begin working on my polyfill. As I make changes to important files, grunt will pick those up, lint the files and run my Jasmine tests, automatically, as shown in <<EX4-41>>.
 
 [[EX4-41]]
-.Developing iteratively with +grunt watch+
+.Developing iteratively with grunt watch
 image::images/bdpf_0406.png[]
 
 ==== Performing Remote Testing with Travis-CI
@@ -706,9 +706,9 @@ image::images/bdpf_0406.png[]
 Before we wrap up this chapter, there's one final piece of setup I suggest you perform when building a cross-browser polyfill. That is, configuring a CI server to run your tests and provide you with that extra-level sanity check. As I said above, I prefer Travis CI because the service is free for open source projects, and it's dead-simple to configure. In fact, all I need in my project is to add a file called +.travis.yml+ with a few options, as shown in <<EX4-42>>.
 
 [[EX4-42]]
-.A Travis-CI configuration file, +.travis.yml+, for our Forms polyfill
+.A Travis-CI configuration file, .travis.yml, for our Forms polyfill
 ====
-[souce, yaml]
+[source, yaml]
 ----
 language: node_js
 node_js:

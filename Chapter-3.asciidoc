@@ -53,12 +53,12 @@ With that done, your local and remote repositories will be all set-up and it wil
 - +dist/+ - The minified and concatenated files you plan to distribute; i.e. the "binaries" for your polyfill
 - +lib/+ - Any 3rd-party libraries that your Polyfill depends on (jQuery, Underscore, etc.)
 - +sample/+ - Sample and example code for the polyfill
-- +spec/+ - Home for your unit tests, which we'll discuss in Chapter 4.
+- +spec/+ - Home for your unit tests, which we'll discuss in <<polyfills_chapter_4>>.
 - +src/[js,css]+ - Source JavaScript and CSS files
 - +.gitignore+ - A list of files for Git to ignore when found in your project. GitHub can create one of these files for you when creating a new project. If you go that route, select the "Node" template.
 - +CHANGELOG.md+ - A laundry-list of minor and breaking changes for each version of your library. 
 - +CONTRIBUTING.md+ - Essential if you plan to accept contributions for your project. 
-- +README.md+ - the readme for your project. GitHub automatically treats this file as the main entry point when anyone visits your project. It should describe the purpose and goals of the polyfill--as I discussed in Chapter 1--features of the project, a roadmap for the projects, installation and usage instructions and anything else you think might be useful to consumers of or collaborators on your polyfill.
+- +README.md+ - the readme for your project. GitHub automatically treats this file as the main entry point when anyone visits your project. It should describe the purpose and goals of the polyfill--as I discussed in <<polyfills_chapter_1>>--features of the project, a roadmap for the projects, installation and usage instructions and anything else you think might be useful to consumers of or collaborators on your polyfill.
 - +LICENSE.md+ - Every open-source project needs a license. Which license you choose is up to you, but permissive licenses, such as MIT and Apache 2.0 will garner more interest and, possibly, participation from other developers. GitHub can also generate this file for you, based on the license chosen at project creation. 
 
 [NOTE]
@@ -68,7 +68,7 @@ Though I did take the LSAT once upon a time, please note that I am not an attorn
 
 === Specifying the API
 
-Once your polyfill project is set-up, your next important decision is determining how other developers will "call" your polyfill, if at all. As you'll recall from Chapter 1, two of the important "sub types" of polyfills are the "opt in" and "drop in" types. If you're building a "drop in" polyfill, that essentially means that developers need only include a reference to your library in their projects. When your script is loaded, it automatically "activates" and goes to work. For these types of polyfills, the API of your library is straightforward and should match the API of the specified functionality you're emulating, as much as possible.
+Once your polyfill project is set-up, your next important decision is determining how other developers will "call" your polyfill, if at all. As you'll recall from <<polyfills_chapter_1>>, two of the important "sub types" of polyfills are the "opt in" and "drop in" types. If you're building a "drop in" polyfill, that essentially means that developers need only include a reference to your library in their projects. When your script is loaded, it automatically "activates" and goes to work. For these types of polyfills, the API of your library is straightforward and should match the API of the specified functionality you're emulating, as much as possible.
 
 If, on the other hand, you're building an "opt-in" polyfill, you'll need to provide some mechanism for developers to activate your library. How you choose to expose your polyfill to developers is up to you, but I recommend considering your audience, specifically what they are likely to expect and be comfortable with, as your design your API. For examples of how other libraries expose their "opt-in" APIs, you can check out examples on the https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-Browser-Polyfills[Modernizr Polyfill List]. Since the HTML5 Forms polyfill I'm building will leverage Kendo UI, I've chosen to build my polyfill as a custom Kendo UI Widget. Building my polyfill as a Kendo UI widget, I can use Kendo UI's ready made options for initializing my library. As a result, I gain an initialization API for my polyfill that's easy to use and familiar to developers, especially those already familiar with Kendo UI.
 
@@ -161,7 +161,7 @@ In addition to creating a roadmap and plan for your polyfill, you'll also want t
 
 === Adding Basic Features
 
-So we've got our basic polyfill skeleton in place, an API for calling it and a roadmap for which features we plan to add. Now it's time to get to work and add our first, real feature. Of course, if we're going to add features to our polyfill, we also need ways to test them out, don't we? In Chapter 4, I'll discuss setting up unit and cross-browser testing in-depth, but in the meantime, let's create a "sample" form that we can use to test out our library as we work on it. This sample will serve as a live demonstration and part of our docs when we publish our polyfill, so it's something you'll want to add to your projects even if you're also performing automated testing. Consider it a way to "show off" all your hard work to you potential users.
+So we've got our basic polyfill skeleton in place, an API for calling it and a roadmap for which features we plan to add. Now it's time to get to work and add our first, real feature. Of course, if we're going to add features to our polyfill, we also need ways to test them out, don't we? In <<polyfills_chapter_4>>, I'll discuss setting up unit and cross-browser testing in-depth, but in the meantime, let's create a "sample" form that we can use to test out our library as we work on it. This sample will serve as a live demonstration and part of our docs when we publish our polyfill, so it's something you'll want to add to your projects even if you're also performing automated testing. Consider it a way to "show off" all your hard work to you potential users.
 
 ==== Creating a Sample Form
 
@@ -376,7 +376,7 @@ When building a cross-browser polyfill, you'll need to consider how you wish to 
 . Require that the user perform feature detection before including or opting-in to your polyfill
 . Perform feature detection on behalf of (or in addition to) the user
 
-The first approach is common for polyfills that cover a limited feature-set, or those that are activated on a per-element or frequent basis. As http://modernizr.com[Modernizr] is widely used by developers, it's common to see polyfills used in a manner similar to <<EX1-3>> from Chapter 1. In this example, I'm  using Modernizr to query for CSS Border Radius support and, if it's not available in the user's browser, I'll opt-in to PIE for a given set of elements.
+The first approach is common for polyfills that cover a limited feature-set, or those that are activated on a per-element or frequent basis. As http://modernizr.com[Modernizr] is widely used by developers, it's common to see polyfills used in a manner similar to <<EX1-3>> from <<polyfills_chapter_1>>. In this example, I'm  using Modernizr to query for CSS Border Radius support and, if it's not available in the user's browser, I'll opt-in to PIE for a given set of elements.
 
 When building polyfills that are a bit more expansive, or even more "intrusive" in the functionality they provide, I recommend performing feature detection on the developer's behalf. In the case of HTML5 Forms, my polyfill is instantiated at the form-level, so asking the user to perform feature detection before calling my library would be an all-or-nothing proposition that would lead to my library being used for all HTML5 Forms features, or none of them at all. Instead, I'd rather provide the ability for the polyfill to selectively upgrade only those features *not* supported in the browser.
 
@@ -419,12 +419,12 @@ Once I add feature detection to my polyfill, the color type will only be "upgrad
 . As an opt-in polyfill, allowing developers to pass in options is easy.
 . Since the visual aspects of HTML5 Forms vary greatly from one browser to the next, even between browsers that *support* a new type, some developers may prefer the ability to author HTML5 forms markup while gaining a consistent look and feel for visual widgets, across browsers. It's downright "prollyfill-esque," but we'll get to that.
 
-If you recall that one of our "responsible polyfilling" principles in Chapter 2 is "mind (only) the gaps," you probably think I'm contradicting myself right now by adding override capabilities to my library. And while an argument can be made for leaving out a feature such as this, I believe that it's a feature that adds value to the developer and end user by providing the ability to apply a consistent form UI across browsers. As such, I think it's appropriate. What's more, since the feature I'm adding doesn't "break" the end-user experience on supporting browsers if the polyfill is removed--it merely changes the look and feel of HTML5 Forms fields--I don't see it as a violation of the principle. Bottom line: these are principles, not rules. As the polyfill developer, you get to decide which ones to follow and which to discard, with good reason. If consumers of your library don't agree, they'll let you know.
+If you recall that one of our "responsible polyfilling" principles in <<polyfills_chapter_2>> is "mind (only) the gaps," you probably think I'm contradicting myself right now by adding override capabilities to my library. And while an argument can be made for leaving out a feature such as this, I believe that it's a feature that adds value to the developer and end user by providing the ability to apply a consistent form UI across browsers. As such, I think it's appropriate. What's more, since the feature I'm adding doesn't "break" the end-user experience on supporting browsers if the polyfill is removed--it merely changes the look and feel of HTML5 Forms fields--I don't see it as a violation of the principle. Bottom line: these are principles, not rules. As the polyfill developer, you get to decide which ones to follow and which to discard, with good reason. If consumers of your library don't agree, they'll let you know.
 
 To add an "override" for visual elements to my polyfill, I can leverage the built-in +options+ object required by all Kendo UI widgets. In <<EX3-3>>, we used this object to specify the name of our widget, +Form+, which Kendo UI uses when adding our polyfill to the library namespace. I can use this object to specify any number of developer-defined features, and I'll use it now to add an +alwaysUseWidgets+ boolean value. Once I've added that option, I'll modify my +isFormTypeSupported+ method to check for this property. If +alwaysUseWidgets+ is true, I'll skip the feature detection test and return +false+. The full listing for our polyfill source including color type support and the override is shown in <<EX3-11>>.
 
 [[EX3-11]]
-.Polyfill source with color type support & an +alwaysUseWidgets+ option
+.Polyfill source with color type support & an alwaysUseWidgets option
 ====
 [source, js]
 ----
@@ -535,7 +535,7 @@ As detailed in the spec, the number type is basically an edit mask that ensures 
 Just as with the color type, Kendo UI Web has a http://demos.kendoui.com/web/numerictextbox/index.html[NumericTestBox] widget that functions as a nice edit mask control for floating point values, so we'll use this widget to polyfill non-supporting browsers. <<EX3-12>> contains the +number+ specific code that I'll add to +kendo.forms.js+, just after my color type code:
 
 [[EX3-12]]
-.Adding +number+ input type support to my Forms polyfill
+.Adding number input type support to my Forms polyfill
 ====
 [source, js]
 ----
@@ -686,7 +686,7 @@ This is much more complex than section for our color and number types, but there
 In Kendo UI, the equivalent widget to the range type is the http://demos.kendoui.com/web/slider/index.html[Slider] control, which has identical behavior, and supports all of the necessary attributes and rules specified above. To add support for the range type, I'll add another object literal to my +typeUpgrades+ array, as shown in <<EX3-16>>:
 
 [[EX3-16]]
-.Adding support for the +range+ input type 
+.Adding support for the range input type 
 ====
 [source, js]
 ----
@@ -740,7 +740,7 @@ This example is a simple polyfill for the +Array.forEach+ method. First, I'll ch
 
 === Polyfilling visual features with CSS
 
-With the input type refactor done, adding support for most of the remaining types (datetime, date, time, month, etc.) is pretty straightforward and not really worth covering in this book. There are a few quirks here and there with some of the date/time types, especially when it comes to the proper way to format date attribute values, but as long as you ensure you're http://www.w3.org/TR/html5/infrastructure.html#valid-global-date-and-time-string[properly handling date and time strings as covered in the spec], you should be fine. Your author failed to do so when he first started building his HTML5 Forms polyfill, so do take my word for it. Not coincidentally, it was this experience that lead yours truly to make "Read the Spec" the first principle of responsible polyfill development, as covered in Chapter 2.
+With the input type refactor done, adding support for most of the remaining types (datetime, date, time, month, etc.) is pretty straightforward and not really worth covering in this book. There are a few quirks here and there with some of the date/time types, especially when it comes to the proper way to format date attribute values, but as long as you ensure you're http://www.w3.org/TR/html5/infrastructure.html#valid-global-date-and-time-string[properly handling date and time strings as covered in the spec], you should be fine. Your author failed to do so when he first started building his HTML5 Forms polyfill, so do take my word for it. Not coincidentally, it was this experience that lead yours truly to make "Read the Spec" the first principle of responsible polyfill development, as covered in <<polyfills_chapter_2>>.
 
 Rather than covering the rest of the HTML5 input types explicitly, let's turn our focus to a different part of the HTML5 forms spec, and take a look at a scenario where adding polyfill support requires JavaScript and CSS to get the job done. While there are a few areas of the HTML5 spec that require us to delve into CSS, the +placeholder+ attribute is probably the best example of this type of feature. According to http://www.w3.org/TR/html5/forms.html#the-placeholder-attribute[the placeholder section of spec], this attribute "represents a short hint (a word or short phrase) intended to aid the user with data entry when the control has no value." In contrast to the +<label>+ element, the placeholder attribute is intended to contain hint text that is overlaid on or displayed inside of input controls, and which disappears when a user enters a value.
 
@@ -844,7 +844,7 @@ At this point, you might be wondering why we're switching gears to testing when 
 
 === Testing out your work across browsers
 
-Thus far, we've been "testing" out our polyfill by viewing the sample HTML form in modern browsers like Chome, Firefox, Opera, Safari and IE9+. If you're following along, you've probably even been testing using just a single browser, which tends to be my own manual testing workflow, as well. And while this strategy is fine when you're getting up and running and just trying to get things to work, eventually you're going to need to test in more than one browser. In fact, you're going to need to test in all of them, and often. In Chapter 4, I'll discuss some strategies for automating your cross-browser testing, but let's first look at a few ways that you can get started with cross-browser testing.
+Thus far, we've been "testing" out our polyfill by viewing the sample HTML form in modern browsers like Chome, Firefox, Opera, Safari and IE9+. If you're following along, you've probably even been testing using just a single browser, which tends to be my own manual testing workflow, as well. And while this strategy is fine when you're getting up and running and just trying to get things to work, eventually you're going to need to test in more than one browser. In fact, you're going to need to test in all of them, and often. In <<polyfills_chapter_4>>, I'll discuss some strategies for automating your cross-browser testing, but let's first look at a few ways that you can get started with cross-browser testing.
 
 ==== Installing the "Evergreen" Browsers
 
@@ -900,4 +900,4 @@ Another great option for cross-browser testing is http://ci.testling.com/[Testli
 
 In this chapter, we covered the basics of getting your polyfill project setup, and we also added basic features, did a simple refactor to improve polyfill maintenance, and we even added support for the +placeholder+ forms attribute in oldIE. We've come a long way already, and I hope you've learned a thing or two about putting those principles of responsible polyfill development into practice.
 
-As great as our progress has been so far, though, you might find yourself bothered by the fact that a) our polyfill isn't terribly easy to test and b) we don't really have a strategy in place for linting our code, performing minification, or doing anything else that a good project should do before releasing "production quality" code. In Chapter 4, we're going to cover all of these, and more.
+As great as our progress has been so far, though, you might find yourself bothered by the fact that a) our polyfill isn't terribly easy to test and b) we don't really have a strategy in place for linting our code, performing minification, or doing anything else that a good project should do before releasing "production quality" code. In <<polyfills_chapter_4>>, we're going to cover all of these, and more.

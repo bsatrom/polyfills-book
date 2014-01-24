@@ -5,7 +5,7 @@ Over the last two chapters, we've built a pretty nice cross-browser polyfill fro
 
 === Building for Performance
 
-In Chapter 2, I introduced several principles of "responsible polyfill" development. One of these was "Build with performance in mind." The spirit of this principle is to encourage polyfill developers to go beyond only delivering a functional equivalent to a native browser feature via their library, but to ensure that this equivalent is also as fast as it possibly can be. 
+In <<polyfills_chapter_2>>, I introduced several principles of "responsible polyfill" development. One of these was "Build with performance in mind." The spirit of this principle is to encourage polyfill developers to go beyond only delivering a functional equivalent to a native browser feature via their library, but to ensure that this equivalent is also as fast as it possibly can be. 
 
 This is a high bar, for sure. Your polyfill's performance baseline is the native rendering capabilities of the browser. Chances are, your library won't be able to match the speed of a native feature, and attempting to do so should not be your focus. Instead, you should instead strive to pass the front-end developers' _noticeability_ test. It's a simple test. If, after including your library in his or her application, a developer's app runs noticeably slower, you can expect that your polyfill will be dropped on the floor, quickly. That, or the developer will contact you and complain. Remember, polyfills are designed to emulate native browser capabilities, so you should consider it your solemn duty *not* to be noticed by developers, or end-users, for that matter. And while the _noticeability_ test itself is both far from scientific and something that varies from developer to developer, there are some strategies you can adopt to increase the chances that you'll pass this test:
 
@@ -21,10 +21,10 @@ First things first, if you want to build for performance, you need to be able to
 
 ==== 2. Don't Execute Code Too Early or Too Often
 
-The next strategy we can employ to pass the _noticeability_ test is to make sure that our polyfill doesn't execute any code it doesn't have to. This is especially important if your library is a drop-in or opt-in polyfill that performs it's own feature detection. For instance, our HTML5 Forms Polyfill needs to test for browser support of several input types. In Chapter 3, we perform feature detection as we loop over each input in a form, as shown in <<EX5-1>>. 
+The next strategy we can employ to pass the _noticeability_ test is to make sure that our polyfill doesn't execute any code it doesn't have to. This is especially important if your library is a drop-in or opt-in polyfill that performs it's own feature detection. For instance, our HTML5 Forms Polyfill needs to test for browser support of several input types. In <<polyfills_chapter_3>>, we perform feature detection as we loop over each input in a form, as shown in <<EX5-1>>. 
 
 [[EX5-1]]
-.Form Support with Feature Detection in +kendo.forms.js+
+.Form Support with Feature Detection in kendo.forms.js
 ====
 [source, js]
 ----
@@ -106,7 +106,7 @@ In this snippet, I create an array called +typeUpgrades+ to represent each form 
 The above approach works, but perhaps you noticed that we perform the feature detection test--creating an in-memory input element and setting it's type--each and every time. So, if I have twenty inputs on my form with the new "color" type, I'll perform this dance twenty times. This is unnecessary. The user's browser won't change in the middle of a page load, so there's really no reason for me to perform these feature tests each time through. Instead, it makes more sense to test each feature when my library loads, and cache the result of each test as a boolean that I can access later. <<EX5-2>> shows an example of this for my HTML5 Forms polyfill.
 
 [[EX5-2]]
-.Caching Feature Tests at First-Run in +kendo.forms.js+
+.Caching Feature Tests at First-Run in kendo.forms.js
 ====
 [source, js]
 ----
@@ -216,12 +216,12 @@ There's no science to this process, unfortunately, so I can't give you a bunch o
 
 Before we proceed with the next few performance tweaks, I want to share the code samples for the "complete" HTML5 Forms polyfill. Thus far, I've only included snippets for three new input types. However, to properly show the impact of the next couple of refactors, we need to look at the complete source. In the production version of my polyfill, the source is broken into three modules, or files, that I concatenate during my build process. Those files are:
 
-. +kendo.forms.types.js+ - Contains all of the input types supported by my polyfill, and the logic used to "upgrade" each to use a Kendo UI widget. The full source of this file can be viewed in <<EX5-5>>.
-. +kendo.forms.features.js+ - Feature detection tests for my polyfill. The full source of this file can be viewed in <<EX5-6>>.
-. +kendo.forms.js+ - The main source file for my polyfill. Contains widget initialization code and depends on +kendo.forms.types.js+ and +kendo.forms.features.js+. The full source of this file can be viewed in <<EX5-7>>.
+. kendo.forms.types.js - Contains all of the input types supported by my polyfill, and the logic used to "upgrade" each to use a Kendo UI widget. The full source of this file can be viewed in <<EX5-5>>.
+. kendo.forms.features.js - Feature detection tests for my polyfill. The full source of this file can be viewed in <<EX5-6>>.
+. +kendo.forms.js+ - The main source file for my polyfill. Contains widget initialization code and depends on +kendo.forms.types.js+ and kendo.forms.features.js. The full source of this file can be viewed in <<EX5-7>>.
 
 [[EX5-5]]
-.Contents of +kendo.forms.types.js+
+.Contents of kendo.forms.types.js
 ====
 [source, js]
 ----
@@ -383,7 +383,7 @@ Before we proceed with the next few performance tweaks, I want to share the code
 ====
 
 [[EX5-6]]
-.Contents of +kendo.forms.features.js+
+.Contents of kendo.forms.features.js
 ====
 [source, js]
 ----
@@ -429,7 +429,7 @@ Before we proceed with the next few performance tweaks, I want to share the code
 ====
 
 [[EX5-7]]
-.Contents of +kendo.forms.js+
+.Contents of kendo.forms.js
 ====
 [source, js]
 ----
@@ -544,7 +544,7 @@ In this case, +element+ represents the +<form>+ that I'm calling the Kendo UI Wi
 Further down the sample, you'll notice that I then access this variable three additional times, each time calling +form.find+ to further refine the list. In this case, even though the form itself is cached, jQuery has to return to the DOM to give me the collection of elements that match my +find+ selector. Since all of my +find+ operations are meant to operate on HTML input elements, I can make my cached variable a bit more targeted, which I've done in <<EX5-8>>. Note that I've clipped some code from the source that's not relevant to the current discussion.
 
 [[EX5-8]]
-.+kendo.forms.js+ polyfill main logic refactored to cache form inputs
+.kendo.forms.js polyfill main logic refactored to cache form inputs
 ====
 [source, js]
 ----
@@ -623,12 +623,12 @@ The final performance change I plan to make to my polyfill is a larger one, and 
 
 In <<EX5-7>> I'm looping over the +typeUpgrades+ collection defined in +kendo.forms.types+, and then separately looping over each input that matches that type. What's more, I'm looping over each input to determine if it needs separate widget styling (provided via CSS classes that Kendo UI uses to style "vanilla" inputs) and finally, looping over each element that contains a +placeholder+ attribute and upgrading those as well, if not supported by the browser.
 
-As we built up our polyfill in Chapter 3, each of these additions made sense, and they do fulfill the functional requirements of my library. And yet, it all seems so inefficient. This inefficiency was likely introduced as a result of my initial decision to loop first over input types and second over elements. At the time, this made sense because it allowed me to simultaneously upgrade all of the "color," "number" or "datetime" inputs on the form using jQuery's +each+ method. But as I add other features, it becomes clear that my library will need to operate on each input individually, upgrading its type, dealing with attribute support and even adding validation once I expand my library with that functionality.
+As we built up our polyfill in <<polyfills_chapter_3>>, each of these additions made sense, and they do fulfill the functional requirements of my library. And yet, it all seems so inefficient. This inefficiency was likely introduced as a result of my initial decision to loop first over input types and second over elements. At the time, this made sense because it allowed me to simultaneously upgrade all of the "color," "number" or "datetime" inputs on the form using jQuery's +each+ method. But as I add other features, it becomes clear that my library will need to operate on each input individually, upgrading its type, dealing with attribute support and even adding validation once I expand my library with that functionality.
 
 So, to shift from several loops to a single loop, I need to move a few things around. For starers, my +kendo.forms.types+ object needs to change. As illustrated in <<EX5-9>>, I've changed the object from an array of type objects, to a single object of key-value pairs. This will make it much easier for me to work with each type. You'll also notice that I moved some of the "upgrade" logic for vanilla inputs and buttons out of my main file and into this object, as well.
 
 [[EX5-9]]
-.Refactored +kendo.forms.types+ source
+.Refactored kendo.forms.types source
 ====
 [source, js]
 ----
@@ -672,7 +672,7 @@ So, to shift from several loops to a single loop, I need to move a few things ar
 Next up, I'll make some changes to the core widget logic for my polyfill, as illustrated in <<EX5-10>>. Not only have I collapsed things down into a single loop (+inputs.each()+), but I've also cleaned up my +init+ method and moved some of the core logic into helper methods (+shouldUpgradeType+, +upgradeInputType+, +upgradePlaceholder+). 
 
 [[EX5-10]]
-.+kendo.forms.js+ refactored to use a single loop
+.kendo.forms.js refactored to use a single loop
 ====
 [source, js]
 ----
@@ -741,7 +741,7 @@ I think you'll agree that this is much cleaner, but is it any faster? For that m
 
 One of the nice things about JSPerf is that, with a little bit of setup, it's easy to do side-by-side testing of revisions to your code. Along those lines, I created a new JSPerf test that includes all of the tweaks we've made in this chapter, and you can http://jsperf.com/kendo-ui-forms-performance/5[view it online], if you so desire. You can also append +/edit+ to the end of the url if you want to see how the test was set-up, or make edits of your own. 
 
-For this test, I included the same sample Form that we created in Chapter 3, and used JSPerf's set-up capability to load a different version of my polyfill source, depending on the individual test case. All-told, I created four tests:
+For this test, I included the same sample Form that we created in <<polyfills_chapter_3>>, and used JSPerf's set-up capability to load a different version of my polyfill source, depending on the individual test case. All-told, I created four tests:
 
 . A baseline Test, before any changes were made
 . A test for the element caching refactor
@@ -772,7 +772,7 @@ Now that we've talked about general performance testing, I'll close this chapter
 
 Regardless of your build and automated testing workflow, there's no substitute for hands-on actual testing with certain browsers, especially oldIE. While it's still important to test IE 7 and 8 for most kinds of sites and apps, it's critically important when you are building polyfills. More often than not, IE 7 and 8 will need the functionality your polyfill provides, so you'll want to test on these browsers early and often.
 
-After making each of the performance tweaks listed in this chapter, I was sure to run all of my automated tests with the +grunt test+ and +grunt x-test+ commands I set up in Chapter 4. Everything looks great in the latest browsers, but when I open up a VM with IE 8 or IE 7, I see something that looks more like <<EX5-12>>.
+After making each of the performance tweaks listed in this chapter, I was sure to run all of my automated tests with the +grunt test+ and +grunt x-test+ commands I set up in <<polyfills_chapter_4>>. Everything looks great in the latest browsers, but when I open up a VM with IE 8 or IE 7, I see something that looks more like <<EX5-12>>.
 
 [[EX5-12]]
 .Testing my polyfill with IE 8
@@ -781,7 +781,7 @@ image::images/bdpf_0504.png[]
 In spite of all of my testing, I still have a handful of failing tests in IE 7 and 8. Digging deeper, however, I see that they're all Date- and Time-related tests, which suggests a common cause for all of these. Let's take a look at the first failing test, which is listed in <<EX5-13>>:
 
 [[EX5-13]]
-.Datetime Jasmine test block in +fixtures.js+
+.Datetime Jasmine test block in fixtures.js
 ====
 [source, js]
 ----
@@ -819,7 +819,7 @@ describe('DateTime and datetime-local type Support', function() {
 This test, which I've clipped for readability, is designed to make sure that the Kendo UI DateTime widget is properly initialized with the date input's +value+ attribute. In IE 7 and 8, this test fails at the second +expect+. Upon further investigation, it appears that the +dateTimeObject+ variable is null because my DateTime widget wasn't properly initialized. That means that the problem is in my "upgrade" function, which I've included in <<EX5-14>>, below.
 
 [[EX5-14]]
-.DateTime upgrade logic added to +kendo.forms.features.js+
+.DateTime upgrade logic added to kendo.forms.features.js
 ====
 [source, js]
 ----
@@ -855,7 +855,7 @@ The issue, it would seem, is with the +getDateTimeDefaults+ helper function, whi
 The answer is deceptively simple: IE 7 and 8 don't support the ISO Date standard when parsing date strings. Welcome to the world of cross-browser polyfill development, my friends! Thankfully, it's a relatively simple fix. If I wanted to take an external dependency, I could include a library like http://moment.js[Moment.js] to handle the hassle of date parsing. I can also leverage built-in features of Kendo UI or jQuery to help. For the sake of completeness, however, in this case, I'm going to add my own fix. First, I'll add a new +creteDateFromInput+ method to the +kendo.forms.types.js+ file, as shown in <<EX5-15>>:
 
 [[EX5-15]]
-.Handling ISO and non-ISO date formats for oldIE in +kend.forms.features.js+
+.Handling ISO and non-ISO date formats for oldIE in kend.forms.features.js
 ====
 [source, js]
 ----
@@ -887,7 +887,7 @@ This simplistic solution takes a string value, a defaultDate and an optional pre
 Next, I can modify my +getDateTimeDefaults+ function to use this  new function:
 
 [source, js]
-.Refactored +getDateTimeDefaults+ method in +kendo.forms.features.js+
+.Refactored +getDateTimeDefaults+ method in kendo.forms.features.js
 ----
 function getDateTimeDefaults(input) {
   return {
@@ -929,6 +929,6 @@ Unfortunately, it's not possible to use Karma to automatically test mobile brows
 
 === Summary
 
-Over the last three chapters, we've discussed many of the ins and outs of building your own cross-browser polyfills. In Chapter 3 we explored some practices for project structure and explored the ins and outs of adding initial functionality and a bit of refactoring. Then, in Chapter 4, we configured a solid build and test environment which allowed us to test our polyfill in the browser and via command-line tools like Grunt, Jasmine and Karma. Finally we looked at performance and edge-case tuning, and explored some examples using JSPerf to fine-tune the speed of our polyfill. Collectively, you should have a solid foundation to use for building your own polyfills, and I can't wait to see what you'll come up with!
+Over the last three chapters, we've discussed many of the ins and outs of building your own cross-browser polyfills. In <<polyfills_chapter_3>> we explored some practices for project structure and explored the ins and outs of adding initial functionality and a bit of refactoring. Then, in <<polyfills_chapter_4>>, we configured a solid build and test environment which allowed us to test our polyfill in the browser and via command-line tools like Grunt, Jasmine and Karma. Finally we looked at performance and edge-case tuning, and explored some examples using JSPerf to fine-tune the speed of our polyfill. Collectively, you should have a solid foundation to use for building your own polyfills, and I can't wait to see what you'll come up with!
 
 Next, we'll turn the discussion to future polyfilling, or the practice of adding new APIs and functionality to our browsers, for the purpose of vetting and testing out what's next for the web platform.
