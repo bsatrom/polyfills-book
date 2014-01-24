@@ -17,6 +17,4 @@ include::Chapter-6.asciidoc[]
 
 include::Chapter-7.asciidoc[]
 
-include::index.asciidoc[]
-
 include::colo.asciidoc[]
