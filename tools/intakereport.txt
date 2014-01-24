@@ -1,0 +1,82 @@
+Building Polyfills, 1E / 9781449370732
+RT # 175210
+
+Stylesheet: animal
+Toolchain: Atlas/csspdf
+
+Atlas URL: http://ano-atlas2.herokuapp.com/books/1234000001637
+
+Incoming format: Asciidoc
+Outgoing format: Asciidoc
+
+Preliminary pagecount (without figures): xii + 142 = 154  
+
+
+Resources
+=========
+
+** Intake PDFs: 
+   (Git repo) pdf/drafts/intake.pdf
+   (Git repo) pdf/drafts/intake_with_remarks.pdf
+
+** Figs: Illustrations is still working on the figs. 
+   24 total. (0 are informal; 0 are inline.)
+
+   Once the figs are processed on /work, you'll need to add them to the book's repo in Git.
+
+** Intake Report:
+   (Git repo) tools/intakereport.txt
+
+** MS Snapshot:
+    To view the submitted files, you'll need to checkout the git tag named 'manuscript_to_prod' 
+    by running the following command in your checkout:
+    
+    $ git checkout manuscript_to_prod
+    
+    This will temporarily switch the files in your repo to the state they were in when the manuscript_to_prod tag 
+    was created. 
+    To switch the files back to the current state, run:
+    
+    $ git checkout master
+  
+  
+Notes from Tools:
+=================
+
+** Syntax highlighting: applied to 98 out of 98 code listings.
+
+** Please let Tools know ASAP if there are any other global problems for which we can help automate a fix.
+
+** When you create a pdf you'll see the following error:
+
+Request for title of element with no title: blockquote (id="EX2-1")
+Request for title of element with no title: blockquote (id="EX2-1")
+
+The author tries to use an xref to reference several blocks of text and lists styled as a quote. That won't work, so it would probably be best to work with the author for an alternative solution or to delete the xref altogether.
+
+Notes from Dan:
+==================
+
+Ready for intake.
+
+Author name is missing from title page.
+
+[Fixed. --Tools]
+
+Foreword will be coming later.
+
+Print needed at Fluent, so FTP should be 2/14 (ideally). Could stretch to 2/20, but better to make 2/14.
+
+*Hard-coded xrefs to chapters! Booooooo.
+
+[Fixed. --Tools]
+
+Spend a little time breaking chapter headings. Some look pretty bad, see Chapter 3.
+
+==================
+
+Please let me know about any other issues.
+
+Thanks,
+Chris
+
