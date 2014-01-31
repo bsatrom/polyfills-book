@@ -880,10 +880,10 @@ While many of the names above are pretty straightforward, "Chrome Canary" isn't 
 
 ==== Testing in oldIE
 
-In addition to testing out your polyfill in the latest version of all of the browsers above--not to mention mobile browsers if you're supporting those--I highly recommend hands-on testing with Internet Explorer 6, 7 and 8. If you're a Windows user, you might be tempted to use the "Browser Mode" and "Document Mode" features in IE's F12 Developer Tools to simulate IE 7 and 8. I humbly ask that you resist that temptation but for the simplest of tests. These modes do a decent job of _simulating_ the behaviors of oldIE, sure, but they aren't foolproof. For example, <<EX3-21>> and <<EX3-22>> illustrate the differences I see when running my HTML5 Forms polyfill test suite (which I'll introduce in the next chapter) in IE 10 with simulation, and in IE 8. It's the same code and same test suite for both, and even though Document Mode is providing me an IE 8 experience, in theory, in practice you'll find that this is not always the case.
+In addition to testing out your polyfill in the latest version of all of the browsers above--not to mention mobile browsers if you're supporting those--I highly recommend hands-on testing with Internet Explorer 6, 7 and 8. If you're a Windows user, you might be tempted to use the "Browser Mode" and "Document Mode" features in IE's F12 Developer Tools to simulate IE 7 and 8. I humbly ask that you resist that temptation but for the simplest of tests. These modes do a decent job of _simulating_ the behaviors of oldIE, sure, but they aren't foolproof. For example, <<EX3-21>> and <<EX3-22>> illustrate the differences I see when running my HTML5 Forms polyfill test suite (which I'll introduce in the next chapter) in IE 11, with simulation, and in IE 8. It's the same code and same test suite for both, and even though Document Mode is providing me an IE 8 experience, in theory, in practice you'll find that this is not always the case.
 
 [[EX3-21]]
-.Testing IE8 Via IE 10's Browser Mode simulator
+.Testing IE8 Via IE 11's Browser Mode simulator
 image::images/bdpf_0306.png[]
 
 [[EX3-22]]
