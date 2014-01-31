@@ -1,80 +1,95 @@
 [[polyfills_chapter_3]]
-== Building Your First Polyfill, Part 1 - Getting Started
+== Building Your First Polyfill, Part 1: Getting Started
 
-Over the last two chapters, we've covered why polyfilling is still important, as well as some principles for responsible polyfill development. In this chapter, I'm going to walk through some practical steps for building cross-browser polyfills via an actual, real-world project that I created. We won't go through every line of code, or every excruciating detail, but I will introduce you to some practical examples and considerations that you'll want to keep in mind for your own polyfill development, no matter the web platform feature being targeted. We'll start with a discussion on project setup and structure before diving into setting up your API and deciding what you plan to build and not to build. Then we'll explore adding basic features and refactoring your polyfill as you expand scope over time. We'll then wrap up the chapter with a look at manual cross-browser testing, and some tips for streamlining your cross-browser testing workflow. 
+Over the last two chapters, we've covered why polyfilling is still important, as well as some principles for responsible polyfill development. In this chapter, I'm going to walk through some practical steps for building cross-browser polyfills via an actual, real-world project that I created. We won't go through every line of code or every excruciating detail, but I will introduce you to some practical examples and considerations that you'll want to keep in mind for your own polyfill development, no matter the web platform feature being targeted. We'll start with a discussion on project setup and structure before diving into setting up your API and deciding what you plan to build and not to build. Then we'll explore adding basic features and refactoring your polyfill as you expand scope over time. We'll then wrap up the chapter with a look at manual cross-browser testing, and some tips for streamlining your cross-browser testing workflow. 
 
 === The HTML5 Forms Polyfill
 
-First, let's take a look at our candidate library for the next two chapters: an HTML5 Forms polyfill. When I first set out to write this book, I considered a lot of different options for a guinea pig polyfill to use. I wanted to target something that was reasonably complex, but straightforward enough to introduce in bits and pieces, via text. I also wanted to choose a technology that’s implementation status across browsers was more than just "supported in everything but IE." And even though IE will factor into some of the hairier aspects of our polyfill development, I wanted to walk through an example with quirks in as many browsers as possible. For those purposes, there’s no better technology to attempt to polyfill than "HTML5 Forms."
+First, let's take a look at our candidate library for the next two chapters: an HTML5 Forms polyfill. When I first set out to write this book, I considered a lot of different options for a guinea pig polyfill to use. I wanted to target something that was reasonably complex, but straightforward enough to introduce in bits and pieces, via text. I also wanted to choose a technology that’s implementation status across browsers was more than just "supported in everything but IE." And even though IE will factor into some of the hairier aspects of our polyfill development, I wanted to walk through an example with quirks in as many browsers as possible. For those purposes, there’s no better technology to attempt to polyfill than HTML5 Forms.
 
-What we know of today as "http://www.w3.org/TR/2011/WD-html5-20110525/forms.html[HTML5 forms]" was actually the first technology to be proposed under the umbrella of what eventually became "HTML5." First introduced outside of the WC3 as "Web Forms 2.0" by a consortium of browser vendors that included Google, Mozilla, Opera Software and Apple, this proposal arrived at a time when the W3C was still pouring much of their effort into the now-defunct XHTML 2.0 specification. As an outflow of "Web Forms 2.0," these vendors formed the Web Hypertext Application Technology Working Group (WHATWG), a sibling standards body to the W3C that still exists today.
+What we know of today as "HTML5 Forms" was actually the first technology to be proposed under the umbrella of what eventually became HTML5. First introduced outside the W3C as Web Forms 2.0 by a consortium of browser vendors that included Google, Mozilla, Opera Software, and Apple, this proposal arrived at a time when the W3C was still pouring much of its effort into the now-defunct XHTML 2.0 specification. As an outflow of Web Forms 2.0, these vendors formed the Web Hypertext Application Technology Working Group (WHATWG), a sibling standards body to the W3C that still exists today.
 
-And while it is outside of the scope of this book to discuss the politics of HTML5, various collected standards and competing standards bodies, it is important to note that HTML5 forms has not only been around a while, but it’s still one of the most hotly-debated aspects of the HTML5 spec. While certain aspects of the forms spec have near universal support (i.e. forms constraint validation), some of the more visual aspects of the spec—new input types like number, color and datetime—have yet to be consistently implemented across all browsers, as illustrated in <<EX3-1a>>. What’s more, in some cases, for those browsers that do support certain types, the specifics of said support are often inconsistent from one implementation to the next. This means that you, the developer, might not get exactly the behavior you expect, every time, in every browser.
+And while it is outside of the scope of this book to discuss the politics of HTML5, various collected standards, and competing standards bodies, it is important to note that HTML5 Forms has not only been around a while, but it’s still one of the most hotly debated aspects of the HTML5 spec. While certain aspects of the Forms spec have near universal support (for example, forms constraint validation), some of the more visual aspects of the spec (new input types like number, color, and datetime) have yet to be consistently implemented across all browsers, as illustrated in <<EX3-1a>>. What’s more, in some cases, for those browsers that do support certain types, the specifics of said support are often inconsistent from one implementation to the next. This means that you, the developer, might not get exactly the behavior you expect, every time, in every browser.
 
 [[EX3-1a]]
-.Color Inputs viewed in Opera, Chrome and Firefox
+.Color inputs viewed in Opera, Chrome, and Firefox
 image::images/bdpf_0301.png[]
 
-HTML5 Forms is a minefield, and I can't think of a better area in which to venture as a polyfill developer. It’s a bit hairy, for sure, but this area of the spec if sufficiently complex enough to expose many of the polyfilling practices that I introduced in the last chapter.
+HTML5 Forms is a minefield, and I can't think of a better area in which to venture as a polyfill developer. It’s a bit hairy, for sure, but this area of the spec is sufficiently complex enough to expose many of the polyfilling practices that I introduced in the preceding chapter.
 
-In addition to targeting HTML5 Forms with my polyfill, I've chosen to leverage http://kendoui.com[Kendo UI] to provide much of the functionality that my polyfill will deliver to older browsers, from visual elements like Color and Date pickers, to key framework-level features like form validation. All of the UI widgets and framework features I need for my polyfill are available in the Open Source version of Kendo UI, which is available from http://www.kendoui.com[its website]. That said, if you're following along and prefer to instead use a UI library like http://jqueryui.com[jQuery UI], you're welcome to do so. In fact, I've built a version of this polyfill using jQuery UI, and you can http://www.github.com/bsatrom/jquery-ui-forms[find it on GitHub]. Very little of what I cover in this chapter is dependent upon and applicable to only Kendo UI. 
+In addition to targeting HTML5 Forms with my polyfill, I've chosen to leverage http://kendoui.com[Kendo UI] to provide much of the functionality that my polyfill will deliver to older browsers, from visual elements like color and date pickers, to key framework-level features like form validation. All of the UI widgets and framework features I need for my polyfill are available in the open source version of Kendo UI, which is available from http://www.kendoui.com[its website]. That said, if you're following along and prefer to instead use a UI library like http://jqueryui.com[jQuery UI], you're welcome to do so. In fact, I've built a version of this polyfill using jQuery UI, and you can http://bit.ly/ui-forms[find it on GitHub]. Very little of what I cover in this chapter is dependent upon and applicable to only Kendo UI. 
 
 ==== Why Use a Library?
 
-At this point, you may be asking yourself why I've choosen to use a library like jQuery UI or Kendo UI at all. Why not just build the UI for each input type from scratch? It's a valid question, and in fact there are several great HTML5 Forms libraries out there that take this approach. If you're interested in taking a look at the code required to deliver UI widgets from scratch, I encourage you to check one of these out.
+At this point, you may be asking yourself why I've chosen to use a library like jQuery UI or Kendo UI at all. Why not just build the UI for each input type from scratch? It's a valid question, and in fact there are several great HTML5 Forms libraries out there that take this approach. If you're interested in taking a look at the code required to deliver UI widgets from scratch, I encourage you to check one of these out.
 
 In our case, however, I've chosen to use a UI library because it allows me to focus on the process of building polyfills, which is, after all, what this book is about. By starting with a library that I can plug in, I'm able to focus on tips and tricks that are common to all types of polyfills, without getting bogged down in the very complex specifics of building form UI by hand.
 
 [NOTE]
 ====
-The HTML5 Forms Polyfill we will be building over the next three chapters can be found in its current form online at https://github.com/kendo-labs/kendo-ui-forms[https://github.com/kendo-labs/kendo-ui-forms]. The project is actively maintained, and you're welcome to view the source after reading this book if you want to dig deeper into any specifics that I was unable to cover here.
+The HTML5 Forms polyfill we will be building over the next three chapters can be found in its current form online on http://bit.ly/kendo-ui[GitHub]. The project is actively maintained, and you're welcome to view the source after reading this book if you want to dig deeper into any specifics that I was unable to cover here.
 ====
 
-Finally, it's worth mentioning that I've decided to build my HTML5 Forms polyfill as an "opt-in" polyfill, as opposed to a "drop-in" library. While it's certainly possible to do the latter, I think the former is a better approach, in my case, for a couple of reasons. For starters, since I'm using Kendo UI to power my widgets, and Kendo UI requires explicit widget initialization, I feel that it's appropriate for me to do the same with my polyfill and require that the developer "activate" the capabilities of my polyfill. I've also chosen to pursue an "opt-in" approach because the HTML5 Forms spec is so broad and complex that I'm not sure if my library will ever be able to support every single corner of the spec to the letter. By taking a "opt-in" approach, and documenting what I do and don't support, I can make sure that the developer knows what they are buying into.
+Finally, it's worth mentioning that I've decided to build my HTML5 Forms polyfill as an opt-in polyfill, as opposed to a drop-in library. While it's certainly possible to do the latter, I think the former is a better approach, in my case, for a couple of reasons. For starters, since I'm using Kendo UI to power my widgets, and Kendo UI requires explicit widget initialization, I feel that it's appropriate for me to do the same with my polyfill and require that the developer activate the capabilities of my polyfill. I've also chosen to pursue an opt-in approach because the HTML5 Forms spec is so broad and complex that I'm not sure if my library will ever be able to support every single corner of the spec to the letter. By taking an opt-in approach, and documenting what I do and don't support, I can make sure that the developers know what they are buying into.
 
-That said, even though my polyfill is opt-in, it doesn't mean that I can't future proof my library. Just as with a drop-in polyfill, my goal is to provide a polyfill that can be easily removed (along with a line or two of code) when all browsers support the HTML5 Forms spec.
+That said, even though my polyfill is opt-in, it doesn't mean that I can't future-proof my library. Just as with a drop-in polyfill, my goal is to provide a polyfill that can be easily removed (along with a line or two of code) when all browsers support the HTML5 Forms spec.
 
 === Setting Up Your Polyfill Project
 
-Regardless of the technology you choose to target with your polyfill, the two most important choices that you can make early on are: 1) which source control solution you plan to use and 2) what your initial project structure should look like. Sure, you can start with "Source Control by Dropbox" at the beginning and name your polyfill +mylib.js+ if you're just itching to get started, but a little bit of foresight and planning is, in my opinion, just as important to polyfill development as the code you write. As such, I'll use the next few sections to talk about these early considerations.
+Regardless of the technology you choose to target with your polyfill, the two most important choices that you can make early on are: 
+
+* Which source control solution you plan to use 
+
+* What your initial project structure will look like. 
+
+Sure, you can start with "Source Control by Dropbox" at the beginning and name your polyfill +mylib.js+ if you're just itching to get started, but a little bit of foresight and planning is, in my opinion, just as important to polyfill development as the code you write. As such, I'll use the next few sections to talk about these early considerations.
 
 ==== Choosing a Source Control Solution
 
-The first step is to think about how and where you’ll want to host your code so that: a) you’ve got a backup and full project history in case things go wrong; and, b) other developers can find, leverage and contribute to your project. For the first part, you’ll want to choose a source control solution that’s open-source and widely-used. Two examples are http://git-scm.com/[Git] and http://mercurial.selenic.com/[Mercurial]. These two systems have a similar command-line syntax for working with files and code repositories, so some developers will be comfortable working with either. That said, Git is far and away the most popular source control system in use today, so you’ll reach a larger body of potential collaborators by choosing that system.
+The first step is to think about how and where you’ll want to host your code so that you’ve got a backup and full project history in case things go wrong so other developers can find, leverage, and contribute to your project. For the first part, you’ll want to choose a source control solution that’s open source and widely used. Two examples are http://git-scm.com/[Git] and http://mercurial.selenic.com/[Mercurial]. These two systems have a similar command-line syntax for working with files and code repositories, so some developers will be comfortable working with either. That said, Git is far and away the most popular source control system in use today, so you’ll reach a larger body of potential collaborators by choosing that system.
 
-When paired with a solid code-sharing site, your source control solution also gives you a platform for making your polyfill available to the world. Not only can you store your polyfill source and history in these sites, but you can make that source and history available for others, which is hopefully your goal as a polyfill developer. Just as Git is the most popular source control option around today, https://github.com/[GitHub] is the most popular option for hosting and collaborating on all manner of git-based open-source software projects. Other options worth considering, if GitHub is not your cup of tea, are http://www.bitbucket.com/[BitBucket]--which allows you to host both Git and Mercurial projects—and Microsoft’s http://www.codeplex.com/[CodePlex]--which supports Mercurial projects, only. For the examples in this book, I’ve chosen Git as my source control solution and GitHub for code sharing and distribution.
+When paired with a solid code-sharing site, your source control solution also gives you a platform for making your polyfill available to the world. You can not only store your polyfill source and history in these sites, but also make that source and history available for others, which is hopefully your goal as a polyfill developer. Just as Git is the most popular source control option around today, https://github.com/[GitHub] is the most popular option for hosting and collaborating on all manner of Git-based open source software projects. Other options worth considering, if GitHub is not your cup of tea, are http://www.bitbucket.com/[Bitbucket]&#x00D7;which allows you to host both Git and Mercurial projects, and Microsoft’s http://www.codeplex.com/[CodePlex]&#x00D7;which supports Mercurial projects only. For the examples in this book, I’ve chosen Git as my source control solution and GitHub for code sharing and distribution.
 
-==== Setting up the Initial Project Structure
+==== Setting Up the Initial Project Structure
 
-Once I've chosen a source control solution, I'm ready to set up my project. I'll start by creating a new folder for my polyfill, called +kendo-ui-forms+ in my usual development folder on my machine. Then, I'll open a terminal window in that directory and initialize a new GitHub repo by running the **`git init`** command. Once you’ve initialized your own local git repository, you’ll want to connect it to the remote repository that will be hosting your project online, which you can do by running the following command: **`git remote add git@github.com:_++yourusername++_/_++your-project-name++s_.git`**. If you're not familiar with setting up a new remote repository, head over to http://www.github.com[GitHub], create a new repository for your project and follow the on-screen instructions.
+Once I've chosen a source control solution, I'm ready to set up my project. I'll start by creating a new folder for my polyfill, called +kendo-ui-forms+ in my usual development folder on my machine. Then, I'll open a terminal window in that directory and initialize a new GitHub repo by running the **`git init`** command. Once you’ve initialized your own local Git repository, you’ll want to connect it to the remote repository that will be hosting your project online, which you can do by running the following command: **`git remote add git@github.com:_++yourusername++_/_++your-project-name++s_.git`**. If you're not familiar with setting up a new remote repository, head over to http://www.github.com[GitHub], create a new repository for your project, and follow the on-screen instructions.
 
-With that done, your local and remote repositories will be all set-up and it will be time to add some essential project files. Here's the basic project structure I recommend for most open-source polyfills (assuming a view from the folder root):
+With that done, your local and remote repositories will be all set up, and it will be time to add some essential project files. Here's the basic project structure I recommend for most open source polyfills (assuming a view from the folder root):
 
-- +dist/+ - The minified and concatenated files you plan to distribute; i.e. the "binaries" for your polyfill
-- +lib/+ - Any 3rd-party libraries that your Polyfill depends on (jQuery, Underscore, etc.)
-- +sample/+ - Sample and example code for the polyfill
-- +spec/+ - Home for your unit tests, which we'll discuss in <<polyfills_chapter_4>>.
-- +src/[js,css]+ - Source JavaScript and CSS files
-- +.gitignore+ - A list of files for Git to ignore when found in your project. GitHub can create one of these files for you when creating a new project. If you go that route, select the "Node" template.
-- +CHANGELOG.md+ - A laundry-list of minor and breaking changes for each version of your library. 
-- +CONTRIBUTING.md+ - Essential if you plan to accept contributions for your project. 
-- +README.md+ - the readme for your project. GitHub automatically treats this file as the main entry point when anyone visits your project. It should describe the purpose and goals of the polyfill--as I discussed in <<polyfills_chapter_1>>--features of the project, a roadmap for the projects, installation and usage instructions and anything else you think might be useful to consumers of or collaborators on your polyfill.
-- +LICENSE.md+ - Every open-source project needs a license. Which license you choose is up to you, but permissive licenses, such as MIT and Apache 2.0 will garner more interest and, possibly, participation from other developers. GitHub can also generate this file for you, based on the license chosen at project creation. 
++dist/+:: The minified and concatenated files you plan to distribute (the "binaries" for your polyfill).
+
++lib/+:: Any third party libraries that your polyfill depends on (jQuery, Underscore).
+
++sample/+:: Sample and example code for the polyfill.
+
++spec/+:: Home for your unit tests, which we'll discuss in <<polyfills_chapter_4>>.
+
++src/[js,css]+:: Source JavaScript and CSS files.
+
++.gitignore+:: A list of files for Git to ignore when found in your project. GitHub can create one of these files for you when creating a new project. If you go that route, select the Node template.
+
++CHANGELOG.md+:: A laundry list of minor and breaking changes for each version of your library. 
+
++CONTRIBUTING.md+:: Essential if you plan to accept contributions for your project. 
+
++README.md+:: The readme file for your project. GitHub automatically treats this file as the main entry point when anyone visits your project. It should describe the purpose and goals of the polyfill--as I discussed in <<polyfills_chapter_1>>&#x00D7;features of the project, a road map for the projects, installation and usage instructions, and anything else you think might be useful to consumers of or collaborators on your polyfill.
+
++LICENSE.md+:: Every open source project needs a license. Which license you choose is up to you, but permissive licenses, such as MIT and Apache 2.0, will garner more interest and, possibly, participation from other developers. GitHub can also generate this file for you, based on the license chosen at project creation. 
 
 [NOTE]
 ====
-Though I did take the LSAT once upon a time, please note that I am not an attorney, nor do I play one on the internet. As such, my opinions on licensing should not be confused for legal expertise. Your best bet is to consult with a legal expert before choosing an open source license. You can also visit http://choosealicense.com/[ChooseALicense.com] for more information about the dizzying array of open-source licenses available. But still, you should talk to a lawyer if you want an expert legal perspective in your choice of license. 
+Though I did take the LSAT once upon a time, please note that I am not an attorney, nor do I play one on the Internet. As such, my opinions on licensing should not be confused for legal expertise. Your best bet is to consult with a legal expert before choosing an open source license. You can also visit http://choosealicense.com/[Choose A License] for more information about the dizzying array of open source licenses available. But still, you should talk to a lawyer if you want an expert legal perspective in your choice of license. 
 ====
 
 === Specifying the API
 
-Once your polyfill project is set-up, your next important decision is determining how other developers will "call" your polyfill, if at all. As you'll recall from <<polyfills_chapter_1>>, two of the important "sub types" of polyfills are the "opt in" and "drop in" types. If you're building a "drop in" polyfill, that essentially means that developers need only include a reference to your library in their projects. When your script is loaded, it automatically "activates" and goes to work. For these types of polyfills, the API of your library is straightforward and should match the API of the specified functionality you're emulating, as much as possible.
+Once your polyfill project is set up, your next important decision is determining how other developers will "call" your polyfill, if at all. As you'll recall from <<polyfills_chapter_1>>, two of the important subtypes of polyfills are the opt-in and drop-in types. If you're building a drop-in polyfill, that essentially means that developers need only include a reference to your library in their projects. When your script is loaded, it automatically activates and goes to work. For these types of polyfills, the API of your library is straightforward and should match the API of the specified functionality you're emulating, as much as possible.
 
-If, on the other hand, you're building an "opt-in" polyfill, you'll need to provide some mechanism for developers to activate your library. How you choose to expose your polyfill to developers is up to you, but I recommend considering your audience, specifically what they are likely to expect and be comfortable with, as your design your API. For examples of how other libraries expose their "opt-in" APIs, you can check out examples on the https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-Browser-Polyfills[Modernizr Polyfill List]. Since the HTML5 Forms polyfill I'm building will leverage Kendo UI, I've chosen to build my polyfill as a custom Kendo UI Widget. Building my polyfill as a Kendo UI widget, I can use Kendo UI's ready made options for initializing my library. As a result, I gain an initialization API for my polyfill that's easy to use and familiar to developers, especially those already familiar with Kendo UI.
+If, on the other hand, you're building an opt-in polyfill, you'll need to provide some mechanism for developers to activate your library. How you choose to expose your polyfill to developers is up to you, but I recommend considering your audience, specifically what they are likely to expect and be comfortable with, as you design your API. For examples of how other libraries expose their opt-in APIs, you can check out examples on the http://bit.ly/mod-list[Modernizr Polyfill List]. Since the HTML5 Forms polyfill I'm building will leverage Kendo UI, I've chosen to build my polyfill as a custom Kendo UI widget. Building my polyfill as a Kendo UI widget, I can use Kendo UI's ready-made options for initializing my library. As a result, I gain an initialization API for my polyfill that's easy to use and familiar to developers, especially those already familiar with Kendo UI.
 
 ==== Initializing an Opt-In Polyfill
 
-Kendo UI allows developers to initialize widgets in one of two ways. I can use jQuery-style widget initialization, as illustrated in <<EX3-1>>, or I can use a declarative-style declaration, which hinges on placing +data-role+ attributes on relevant elements in my markup. This approach is illustrated in <<EX3-2>>. Note that the next few examples assume the inclusion jQuery, Kendo UI JavaScript and Kendo UI CSS in the page.
+Kendo UI allows developers to initialize widgets in one of two ways. I can use jQuery-style widget initialization, as illustrated in <<EX3-1>>, or I can use a declarative-style declaration, which hinges on placing +data-role+ attributes on relevant elements in my markup. This approach is illustrated in <<EX3-2>>. Note that the next few examples assume the inclusion of jQuery, Kendo UI JavaScript, and Kendo UI CSS in the page.
 
 [[EX3-1]]
 .Initializing my Forms polyfill using JavaScript
@@ -107,7 +122,7 @@ Kendo UI allows developers to initialize widgets in one of two ways. I can use j
 To support both of these approaches in my polyfill, I'll need to follow Kendo UI's recommended approach for creating custom widgets. First, I'll create the core source file for my polyfill in the +src/+ folder for my project. I'll call it +kendo.forms.js+, which follows a naming convention similar to other Kendo UI source files. Then, in my new source file, I'll include the code in <<EX3-3>>.
 
 [[EX3-3]]
-.Initial skeleton for the Kendo UI Forms Polyfill
+.Initial skeleton for the Kendo UI Forms polyfill
 ====
 [source, js]
 ----
@@ -122,7 +137,7 @@ To support both of these approaches in my polyfill, I'll need to follow Kendo UI
     },
     options: {
       // the name is what it will appear in the kendo namespace (kendo.ui.Form).
-      // The jQuery plugin would be jQuery.fn.kendoForm.
+      // The jQuery plug-in would be jQuery.fn.kendoForm.
       name: 'Form'
     }
   });
@@ -132,43 +147,43 @@ To support both of these approaches in my polyfill, I'll need to follow Kendo UI
 ----
 ====
 
-As illustrated above, my polyfill starts with an http://benalman.com/news/2010/11/immediately-invoked-function-expression/[Immediately-Invoked Function Expression] (IIFE) that specifies my dependencies, jQuery and Kendo UI in this case. Next, I create some local lookup variables to cache key parts of the Kendo UI namespace. Then, I create a new Form variable by calling the +kendo.ui.Widget.extend()+ method, which takes care of handling the initialization types I specified above. Finally, I'll call the +kendo.ui.plugin()+ method and pass in my +Form+ widget, which adds my polyfill to the widget registry for runtime lookup and evaluation.
+As illustrated here, my polyfill starts with an http://bit.ly/i-ife[Immediately-Invoked Function Expression] (IIFE) that specifies my dependencies, jQuery and Kendo UI in this case. Next, I create some local lookup variables to cache key parts of the Kendo UI namespace. Then, I create a new Form variable by calling the +kendo.ui.Widget.extend()+ method, which takes care of handling the initialization types I specified. Finally, I'll call the +kendo.ui.plugin()+ method and pass in my +Form+ widget, which adds my polyfill to the widget registry for runtime lookup and evaluation.
 
-For my HTML5 Forms polyfill, this is all I need to create a public API for initializing my library. With this skeleton code in place, I can now use either initialization method described in <<EX3-1>> and <<EX3-2>> and things will resolve. My polyfill won't do anything at this point, but it will run without errors, so that's progress!
+For my HTML5 Forms polyfill, this is all I need to create a public API for initializing my library. With this skeleton code in place, I can now use either initialization method described in <<EX3-1>> and <<EX3-2>>, and things will resolve. My polyfill won't do anything at this point, but it will run without errors, so that's progress!
 
-With the opt-in API of our library set, we can move on to building out the core functionality of our polyfill. Regardless of the type of polyfill you're building, much of the API you'll be exposing should already be decided for you via the specification for the technology you're targeting. As discussed in the last chapter, it's important to adhere to this specification as much as possible. If you're planning to support an aspect of the spec, you should try your best to support it _as specced_. You should also be clear in your documentation and in-source comments which aspects of the spec you support and which you don't. 
+With the opt-in API of our library set, we can move on to building out the core functionality of our polyfill. Regardless of the type of polyfill you're building, much of the API you'll be exposing should already be decided for you via the specification for the technology you're targeting. As discussed in the preceding chapter, it's important to adhere to this specification as much as possible. If you're planning to support an aspect of the spec, you should try your best to support it _as specced_. You should also be clear in your documentation and in-source comments which aspects of the spec you support and which you don't. 
 
-=== Deciding what to build
+=== Deciding What to Build
 
-Speaking of which, the next important decision you need to make in your library is what to build. Even if you do plan to support every nook and cranny of a spec with your polyfill, you probably won't be able to bang out full support over a weekend. You need a plan, and if you're anything like me, you probably want to target simple features and "quick wins" first. This establishes a good foundation and a working polyfill before you tackle the hairier aspects of support. If you'd rather target the hard stuff first, that's ok too!
+Speaking of which, the next important decision you need to make in your library is what to build. Even if you do plan to support every nook and cranny of a spec with your polyfill, you probably won't be able to bang out full support over a weekend. You need a plan, and if you're anything like me, you probably want to target simple features and "quick wins" first. This establishes a good foundation and a working polyfill before you tackle the hairier aspects of support. If you'd rather target the hard stuff first, that's OK too!
 
-In the context of HTML5 Forms, the simpler features are those new input types like +color+, +number+ and +DateTime+. Because Kendo UI Web has widgets for these, *supporting* them is a simple matter of adding the Kendo UI widget when one of these types is found on a form. Validation support, on the other hand, is a bit trickier, so I'm going to put that off for later, perhaps after the first couple of releases.
+In the context of HTML5 Forms, the simpler features are those new input types like +color+, +number+, and +datetime+. Because Kendo UI Web has widgets for these, _supporting_ them is a simple matter of adding the Kendo UI widget when one of these types is found on a form. Validation support, on the other hand, is a bit trickier, so I'm going to put that off for later, perhaps after the first couple of releases.
 
-Speaking of releases, this is probably a good time to think about the roadmap for your polyfill. Assuming you're talking about a complex feature, you'll probably want to write down what you plan to support, and when. For the HTML5 Forms polyfill, I chose to include a roadmap on the README for the project, which I've also included below in <<EX3-4>>.
+Speaking of releases, this is probably a good time to think about the road map for your polyfill. Assuming you're talking about a complex feature, you'll probably want to write down what you plan to support, and when. For the HTML5 Forms polyfill, I chose to include a roadmap on the _readme_ for the project, which I've also included in <<EX3-4>>.
 
 [[EX3-4]]
-.Roadmap for the Kendo UI Forms Polyfill
+.Road map for the Kendo UI Forms polyfill
 [options="header"]
 |=======
 |Release|Features
-|v0.1   |Support upgrading all HTML5 input types (color, numeric, range, file, datetime, time, month, week)
-|v0.1.1 |Button support & date type support
+|v0.1   |Support upgrading all HTML5 input types (color, numeric, range, file, datetime, time, month, week).
+|v0.1.1 |Button support and date type support
 |v0.2   | Add support for progress and datalist elements; add a placeholder fallback and search box UI; autocomplete attribute support.
-|v0.3   | Add validation support
+|v0.3   | Add validation support.
 |=======
 
-In addition to creating a roadmap and plan for your polyfill, you'll also want to consider if there's anything under the technology umbrella of your polyfill that you don't plan to or cannot support. Sometimes, it's not possible to reliably polyfill an aspect of a specification, so you'll want to avoid even trying to support it. Other times, adding support for a given feature is possible, but not something you're prepared to take on. No matter the reason, be sure that your roadmap is clear about what you're not planning to polyfill so that developers are informed when considering your library. 
+In addition to creating a road map and plan for your polyfill, you'll want to consider whether there's anything under the technology umbrella of your polyfill that you don't plan to or cannot support. Sometimes it's not possible to reliably polyfill an aspect of a specification, so you'll want to avoid even trying to support it. Other times, adding support for a given feature is possible, but not something you're prepared to take on. No matter the reason, be sure that your road map is clear about what you're not planning to polyfill so that developers are informed when considering your library. 
 
 === Adding Basic Features
 
-So we've got our basic polyfill skeleton in place, an API for calling it and a roadmap for which features we plan to add. Now it's time to get to work and add our first, real feature. Of course, if we're going to add features to our polyfill, we also need ways to test them out, don't we? In <<polyfills_chapter_4>>, I'll discuss setting up unit and cross-browser testing in-depth, but in the meantime, let's create a "sample" form that we can use to test out our library as we work on it. This sample will serve as a live demonstration and part of our docs when we publish our polyfill, so it's something you'll want to add to your projects even if you're also performing automated testing. Consider it a way to "show off" all your hard work to you potential users.
+So we've got our basic polyfill skeleton in place, an API for calling it, and a road map for which features we plan to add. Now it's time to get to work and add our first, real feature. Of course, if we're going to add features to our polyfill, we also need ways to test them out, don't we? In <<polyfills_chapter_4>>, I'll discuss setting up unit and cross-browser testing in depth, but in the meantime, let's create a sample form that we can use to test out our library as we work on it. This sample will serve as a live demonstration and part of our docs when we publish our polyfill, so it's something you'll want to add to your projects even if you're also performing automated testing. Consider it a way to show off all your hard work to your potential users.
 
 ==== Creating a Sample Form
 
-To that end, let's create a new HTML page in the +samples/+ folder and call it +form.html+. Since our library is an HTML5 Forms polyfill, it makes sense that the sample page itself contain a form showing off all of our bells and whistles. Since this sample page will also serve as a part of my docs, the HTML page, which you can view in the https://github.com/kendo-labs/kendo-ui-forms[online repo for this project], will include references to bootstrap and some additional markup that I've not included in the snippet below. The relevant portion of this sample page, that is the form itself, is shown in <<EX3-4>>.
+To that end, let's create a new HTML page in the +samples/+ folder and call it +form.html+. Since our library is an HTML5 Forms polyfill, it makes sense that the sample page itself contain a form showing off all of our bells and whistles. Since this sample page will also serve as a part of my docs, the HTML page, which you can view in the https://github.com/kendo-labs/kendo-ui-forms[online repo for this project], will include references to bootstrap and some additional markup that I've not included in <<EX3-04>>. The relevant portion of this sample page, the form itself, is shown in <<EX3-4>>.
 
 [[EX3-04]]
-.Sample markup for the forms polyfill
+.Sample markup for the Forms polyfill
 ====
 [source, html]
 ----
@@ -260,14 +275,14 @@ To that end, let's create a new HTML page in the +samples/+ folder and call it +
 ----
 ====
 
-As you can see from the sample, it's a pretty robust form, and it also uses all of the new HTML5 Forms features introduced in the spec, like new input types (+color+, +datetime+, etc), new attributes (+autocomplete+, +pattern+, +required+, etc.) and form validation features. To give you an idea of what this form looks like in various browsers, <<EX3-5>> shows what our form looks like, by default, in Chrome 29, while <<EX3-6>> shows what the form looks like in Safari 6.1. Notice the difference in the Date fields, the Color field and others. We've certainly got our work cut out for us with this polyfill, even without taking oldIE into account! 
+As you can see from the sample, it's a pretty robust form, and it also uses all of the new HTML5 Forms features introduced in the spec, like new input types (such as +color+ and +datetime+), new attributes ( like +autocomplete+, +pattern+, or +required+) and form validation features. To give you an idea of what this form looks like in various browsers, <<EX3-5>> shows what our form looks like, by default, in Chrome 29, while <<EX3-6>> shows what the form looks like in Safari 6.1. Notice the difference in the date fields, the color field, and others. We've certainly got our work cut out for us with this polyfill, even without taking oldIE into account! 
 
 [[EX3-5]]
-.Sample Form as viewed in Google Chrome 29
+.Sample form as viewed in Google Chrome 29
 image::images/bdpf_0302.png[]
 
 [[EX3-6]]
-.Sample Form as viewed in Safari 6.1
+.Sample form as viewed in Safari 6.1
 image::images/bdpf_0303.png[]
 
 With my sample form in place, I'll next need to add a reference to my polyfill source file. In <<EX3-3>>, we created the main +kendo.forms.js+ file, which included the skeleton for our Forms widget and polyfill. I'll add a reference to that file in my sample form, and then add a script block or new file reference to activate the sample form, as illustrated in <<EX3-7>>.
