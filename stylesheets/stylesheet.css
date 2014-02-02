@@ -41,6 +41,9 @@ q:before, q:after {
 	content: '';
 	content: none;
 }
+img.med {
+  width: 15em;
+}
 table {
 	border-collapse: collapse;
 	border-spacing: 0;
