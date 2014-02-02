@@ -1,0 +1,18 @@
+@-hitch-requires ../js/selector-matches.js;
+
+#todo-list li:-hitch-anyof(.urgent, .overdue) label {
+    color: red; 
+}
+
+#todo-list li:-hitch-noneof(.urgent, .overdue) label {
+    color: green; 
+}
+
+#todo-list li:-hitch-allof(.urgent, .overdue) label {
+    font-weight: bold; 
+}
+
+#todo-list li:matches(.urgent, #next-action) label {
+    font-weight: bold; 
+    color: blue;
+}

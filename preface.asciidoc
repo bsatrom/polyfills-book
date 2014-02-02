@@ -1,0 +1,113 @@
+[preface]
+== Preface
+
+If you play a game of word association with a room full of frontend developers, _polyfill_ will no doubt receive mention from more than a few participants. This word--traditionally a synonym for _fallback_, _spackle_, or _patch_&#x2014;was unfamiliar to many developers until just a few years ago, but has become a staple of conversations about modern and open web technologies. And while polyfilling has traditionally operated as a practice for delivering modern features to nonmodern browsers (_oldIE_, meaning IE 6–8, is increasingly a synonym for older browsers), the concept has expanded over the last few years to include the addition of new and experimental platform features to _all browsers_, including the newest and most cutting-edge.
+
+Before our eyes, the practice of polyfilling is evolving from an adoption technique to a full-blown design pattern that allows developers to "spackle" their browsers with whatever semantics they wish. AngularJS, a very popular and fast-growing app framework, encourages this practice by enabling developers to use directives to add custom HTML tags and components to their applications.
+
+Design by polyfill extends beyond frameworks as well. Once such example is the Web Components effort, a set of specifications in the W3C designed to make the creation of custom semantics and encapsulated components a feature in the browser itself. With Web Components, if you want a +<calendar>+ component, you need only create one yourself, or grab one from a third party. It's a powerful idea, and if the concept takes off, it will unlock a new set of capabilities for web developers, while adding new depth and richness to the applications we create.
+
+=== Who This Book Is For
+
+When it comes to the art of patching browser capabilities via polyfills, developers fall into two camps: those _using_ polyfills to provide modern web platform capabilities in their sites, and those _building_ polyfills for the broader web community. The book is primarily focused on the latter camp, and is intended to serve as an introduction to polyfilling, to provide a set of principles and practical guidelines for building _reliable polyfills_, and finally, to provide a road map for the future of polyfilling itself. However, even if you're a JavaScript developer not especially interested in building polyfills, there's a lot of useful content in this book in the realm of test-driven development (TDD), JavaScript build workflows, and performance optimizations.
+
+At present, countless articles and book chapters exist that cover the subject of polyfilling. However, in nearly every case, these articles are targeted at polyfill consumers, and not the intrepid developers who build these libraries. One notable exception is http://addyosmani.com/blog/writing-polyfills[Addy Osmani's guide for polyfill developers], an introductory read that I highly recommend. Beyond Addy's article, there are few resources, online or in print, that cover the topic of polyfills from the viewpoint of the polyfill developer. A lack of definitive resources for building these libraries means that we, as developers, must strike out on our own, or slowly dig through other libraries for patterns and ideas.
+
+My sincere hope is that this book will close the gap by serving as a field guide for polyfill developers. We'll start with a cursory introduction to polyfilling on the web platform, and I'll share some principles and guidelines for building polyfills that developers can rely on. Once the guidelines have been established, we'll shift the discussion to an in-depth walk-through of building a real-life, reasonably complex polyfill, by example.
+
+Once I’ve covered the ins and outs of building polyfills, the last two chapters will shift to focus on that emerging trend on the web platform: the _forward polyfill_, or _prollyfill_. This pattern, as I've mentioned already, enables developers to test and work with emerging concepts, sometimes ahead of the browser vendors themselves. By the time we're done, you'll have all the tools you need to build reliable polyfills for the present, and the future, of the Web.
+
+=== How This Book Is Organized
+
+This book is organized into two parts. In the first part, we discuss the ins and outs of polyfill development, starting with the current landscape of polyfilling in <<polyfills_chapter_1>>. In <<polyfills_chapter_2>>, I'll introduce some principles and practices for the polyfill developer, guidance that I hope you'll find useful regardless of the type of polyfill you plan to build. Then, in Chapters pass:[<xref linkend="polyfills_chapter_3" xrefstyle="select: labelnumber"/>] through pass:[<xref linkend="polyfills_chapter_5" xrefstyle="select: labelnumber"/>], we'll dig deep into polyfill development with a real-life library. In <<polyfills_chapter_3>>, I'll introduce our sample project, an HTML5 Forms polyfill, and we'll build out several features for this library. In <<polyfills_chapter_4>>, we'll talk about testing and build workflows, and I'll introduce you to some tools that can make your life easier as a polyfill developer. Finally, we'll wrap up Part I with a discussion on polyfill performance in <<polyfills_chapter_5>>, where I'll walk through a couple of cases in which we can improve the speed of our polyfill.
+
+In Part II of this book, we'll turn our focus to the future of polyfilling, the _prollyfill_. In <<polyfills_chapter_6>>, I'll introduce the concept of _prollyfilling_ and walk through examples of this important variation on the polyfill. Finally, in <<polyfills_chapter_7>>, we'll close out the book with another walk-through and build a _prollyfill_ for a cutting-edge web platform specification. Once we're done, you should be well equipped to jump into the present, and future, of polyfilling.
+
+=== Conventions Used in This Book
+
+The following typographical conventions are used in this book:
+
+_Italic_:: Indicates new terms, URLs, email addresses, filenames, and file extensions.
+
++Constant width+:: Used for program listings, as well as within paragraphs to refer to program elements such as variable or function names, databases, data types, environment variables, statements, and keywords.
+
+**`Constant width bold`**:: Shows commands or other text that should be typed literally by the user.
+
+_++Constant width italic++_:: Shows text that should be replaced with user-supplied values or by values determined by context.
+
+
+[TIP]
+====
+This element signifies a tip or suggestion.
+====
+
+[NOTE]
+====
+This element signifies a general note.
+====
+
+[WARNING]
+====
+This element indicates a warning or caution.
+====
+
+=== Using Code Examples
+
+Supplemental material (code examples, exercises, etc.) is available for download at link:$$http://github.com/kendo-labs/kendo-ui-forms$$[] and link:$$https://github.com/bsatrom/slacker.js$$[].
+
+This book is here to help you get your job done. In general, if example code is offered with this book, you may use it in your programs and documentation. You do not need to contact us for permission unless you’re reproducing a significant portion of the code. For example, writing a program that uses several chunks of code from this book does not require permission. Selling or distributing a CD-ROM of examples from O’Reilly books does require permission. Answering a question by citing this book and quoting example code does not require permission. Incorporating a significant amount of example code from this book into your product’s documentation does require permission.
+
+We appreciate, but do not require, attribution. An attribution usually includes the title, author, publisher, and ISBN. For example: “_Building Polyfills_ by Brandon Satrom (O’Reilly). Copyright 2012 Some Copyright Holder, 978-0-596-xxxx-x.”
+
+If you feel your use of code examples falls outside fair use or the permission given above, feel free to contact us at pass:[<email>permissions@oreilly.com</email>].
+
+=== Safari® Books Online
+
+[role = "safarienabled"]
+[NOTE]
+====
+pass:[<ulink role="orm:hideurl:ital" url="http://my.safaribooksonline.com/?portal=oreilly">Safari Books Online</ulink>] is an on-demand digital library that delivers expert pass:[<ulink role="orm:hideurl" url="http://www.safaribooksonline.com/content">content</ulink>] in both book and video form from the world&#8217;s leading authors in technology and business.
+====
+
+Technology professionals, software developers, web designers, and business and creative professionals use Safari Books Online as their primary resource for research, problem solving, learning, and certification training.
+
+Safari Books Online offers a range of pass:[<ulink role="orm:hideurl" url="http://www.safaribooksonline.com/subscriptions">product mixes</ulink>] and pricing programs for pass:[<ulink role="orm:hideurl" url="http://www.safaribooksonline.com/organizations-teams">organizations</ulink>], pass:[<ulink role="orm:hideurl" url="http://www.safaribooksonline.com/government">government agencies</ulink>], and pass:[<ulink role="orm:hideurl" url="http://www.safaribooksonline.com/individuals">individuals</ulink>]. Subscribers have access to thousands of books, training videos, and prepublication manuscripts in one fully searchable database from publishers like O’Reilly Media, Prentice Hall Professional, Addison-Wesley Professional, Microsoft Press, Sams, Que, Peachpit Press, Focal Press, Cisco Press, John Wiley & Sons, Syngress, Morgan Kaufmann, IBM Redbooks, Packt, Adobe Press, FT Press, Apress, Manning, New Riders, McGraw-Hill, Jones & Bartlett, Course Technology, and dozens pass:[<ulink role="orm:hideurl" url="http://www.safaribooksonline.com/publishers">more</ulink>]. For more information about Safari Books Online, please visit us pass:[<ulink role="orm:hideurl" url="http://www.safaribooksonline.com/">online</ulink>].
+
+=== How to Contact Us
+
+Please address comments and questions concerning this book to the publisher:
+
+++++
+<simplelist>
+<member>O’Reilly Media, Inc.</member>
+<member>1005 Gravenstein Highway North</member>
+<member>Sebastopol, CA 95472</member>
+<member>800-998-9938 (in the United States or Canada)</member>
+<member>707-829-0515 (international or local)</member>
+<member>707-829-0104 (fax)</member>
+</simplelist>
+++++
+
+We have a web page for this book, where we list errata, examples, and any additional information. You can access this page at link:$$http://www.oreilly.com/catalog/<catalog page>$$[].
+
+++++
+<remark>Don't forget to update the link above.</remark>
+++++
+
+To comment or ask technical questions about this book, send email to pass:[<email>bookquestions@oreilly.com</email>].
+
+For more information about our books, courses, conferences, and news, see our website at link:$$http://www.oreilly.com$$[].
+
+Find us on Facebook: link:$$http://facebook.com/oreilly$$[]
+
+Follow us on Twitter: link:$$http://twitter.com/oreillymedia$$[]
+
+Watch us on YouTube: link:$$http://www.youtube.com/oreillymedia$$[]
+
+=== Acknowledgments
+
+First and foremost, thanks go to my wife, Sarah, whose faith in me is equal parts unflagging and humbling. I am ever grateful for her encouragement to take on these kinds of projects, while also keeping me honest and engaged with my family. It is because of her that I don't have to apologize for countless nights of missed dinners and time lost with our family, because no such sacrifice was required. I hope you'll agree that the quality of this work did not suffer, as a result.
+
+I'm also grateful to my boys, Benjamin and Jack, whose smiles and playful spirits remind me of what really matters each and every day. Thanks for all of the writing interruptions for hugs and kisses, boys! Also, to Baby Satrom #3. Though this book was completed before you were born, you were constantly in my thoughts. I can't wait to meet you in early 2014!
+
+Thanks also to my fantastic colleagues at Telerik, especially Burke Holland, who reviewed every single line of this book and provided immensely helpful feedback when I was deep in the weeds of polyfilling. Thanks also for Addy Osmani who, in addition to writing the foreword, provided early input on the proposal and table of contents for this book. Any "aha!" moments you have while reading this book are due to the insight of these two gentlemen, while any "WTFs" are solely the fault of their author.  

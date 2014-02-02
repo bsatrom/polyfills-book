@@ -1,0 +1,53 @@
+<subtitle>Web Platform APIs for the Present and Future</subtitle>
+
+  <othercredit role="proofreader">
+    <firstname>Sharon</firstname>
+    <surname>Wilkey</surname>
+  </othercredit>
+  <othercredit role="illustrator">
+    <firstname>Rebecca</firstname>
+    <surname>Demarest</surname>
+  </othercredit>
+
+  <!-- All rights reserved. -->
+
+  <publisher>
+    <publishername>O’Reilly Media, Inc.    </publishername>
+    <address format="linespecific">
+      <street>1005 Gravenstein Highway North</street>
+      <city>Sebastopol</city>
+      <state>CA</state>
+      <postcode>95472</postcode>
+    </address>
+  </publisher>
+
+  <legalnotice role="printlocation">
+    <para>Printed in the United States of America.</para>
+  </legalnotice>
+
+  <legalnotice role="printer">
+    <para>[LSI]</para>
+  </legalnotice>
+
+  <legalnotice role="use">
+    <para>O’Reilly books may be purchased for educational, business, or sales promotional use. Online editions are also available for most 
+          titles (<ulink url="http://my.safaribooksonline.com/?portal=oreilly" role="orm:hideurl:ital">http://my.safaribooksonline.com</ulink>). For more information, contact our corporate/institutional sales department:
+          800-998-9938 or <phrase role="keep-together"><email>corporate@oreilly.com</email></phrase>.</para>
+  </legalnotice>
+
+  <legalnotice role="trademarks">
+    <para>Nutshell Handbook, the Nutshell Handbook logo, and the O’Reilly logo
+          are registered trademarks of O’Reilly Media, Inc. <emphasis>Building Polyfills</emphasis>, the picture of a scissor-tailed Nightjar, 
+          and related trade dress are trademarks of O’Reilly Media, Inc.    </para>
+    <para>Many of the designations used by manufacturers and sellers to distinguish
+          their products are claimed as trademarks. Where those designations appear
+          in this book, and O’Reilly Media, Inc. was aware of a trademark claim,
+          the designations have been printed in caps or initial caps.    </para>
+  </legalnotice>
+
+  <legalnotice role="damages">
+    <para>While every precaution has been taken in the preparation of this book,
+        the publisher and authors assume no responsibility for errors or omissions, 
+        or for damages resulting from the use of the information contained herein.</para>
+  </legalnotice>
+<isbn>9781449370732</isbn><edition>1</edition><author><firstname>Brandon</firstname><surname>Satrom</surname><authorblurb><para>Brandon Satrom has been a web developer for close to fifteen years and have worked with countless web technologies and browsers during that time. He's worked as a Microsoft Web Evangelist, and currently serves as the Lead Program Manager for Telerik’s Cross-Platform Tools and Services, which includes Kendo UI, a library for building rich, interactive web and hybrid mobile applications with HTML, JavaScript and CSS. He co-wrote Building Windows 8 Applications with JavaScript, which was published in January of 2013.</para></authorblurb></author><editor><firstname>Simon</firstname><surname>St. Laurent</surname></editor><editor><firstname>Brian</firstname><surname>Anderson</surname></editor><copyright><year>2014</year><holder>Brandon Satrom</holder></copyright><editor role="production"><firstname>Nicole</firstname><surname>Shelby</surname></editor><othercredit role="coverdesigner"><firstname>Randy</firstname><surname>Comer</surname></othercredit><othercredit role="interiordesigner"><firstname>David</firstname><surname>Futato</surname></othercredit><printhistory><formalpara><title>First Edition</title><para>February, 2014</para></formalpara></printhistory><revhistory><revision><date>2014-02-14</date><revremark>First release</revremark></revision></revhistory><legalnotice role="perfect"><para/></legalnotice>
